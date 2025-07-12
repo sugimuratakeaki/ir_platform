@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音声・動画アップロード - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* ===== 音声・動画アップロード画面固有のスタイル ===== */
+        .upload-zone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background: #f7fafc;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+        .upload-zone.dragover {
+            transform: scale(1.02);
+        }
+        .file-item {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 8px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #4299e1;
+            transition: width 0.3s;
+        }
+        .status-badge {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        .status-uploading { background: #fef3c7; color: #d97706; }
+        .status-processing { background: #dbeafe; color: #1d4ed8; }
+        .status-completed { background: #dcfce7; color: #166534; }
+        .status-error { background: #fee2e2; color: #dc2626; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        .metadata-form {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .file-info {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 16px;
+            align-items: center;
+        }
+        .file-details {
+            flex: 1;
+        }
+        .file-name {
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .file-meta {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .processing-queue {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item active">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="card mb-8">
+                <div class="card-body">
+                    <h1 class="text-3xl font-bold mb-4">音声・動画アップロード</h1>
+                    <div class="flex gap-10">
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">今月アップロード数</span>
+                            <span class="text-2xl font-bold text-blue-500">47</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">処理中ファイル</span>
+                            <span class="text-2xl font-bold text-orange-500">3</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">処理完了済み</span>
+                            <span class="text-2xl font-bold text-green-500">44</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">総容量</span>
+                            <span class="text-2xl font-bold text-blue-500">15.2GB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- アップロードゾーン -->
+            <div class="card mb-8">
+                <div class="card-header">
+                    <h2 class="text-xl font-bold">ファイルアップロード</h2>
+                </div>
+                <div class="card-body">
+                    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                        <div class="text-4xl mb-4">📁</div>
+                        <div class="text-xl font-bold mb-2">ファイルをドラッグ&ドロップ</div>
+                        <div class="text-gray-600 mb-4">
+                            または<span class="text-blue-500 underline cursor-pointer">クリックしてファイルを選択</span>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            対応形式: MP4, MOV, AVI, MP3, WAV, M4A (最大500MB)
+                        </div>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept="audio/*,video/*" style="display: none;">
+                    
+                    <div class="metadata-form">
+                        <h3 class="text-lg font-bold mb-4">メタデータ入力</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="form-label">面談日時</label>
+                                <input type="datetime-local" class="form-input" value="2025-07-12T14:00">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">面談種別</label>
+                                <select class="form-input">
+                                    <option>個別面談</option>
+                                    <option>電話会議</option>
+                                    <option>オンライン面談</option>
+                                    <option>決算説明会</option>
+                                    <option>その他</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">参加者（投資家）</label>
+                                <input type="text" class="form-input" placeholder="投資家名・担当者名">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">参加者（当社）</label>
+                                <input type="text" class="form-input" placeholder="当社参加者名">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">主要議題</label>
+                                <input type="text" class="form-input" placeholder="決算説明、事業戦略など">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">重要度</label>
+                                <select class="form-input">
+                                    <option>高</option>
+                                    <option>中</option>
+                                    <option>低</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">備考</label>
+                            <textarea class="form-input h-20" placeholder="その他の備考や注意事項"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 処理状況モニター -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">📊 処理状況モニター</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="processing-queue">
+                            <!-- 処理中ファイル -->
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <div class="file-details">
+                                        <div class="file-name">野村AM_面談_20250710.mp4</div>
+                                        <div class="file-meta">48.2MB • 45分 • 2025/07/10 14:00</div>
+                                    </div>
+                                    <div class="status-badge status-processing">音声解析中</div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>音声認識・テキスト化</span>
+                                        <span>78%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 78%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- アップロード中ファイル -->
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <div class="file-details">
+                                        <div class="file-name">SGP_オンライン面談_20250709.mp4</div>
+                                        <div class="file-meta">67.8MB • 30分 • 2025/07/09 10:00</div>
+                                    </div>
+                                    <div class="status-badge status-uploading">アップロード中</div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>ファイルアップロード</span>
+                                        <span>45%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 45%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 完了ファイル -->
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <div class="file-details">
+                                        <div class="file-name">決算説明会_Q1_20250710.mp4</div>
+                                        <div class="file-meta">234.6MB • 90分 • 2025/07/10 15:00</div>
+                                    </div>
+                                    <div class="status-badge status-completed">処理完了</div>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-600">
+                                    ✓ 音声認識完了 • ✓ 感情分析完了 • ✓ FAQ候補3件生成
+                                </div>
+                            </div>
+                            
+                            <!-- エラーファイル -->
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <div class="file-details">
+                                        <div class="file-name">大和AM_電話会議_20250708.mp3</div>
+                                        <div class="file-meta">12.4MB • 15分 • 2025/07/08 16:30</div>
+                                    </div>
+                                    <div class="status-badge status-error">処理エラー</div>
+                                </div>
+                                <div class="mt-2 text-sm text-red-600">
+                                    ❌ 音質が不良のため音声認識に失敗しました
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 最近の処理結果 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">✅ 最近の処理結果</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-4">
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <div class="font-bold text-green-800">野村AM_面談_20250710.mp4</div>
+                                <div class="text-sm text-green-700 mt-1">
+                                    • テキスト化: 8,247文字<br>
+                                    • 感情分析: ポジティブ (85%)<br>
+                                    • FAQ候補: 5件生成<br>
+                                    • 主要キーワード: AI戦略, クラウド売上, 海外展開
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-success btn-sm">結果確認</button>
+                                    <button class="btn btn-secondary btn-sm">対話記録に追加</button>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 bg-blue-50 rounded-lg">
+                                <div class="font-bold text-blue-800">決算説明会_Q1_20250710.mp4</div>
+                                <div class="text-sm text-blue-700 mt-1">
+                                    • テキスト化: 24,891文字<br>
+                                    • 質疑応答: 12件抽出<br>
+                                    • FAQ候補: 8件生成<br>
+                                    • 参加者感情: 全体的にポジティブ
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-primary btn-sm">結果確認</button>
+                                    <button class="btn btn-secondary btn-sm">IRライブラリに追加</button>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 bg-orange-50 rounded-lg">
+                                <div class="font-bold text-orange-800">SGP_オンライン面談_20250709.mp4</div>
+                                <div class="text-sm text-orange-700 mt-1">
+                                    • テキスト化: 6,543文字<br>
+                                    • 感情分析: ポジティブ (92%)<br>
+                                    • FAQ候補: 3件生成<br>
+                                    • 言語: 英語（自動翻訳済み）
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-primary btn-sm">結果確認</button>
+                                    <button class="btn btn-secondary btn-sm">対話記録に追加</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // ドラッグ&ドロップ機能の基本実装
+        const uploadZone = document.querySelector('.upload-zone');
+        
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            // ファイル処理のロジックをここに追加
+            console.log('Files dropped:', e.dataTransfer.files);
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>決算資料比較・生成 - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 400px 1fr;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+        
+        .material-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .panel-header.current {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        }
+        
+        .material-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .slide-preview {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .slide-preview.changed {
+            border-color: #ed8936;
+            box-shadow: 0 0 0 3px rgba(237, 137, 54, 0.1);
+        }
+        
+        .slide-preview.improved {
+            border-color: #38a169;
+            box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
+        }
+        
+        .slide-header {
+            background: white;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: bold;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .change-indicator {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .change-indicator.updated {
+            background: #feebc8;
+            color: #ed8936;
+        }
+        
+        .change-indicator.new {
+            background: #c6f6d5;
+            color: #38a169;
+        }
+        
+        .slide-body {
+            padding: 16px;
+            height: 200px;
+            position: relative;
+        }
+        
+        .ai-insight-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 200px);
+        }
+        
+        .insight-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .insight-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .ai-suggestion {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .ai-suggestion::before {
+            content: "🤖";
+            position: absolute;
+            top: -8px;
+            left: 16px;
+            background: #f0f9ff;
+            padding: 0 4px;
+            font-size: 16px;
+        }
+        
+        .suggestion-type {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0369a1;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .suggestion-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #1e40af;
+        }
+        
+        .suggestion-text {
+            color: #374151;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .suggestion-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-adopt {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-adopt:hover {
+            background: #2563eb;
+        }
+        
+        .btn-modify {
+            background: #e5e7eb;
+            color: #374151;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-modify:hover {
+            background: #d1d5db;
+        }
+        
+        .comparison-highlight {
+            background: rgba(251, 191, 36, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+            animation: highlight 2s ease-in-out;
+        }
+        
+        .improvement-highlight {
+            background: rgba(34, 197, 94, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        
+        @keyframes highlight {
+            0%, 100% { background: rgba(251, 191, 36, 0.2); }
+            50% { background: rgba(251, 191, 36, 0.4); }
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 150px;
+            position: relative;
+        }
+        
+        .floating-toolbar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 1000;
+        }
+        
+        .toolbar-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .toolbar-btn:hover {
+            background: #2563eb;
+        }
+        
+        .toolbar-btn.secondary {
+            background: #6b7280;
+        }
+        
+        .toolbar-btn.secondary:hover {
+            background: #4b5563;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item active">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-hidden p-8">
+            <div class="card mb-6">
+                <div class="card-body">
+                    <h1 class="text-3xl font-bold mb-4">決算資料比較・生成</h1>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">⚡</span>
+                            <div>
+                                <span class="font-bold">AI生成完了</span>
+                                <div class="text-sm text-gray-600">2025年Q1決算説明会資料 (45スライド)</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 ml-auto">
+                            <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">📝 12箇所の変更</span>
+                            <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">✨ 8箇所の改善提案</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comparison-container">
+                <!-- 前回資料 -->
+                <div class="material-panel">
+                    <div class="panel-header">
+                        <div>
+                            <span>📊</span>
+                            <span>前回資料 (2024年Q4)</span>
+                        </div>
+                        <span class="text-sm opacity-75">参照元</span>
+                    </div>
+                    <div class="material-content">
+                        <div class="slide-preview">
+                            <div class="slide-header">
+                                <span>1. 業績サマリー</span>
+                            </div>
+                            <div class="slide-body">
+                                <div class="chart-container">
+                                    <canvas id="prevChart1"></canvas>
+                                </div>
+                                <div class="text-sm mt-2">
+                                    <p><strong>売上高:</strong> 340億円 (+8.2%)</p>
+                                    <p><strong>営業利益:</strong> 52億円 (+12.5%)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slide-preview">
+                            <div class="slide-header">
+                                <span>2. セグメント別業績</span>
+                            </div>
+                            <div class="slide-body">
+                                <div class="chart-container">
+                                    <canvas id="prevChart2"></canvas>
+                                </div>
+                                <div class="text-sm mt-2">
+                                    <p>クラウド事業が好調に推移し、全社業績を牽引しました。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slide-preview">
+                            <div class="slide-header">
+                                <span>3. 今後の展望</span>
+                            </div>
+                            <div class="slide-body">
+                                <div class="text-sm">
+                                    <p>2025年度は新規事業の収益化と既存事業の効率化を進めてまいります。</p>
+                                    <p class="mt-2">特にAI分野への投資を加速し、競争優位性を確保します。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI解説パネル -->
+                <div class="ai-insight-panel">
+                    <div class="insight-header">
+                        <span>🤖 AI分析・提案</span>
+                    </div>
+                    <div class="insight-content">
+                        <div class="ai-suggestion">
+                            <div class="suggestion-type">数値変化分析</div>
+                            <div class="suggestion-title">売上高の減少要因説明</div>
+                            <div class="suggestion-text">
+                                Q1売上高は298億円（前年同期比-12.4%）となりました。主要因は：<br>
+                                1) 季節性要因（Q1は例年低調）<br>
+                                2) 新製品リリースの遅延<br>
+                                3) 競合他社の価格競争激化
+                            </div>
+                            <div class="suggestion-actions">
+                                <button class="btn-adopt">採用</button>
+                                <button class="btn-modify">修正</button>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-suggestion">
+                            <div class="suggestion-type">投資家視点</div>
+                            <div class="suggestion-title">ポジティブメッセージ強化</div>
+                            <div class="suggestion-text">
+                                「一時的な減収ですが、AI事業への先行投資により次四半期以降の成長基盤は着実に構築されています。R&D投資ROIは前年比+25%改善しており、中長期的な競争力向上を確信しています。」
+                            </div>
+                            <div class="suggestion-actions">
+                                <button class="btn-adopt">採用</button>
+                                <button class="btn-modify">修正</button>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-suggestion">
+                            <div class="suggestion-type">業界比較</div>
+                            <div class="suggestion-title">競合との差別化ポイント</div>
+                            <div class="suggestion-text">
+                                業界平均営業利益率13.2%に対し、当社は13.8%を維持。特にクラウド事業の利益率は業界トップクラスの18.5%を達成しています。
+                            </div>
+                            <div class="suggestion-actions">
+                                <button class="btn-adopt">採用</button>
+                                <button class="btn-modify">修正</button>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-suggestion">
+                            <div class="suggestion-type">グラフ改善</div>
+                            <div class="suggestion-title">視覚的インパクト向上</div>
+                            <div class="suggestion-text">
+                                セグメント別売上グラフに「成長率」の注釈を追加し、クラウド事業の+15%成長を強調することを提案します。
+                            </div>
+                            <div class="suggestion-actions">
+                                <button class="btn-adopt">採用</button>
+                                <button class="btn-modify">修正</button>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-suggestion">
+                            <div class="suggestion-type">質問予測</div>
+                            <div class="suggestion-title">想定Q&A準備</div>
+                            <div class="suggestion-text">
+                                投資家からの想定質問：「Q2の業績回復見通しは？」<br>
+                                推奨回答：「新製品の6月投入により、Q2売上は前四半期比+20%を見込んでいます。」
+                            </div>
+                            <div class="suggestion-actions">
+                                <button class="btn-adopt">採用</button>
+                                <button class="btn-modify">修正</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 今回資料 -->
+                <div class="material-panel">
+                    <div class="panel-header current">
+                        <div>
+                            <span>✨</span>
+                            <span>今回資料 (2025年Q1)</span>
+                        </div>
+                        <span class="text-sm opacity-75">AI生成</span>
+                    </div>
+                    <div class="material-content">
+                        <div class="slide-preview changed">
+                            <div class="slide-header">
+                                <span>1. 業績サマリー</span>
+                                <span class="change-indicator updated">更新</span>
+                            </div>
+                            <div class="slide-body">
+                                <div class="chart-container">
+                                    <canvas id="currentChart1"></canvas>
+                                </div>
+                                <div class="text-sm mt-2">
+                                    <p><strong>売上高:</strong> <span class="comparison-highlight">298億円 (-12.4%)</span></p>
+                                    <p><strong>営業利益:</strong> <span class="comparison-highlight">41億円 (-21.2%)</span></p>
+                                    <p class="mt-2 improvement-highlight">Q1は季節性により減収となりましたが、新製品投入によりQ2回復を見込みます。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slide-preview improved">
+                            <div class="slide-header">
+                                <span>2. セグメント別業績</span>
+                                <span class="change-indicator new">改善</span>
+                            </div>
+                            <div class="slide-body">
+                                <div class="chart-container">
+                                    <canvas id="currentChart2"></canvas>
+                                </div>
+                                <div class="text-sm mt-2">
+                                    <p class="improvement-highlight">クラウド事業は+15%成長を維持し、業界トップクラスの利益率18.5%を達成しています。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slide-preview improved">
+                            <div class="slide-header">
+                                <span>3. 今後の展望</span>
+                                <span class="change-indicator new">AI強化</span>
+                            </div>
+                            <div class="slide-body">
+                                <div class="text-sm">
+                                    <p class="improvement-highlight">一時的な減収ですが、AI事業への先行投資により次四半期以降の成長基盤は着実に構築されています。</p>
+                                    <p class="mt-2 improvement-highlight">R&D投資ROIは前年比+25%改善しており、中長期的な競争力向上を確信しています。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- フローティングツールバー -->
+            <div class="floating-toolbar">
+                <span class="font-bold">🎯 決算資料生成完了</span>
+                <button class="toolbar-btn">PowerPoint出力</button>
+                <button class="toolbar-btn">PDF出力</button>
+                <button class="toolbar-btn secondary">プレビュー</button>
+                <button class="toolbar-btn secondary">保存</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 前回チャート1 (業績サマリー)
+        const prevCtx1 = document.getElementById('prevChart1').getContext('2d');
+        new Chart(prevCtx1, {
+            type: 'bar',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [{
+                    label: '売上高(億円)',
+                    data: [280, 295, 315, 340],
+                    backgroundColor: '#6b7280'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 前回チャート2 (セグメント)
+        const prevCtx2 = document.getElementById('prevChart2').getContext('2d');
+        new Chart(prevCtx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['クラウド', 'AI/ML', 'その他'],
+                datasets: [{
+                    data: [45, 30, 25],
+                    backgroundColor: ['#6b7280', '#9ca3af', '#d1d5db']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 今回チャート1 (業績サマリー)
+        const currentCtx1 = document.getElementById('currentChart1').getContext('2d');
+        new Chart(currentCtx1, {
+            type: 'bar',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q1'],
+                datasets: [{
+                    label: '売上高(億円)',
+                    data: [280, 295, 315, 340, 298],
+                    backgroundColor: ['#6b7280', '#6b7280', '#6b7280', '#6b7280', '#ef4444']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 今回チャート2 (セグメント)
+        const currentCtx2 = document.getElementById('currentChart2').getContext('2d');
+        new Chart(currentCtx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['クラウド(+15%)', 'AI/ML(-5%)', 'その他(-10%)'],
+                datasets: [{
+                    data: [47, 28, 25],
+                    backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // AI提案採用機能
+        document.querySelectorAll('.btn-adopt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const suggestion = e.target.closest('.ai-suggestion');
+                suggestion.style.background = '#dcfce7';
+                suggestion.style.borderColor = '#22c55e';
+                e.target.textContent = '採用済み';
+                e.target.style.background = '#22c55e';
+            });
+        });
+    </script>
+</body>
+</html> 

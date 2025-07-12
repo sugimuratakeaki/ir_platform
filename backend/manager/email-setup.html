@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メール取込設定 - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* ===== メール取込設定画面固有のスタイル ===== */
+        .server-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .server-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .status-connected { color: #10b981; }
+        .status-disconnected { color: #ef4444; }
+        .status-testing { color: #f59e0b; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        .rule-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .rule-active {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #4299e1;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        .email-preview {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .privacy-warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 16px 0;
+        }
+        .log-entry {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .log-success { border-left: 3px solid #10b981; }
+        .log-error { border-left: 3px solid #ef4444; }
+        .log-warning { border-left: 3px solid #f59e0b; }
+        .filter-tag {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+        .category-badge {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+        .category-question { background: #dbeafe; color: #1d4ed8; }
+        .category-complaint { background: #fee2e2; color: #dc2626; }
+        .category-info { background: #dcfce7; color: #166534; }
+        .category-meeting { background: #fef3c7; color: #d97706; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item active">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="card mb-8">
+                <div class="card-body">
+                    <h1 class="text-3xl font-bold mb-4">メール取込設定</h1>
+                    <div class="flex gap-10">
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">設定メールボックス</span>
+                            <span class="text-2xl font-bold text-blue-500">3</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">今月取込メール数</span>
+                            <span class="text-2xl font-bold text-blue-500">127</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">自動分類済み</span>
+                            <span class="text-2xl font-bold text-green-500">118</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">最終同期</span>
+                            <span class="text-2xl font-bold text-blue-500">10分前</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- メールサーバー設定 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- 主要メールボックス -->
+                <div class="server-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold">📮 IR専用メールボックス</h3>
+                            <div class="connection-status status-connected">
+                                <span>●</span>
+                                <span>接続中</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-3">
+                            <div>
+                                <label class="form-label">メールアドレス</label>
+                                <input type="email" class="form-input" value="ir@company.com" readonly>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="form-label">サーバー</label>
+                                    <input type="text" class="form-input" value="imap.company.com" readonly>
+                                </div>
+                                <div>
+                                    <label class="form-label">ポート</label>
+                                    <input type="text" class="form-input" value="993" readonly>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold">自動取込</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div><strong>最終同期:</strong> 2025/07/12 16:20</div>
+                                <div><strong>今月取込:</strong> 89件</div>
+                                <div><strong>同期間隔:</strong> 10分</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn btn-secondary btn-sm">設定変更</button>
+                                <button class="btn btn-primary btn-sm">今すぐ同期</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 代表メールボックス -->
+                <div class="server-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold">📫 代表メールボックス</h3>
+                            <div class="connection-status status-connected">
+                                <span>●</span>
+                                <span>接続中</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-3">
+                            <div>
+                                <label class="form-label">メールアドレス</label>
+                                <input type="email" class="form-input" value="info@company.com" readonly>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="form-label">サーバー</label>
+                                    <input type="text" class="form-input" value="imap.company.com" readonly>
+                                </div>
+                                <div>
+                                    <label class="form-label">ポート</label>
+                                    <input type="text" class="form-input" value="993" readonly>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold">IR関連のみ取込</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div><strong>最終同期:</strong> 2025/07/12 16:15</div>
+                                <div><strong>今月取込:</strong> 38件（フィルタ済み）</div>
+                                <div><strong>同期間隔:</strong> 15分</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn btn-secondary btn-sm">設定変更</button>
+                                <button class="btn btn-primary btn-sm">今すぐ同期</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 新規メールサーバー追加 -->
+            <div class="card mb-8">
+                <div class="card-header">
+                    <h2 class="text-xl font-bold">➕ 新規メールサーバー追加</h2>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">メールアドレス</label>
+                                <input type="email" class="form-input" placeholder="新しいメールアドレス">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">パスワード</label>
+                                <input type="password" class="form-input" placeholder="メールパスワード">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="form-group">
+                                    <label class="form-label">IMAPサーバー</label>
+                                    <input type="text" class="form-input" placeholder="imap.example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">ポート</label>
+                                    <input type="number" class="form-input" placeholder="993">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">サーバー名</label>
+                                <input type="text" class="form-input" placeholder="表示用サーバー名">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">同期間隔</label>
+                                <select class="form-input">
+                                    <option>5分</option>
+                                    <option>10分</option>
+                                    <option>15分</option>
+                                    <option>30分</option>
+                                    <option>1時間</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">セキュリティ</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2" checked> SSL/TLS暗号化
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2" checked> 証明書検証
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-4">
+                        <button class="btn btn-secondary">接続テスト</button>
+                        <button class="btn btn-primary">サーバー追加</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- フィルタリングルール -->
+            <div class="card mb-8">
+                <div class="card-header">
+                    <h2 class="text-xl font-bold">🔍 フィルタリングルール</h2>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-bold mb-4">現在のルール</h3>
+                            
+                            <div class="rule-item rule-active">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm">投資家メール検出</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="text-sm text-gray-600 mb-2">
+                                    件名または本文に「決算」「業績」「IR」「投資」を含む
+                                </div>
+                                <div class="filter-tag">件名フィルタ</div>
+                                <div class="filter-tag">本文フィルタ</div>
+                                <div class="filter-tag">送信者フィルタ</div>
+                            </div>
+                            
+                            <div class="rule-item rule-active">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm">既登録投資家</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="text-sm text-gray-600 mb-2">
+                                    投資家データベースに登録済みのメールアドレスからの送信
+                                </div>
+                                <div class="filter-tag">送信者データベース</div>
+                            </div>
+                            
+                            <div class="rule-item">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm">スパムフィルタ</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="text-sm text-gray-600 mb-2">
+                                    営業メール、スパムを自動除外
+                                </div>
+                                <div class="filter-tag">AIスパム検出</div>
+                            </div>
+                            
+                            <div class="rule-item rule-active">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm">緊急メール検出</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="text-sm text-gray-600 mb-2">
+                                    「緊急」「至急」「重要」などを含む高優先度メール
+                                </div>
+                                <div class="filter-tag">緊急度判定</div>
+                                <div class="filter-tag">即時通知</div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-bold mb-4">新規ルール作成</h3>
+                            <div class="space-y-4">
+                                <div class="form-group">
+                                    <label class="form-label">ルール名</label>
+                                    <input type="text" class="form-input" placeholder="例: 海外投資家メール">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">条件</label>
+                                    <select class="form-input">
+                                        <option>件名に含む</option>
+                                        <option>本文に含む</option>
+                                        <option>送信者に含む</option>
+                                        <option>添付ファイルあり</option>
+                                        <option>カスタム条件</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">キーワード</label>
+                                    <input type="text" class="form-input" placeholder="カンマ区切りでキーワード入力">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">アクション</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2" checked> 自動取込
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2"> 即時通知
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2" checked> 自動分類
+                                        </label>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary w-full">ルール作成</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 自動分類設定 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- AI分類設定 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">🤖 AI自動分類設定</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold">AI分類機能</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">分類カテゴリ</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-2">
+                                            <span class="category-badge category-question">質問</span>
+                                            <span class="text-sm">投資家からの質問</span>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-2">
+                                            <span class="category-badge category-meeting">面談</span>
+                                            <span class="text-sm">面談依頼・日程調整</span>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-2">
+                                            <span class="category-badge category-info">情報</span>
+                                            <span class="text-sm">情報提供・資料送付</span>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-2">
+                                            <span class="category-badge category-complaint">苦情</span>
+                                            <span class="text-sm">苦情・要望</span>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">分類精度設定</h4>
+                                <div class="form-group">
+                                    <label class="form-label">信頼度閾値</label>
+                                    <select class="form-input">
+                                        <option>高 (90%以上)</option>
+                                        <option>中 (70%以上)</option>
+                                        <option>低 (50%以上)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">学習データ</h4>
+                                <div class="text-sm text-gray-600 space-y-1">
+                                    <div><strong>学習済みメール:</strong> 2,847件</div>
+                                    <div><strong>分類精度:</strong> 94.2%</div>
+                                    <div><strong>最終学習:</strong> 2025/07/10</div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm mt-2">再学習実行</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- プライバシー設定 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">🔒 プライバシー設定</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="privacy-warning">
+                            <div class="font-bold text-orange-800 mb-2">⚠️ プライバシー保護について</div>
+                            <div class="text-sm text-orange-700">
+                                メール内容の処理には細心の注意を払い、個人情報保護法に準拠した取り扱いを行います。
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-bold mb-2">データ保持設定</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">メール本文保存</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">添付ファイル保存</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">個人情報マスキング</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">データ削除設定</h4>
+                                <div class="form-group">
+                                    <label class="form-label">自動削除期間</label>
+                                    <select class="form-input">
+                                        <option>なし（手動削除のみ）</option>
+                                        <option>1年後</option>
+                                        <option>2年後</option>
+                                        <option>3年後</option>
+                                        <option>5年後</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">アクセス制御</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">IR部のみアクセス</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">管理者承認必須</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">アクセスログ記録</span>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-2">暗号化設定</h4>
+                                <div class="text-sm text-gray-600 space-y-1">
+                                    <div>✓ メール取込時: TLS 1.3暗号化</div>
+                                    <div>✓ データベース保存: AES-256暗号化</div>
+                                    <div>✓ バックアップ: エンドツーエンド暗号化</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 取込ログ -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-lg font-bold">📊 取込ログ・統計</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-bold mb-3">最近の取込実績</h4>
+                            <div class="space-y-1 max-h-64 overflow-y-auto">
+                                <div class="log-entry log-success">
+                                    <div class="flex-1">
+                                        <div class="font-bold">野村AM - 決算質問</div>
+                                        <div class="text-xs text-gray-600">16:20 • ir@company.com</div>
+                                    </div>
+                                    <span class="category-badge category-question">質問</span>
+                                </div>
+                                
+                                <div class="log-entry log-success">
+                                    <div class="flex-1">
+                                        <div class="font-bold">SGP - 面談調整依頼</div>
+                                        <div class="text-xs text-gray-600">15:45 • ir@company.com</div>
+                                    </div>
+                                    <span class="category-badge category-meeting">面談</span>
+                                </div>
+                                
+                                <div class="log-entry log-success">
+                                    <div class="flex-1">
+                                        <div class="font-bold">大和AM - 資料請求</div>
+                                        <div class="text-xs text-gray-600">14:30 • info@company.com</div>
+                                    </div>
+                                    <span class="category-badge category-info">情報</span>
+                                </div>
+                                
+                                <div class="log-entry log-warning">
+                                    <div class="flex-1">
+                                        <div class="font-bold">不明送信者</div>
+                                        <div class="text-xs text-gray-600">13:15 • info@company.com</div>
+                                    </div>
+                                    <span class="text-xs text-orange-600">要確認</span>
+                                </div>
+                                
+                                <div class="log-entry log-error">
+                                    <div class="flex-1">
+                                        <div class="font-bold">同期エラー</div>
+                                        <div class="text-xs text-gray-600">12:00 • ir@company.com</div>
+                                    </div>
+                                    <span class="text-xs text-red-600">失敗</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-bold mb-3">統計情報</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <h5 class="font-bold text-sm mb-2">今月の分類結果</h5>
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between text-sm">
+                                            <span>質問メール</span>
+                                            <span class="font-bold">67件</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span>面談依頼</span>
+                                            <span class="font-bold">23件</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span>情報提供</span>
+                                            <span class="font-bold">31件</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span>その他</span>
+                                            <span class="font-bold">6件</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h5 class="font-bold text-sm mb-2">処理パフォーマンス</h5>
+                                    <div class="space-y-1 text-sm">
+                                        <div class="flex justify-between">
+                                            <span>平均処理時間</span>
+                                            <span>2.3秒</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>分類精度</span>
+                                            <span>94.2%</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>エラー率</span>
+                                            <span>0.8%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h5 class="font-bold text-sm mb-2">データ使用量</h5>
+                                    <div class="space-y-1 text-sm">
+                                        <div class="flex justify-between">
+                                            <span>保存メール数</span>
+                                            <span>2,847件</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>使用容量</span>
+                                            <span>1.2GB</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>月間成長率</span>
+                                            <span>+127件</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html> 

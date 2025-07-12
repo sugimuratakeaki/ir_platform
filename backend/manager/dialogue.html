@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>対話記録 - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* ===== 対話記録画面固有のスタイル ===== */
+        .dialogue-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .dialogue-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        .dialogue-type-badge {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        .meeting { background: #e6f3ff; color: #0066cc; }
+        .phone { background: #fff2e6; color: #cc6600; }
+        .email { background: #e6ffe6; color: #006600; }
+        .webinar { background: #f0e6ff; color: #6600cc; }
+        .sentiment-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .sentiment-positive { color: #48bb78; }
+        .sentiment-neutral { color: #ed8936; }
+        .sentiment-negative { color: #f56565; }
+        .key-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 8px;
+        }
+        .topic-tag {
+            background: #bee3f8;
+            color: #2c5282;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        .ai-insights {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        .insights-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 6px;
+        }
+        .insights-content {
+            font-size: 13px;
+            color: #374151;
+        }
+        .recording-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        .status-recorded { color: #10b981; }
+        .status-transcribed { color: #3b82f6; }
+        .status-analyzed { color: #8b5cf6; }
+        .filter-tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .filter-tab.active {
+            background: #4299e1;
+            color: white;
+        }
+        .filter-tab:not(.active) {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .filter-tab:not(.active):hover {
+            background: #cbd5e0;
+        }
+        .participant-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .participant {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #f7fafc;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        /* チャート関連のスタイル */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .prediction-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .time-period-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .time-period-btn:hover {
+            background: #e5e7eb;
+        }
+        
+        .trend-indicator {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .trend-up {
+            color: #10b981;
+        }
+        
+        .trend-down {
+            color: #ef4444;
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item active">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="card mb-8">
+                <div class="card-body">
+                    <h1 class="text-3xl font-bold mb-4">対話記録</h1>
+                    <div class="flex gap-10 mb-6">
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">今月の対話件数</span>
+                            <span class="text-2xl font-bold text-blue-500">47</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">面談</span>
+                            <span class="text-2xl font-bold text-blue-500">23</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">電話・メール</span>
+                            <span class="text-2xl font-bold text-blue-500">24</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">AI解析完了</span>
+                            <span class="text-2xl font-bold text-blue-500">42</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 検索・絞り込み機能 -->
+                    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                        <div class="grid grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">期間絞り込み</label>
+                                <div class="flex gap-2">
+                                    <input type="date" id="startDate" class="form-input text-sm" value="2025-01-01">
+                                    <span class="self-center text-gray-500">〜</span>
+                                    <input type="date" id="endDate" class="form-input text-sm" value="2025-07-12">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">問い合わせ種別</label>
+                                <select id="categoryFilter" class="form-select text-sm">
+                                    <option value="">すべて</option>
+                                    <option value="financial">財務・業績</option>
+                                    <option value="strategy">事業戦略</option>
+                                    <option value="esg">ESG・サステナビリティ</option>
+                                    <option value="governance">ガバナンス</option>
+                                    <option value="other">その他</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">投資家区分</label>
+                                <select id="investorFilter" class="form-select text-sm">
+                                    <option value="">すべて</option>
+                                    <option value="institutional">機関投資家</option>
+                                    <option value="individual">個人投資家</option>
+                                    <option value="foreign">海外投資家</option>
+                                    <option value="analyst">アナリスト</option>
+                                </select>
+                            </div>
+                            <div class="self-end">
+                                <button onclick="updateCharts()" class="btn btn-primary w-full">分析更新</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 時系列分析チャート -->
+            <div class="grid grid-cols-2 gap-6 mb-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">問い合わせ件数推移 (時系列)</h3>
+                        <div class="flex gap-2">
+                            <button onclick="setTimePeriod('week')" class="btn btn-sm btn-secondary active" id="weekBtn">週別</button>
+                            <button onclick="setTimePeriod('month')" class="btn btn-sm btn-secondary" id="monthBtn">月別</button>
+                            <button onclick="setTimePeriod('quarter')" class="btn btn-sm btn-secondary" id="quarterBtn">四半期別</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="timeSeriesChart"></canvas>
+                        </div>
+                        
+                        <!-- AI分析結果 -->
+                        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-start gap-2">
+                                <span class="text-blue-600">🤖</span>
+                                <div>
+                                    <h4 class="font-bold text-blue-800 text-sm">AI分析結果</h4>
+                                    <p class="text-sm text-blue-700">
+                                        決算発表前2週間で問い合わせが<strong>+45%増加</strong>。特に「財務・業績」関連が前月比<strong>+78%</strong>。
+                                        次回決算(8月5日)前の7月最終週に<strong>35-40件/週</strong>の問い合わせを予測。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">問い合わせ種別分析</h3>
+                        <div class="text-sm text-gray-500">投資家の関心トレンド</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        
+                        <!-- トレンド分析 -->
+                        <div class="mt-4 space-y-2">
+                            <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                                <span class="text-sm font-bold">📈 財務・業績</span>
+                                <span class="text-green-600 text-sm">↗ +23%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-blue-50 rounded">
+                                <span class="text-sm font-bold">🌱 ESG・サステナビリティ</span>
+                                <span class="text-blue-600 text-sm">↗ +18%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-orange-50 rounded">
+                                <span class="text-sm font-bold">🎯 事業戦略</span>
+                                <span class="text-orange-600 text-sm">↘ -8%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 投資家セグメント分析 -->
+            <div class="grid grid-cols-3 gap-6 mb-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">投資家区分別傾向</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="investorSegmentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">応答時間分析</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="responseTimeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">季節性予測</h3>
+                        <div class="text-sm text-gray-500">AI予測モデル</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-3">
+                            <div class="prediction-item">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-bold">来週予測</span>
+                                    <span class="text-lg font-bold text-blue-600">28-32件</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-blue-500" style="width: 75%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="prediction-item">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-bold">決算週予測</span>
+                                    <span class="text-lg font-bold text-orange-600">38-42件</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-orange-500" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="prediction-item">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-bold">決算後予測</span>
+                                    <span class="text-lg font-bold text-green-600">18-22件</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-green-500" style="width: 45%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                                <div class="text-sm">
+                                    <strong class="text-purple-800">💡 推奨アクション</strong><br>
+                                    <span class="text-purple-700">7月最終週に臨時サポート体制を構築し、事前FAQ準備を推奨</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-tabs">
+                <div class="filter-tab active">すべて (47)</div>
+                <div class="filter-tab">面談 (23)</div>
+                <div class="filter-tab">電話 (15)</div>
+                <div class="filter-tab">メール (9)</div>
+                <div class="filter-tab">今週 (12)</div>
+                <div class="filter-tab">要注意 (3)</div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex gap-3">
+                    <select class="form-select">
+                        <option>日時順（新しい順）</option>
+                        <option>日時順（古い順）</option>
+                        <option>重要度順</option>
+                        <option>投資家別</option>
+                    </select>
+                    <select class="form-select">
+                        <option>すべての投資家</option>
+                        <option>機関投資家のみ</option>
+                        <option>海外投資家のみ</option>
+                        <option>高エンゲージメント</option>
+                    </select>
+                </div>
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" placeholder="内容・投資家名で検索...">
+                </div>
+            </div>
+            
+            <div class="space-y-5">
+                <!-- 面談記録例 1 -->
+                <div class="dialogue-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="dialogue-type-badge meeting">個別面談</span>
+                                <h3 class="text-lg font-bold">野村アセットマネジメント - 田中健太氏</h3>
+                            </div>
+                            <div class="sentiment-indicator sentiment-positive">
+                                <span>😊</span>
+                                <span>ポジティブ (78%)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">基本情報</h4>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div><strong>日時:</strong> 2025/07/10 14:00-14:45</div>
+                                    <div><strong>場所:</strong> 当社会議室A</div>
+                                    <div><strong>時間:</strong> 45分</div>
+                                    <div class="recording-status status-analyzed">
+                                        <span>🎙️</span>
+                                        <span>録音・AI解析完了</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">参加者</h4>
+                                <div class="participant-list">
+                                    <div class="participant">
+                                        <span>👤</span>
+                                        <span>田中健太氏（野村AM）</span>
+                                    </div>
+                                    <div class="participant">
+                                        <span>👤</span>
+                                        <span>山田部長（当社）</span>
+                                    </div>
+                                    <div class="participant">
+                                        <span>👤</span>
+                                        <span>鈴木（IR担当）</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">主要トピック</h4>
+                                <div class="key-topics">
+                                    <span class="topic-tag">AI事業戦略</span>
+                                    <span class="topic-tag">クラウド売上</span>
+                                    <span class="topic-tag">海外展開</span>
+                                    <span class="topic-tag">人材採用</span>
+                                    <span class="topic-tag">競合優位性</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="text-sm font-bold text-gray-600 mb-2">対話要約</h4>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                AI事業における当社の競争優位性について詳細な質疑応答。特に大手IT企業との差別化要因と、
+                                中小企業向けSaaSの市場シェア拡大戦略に高い関心を示された。クラウド売上の成長率について
+                                肯定的な評価をいただき、来四半期の業績見通しについても建設的な議論となった。
+                            </p>
+                        </div>
+                        
+                        <div class="ai-insights">
+                            <div class="insights-title">🤖 AI分析結果</div>
+                            <div class="insights-content">
+                                • 投資継続意向: 95% (前回85%から上昇)<br>
+                                • 懸念事項: 人材確保の持続性 (重要度: 中)<br>
+                                • 期待事項: AI事業の収益化加速 (重要度: 高)<br>
+                                • 推奨フォローアップ: 人材戦略の詳細説明資料送付
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="flex justify-between items-center">
+                            <div class="flex gap-5 text-sm text-gray-500">
+                                <div class="flex items-center gap-1.5">
+                                    <span>📝</span>
+                                    <span>記録者: 鈴木IR担当</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span>🔗</span>
+                                    <span>関連FAQ: 3件生成</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <a href="dialogue-detail.html" class="btn btn-primary btn-sm">詳細</a>
+                                <button class="btn btn-secondary btn-sm">音声再生</button>
+                                <button class="btn btn-secondary btn-sm">議事録出力</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 電話記録例 -->
+                <div class="dialogue-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="dialogue-type-badge phone">電話会議</span>
+                                <h3 class="text-lg font-bold">Singapore Growth Partners - Sarah Lim氏</h3>
+                            </div>
+                            <div class="sentiment-indicator sentiment-positive">
+                                <span>😊</span>
+                                <span>ポジティブ (85%)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">基本情報</h4>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div><strong>日時:</strong> 2025/07/09 10:00-10:30</div>
+                                    <div><strong>形式:</strong> Zoom会議</div>
+                                    <div><strong>時間:</strong> 30分</div>
+                                    <div class="recording-status status-analyzed">
+                                        <span>🎙️</span>
+                                        <span>録音・AI解析完了</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">参加者</h4>
+                                <div class="participant-list">
+                                    <div class="participant">
+                                        <span>👤</span>
+                                        <span>Sarah Lim氏（SGP）</span>
+                                    </div>
+                                    <div class="participant">
+                                        <span>👤</span>
+                                        <span>田中IR部長（当社）</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">主要トピック</h4>
+                                <div class="key-topics">
+                                    <span class="topic-tag">ESG戦略</span>
+                                    <span class="topic-tag">アジア展開</span>
+                                    <span class="topic-tag">現地パートナー</span>
+                                    <span class="topic-tag">ROI目標</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="text-sm font-bold text-gray-600 mb-2">対話要約</h4>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                アジア地域でのESG戦略の具体的な実行計画について詳細な質問。特にシンガポール・
+                                マレーシアでの現地パートナーシップ戦略と、2026年度のROI目標達成可能性について
+                                質疑応答。当社の取り組みに対して非常に前向きな評価をいただいた。
+                            </p>
+                        </div>
+                        
+                        <div class="ai-insights">
+                            <div class="insights-title">🤖 AI分析結果</div>
+                            <div class="insights-content">
+                                • 投資継続意向: 98% (非常に高い)<br>
+                                • 関心事項: アジア展開のスケール戦略 (重要度: 高)<br>
+                                • 期待事項: ESG認証取得の前倒し (重要度: 中)<br>
+                                • 推奨フォローアップ: アジア戦略詳細資料の英語版送付
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="flex justify-between items-center">
+                            <div class="flex gap-5 text-sm text-gray-500">
+                                <div class="flex items-center gap-1.5">
+                                    <span>📝</span>
+                                    <span>記録者: 田中IR部長</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span>🔗</span>
+                                    <span>関連FAQ: 2件生成</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <a href="dialogue-detail.html" class="btn btn-primary btn-sm">詳細</a>
+                                <button class="btn btn-secondary btn-sm">音声再生</button>
+                                <button class="btn btn-secondary btn-sm">議事録出力</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- メール記録例 -->
+                <div class="dialogue-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="dialogue-type-badge email">メール対応</span>
+                                <h3 class="text-lg font-bold">大和アセットマネジメント - 佐藤美香氏</h3>
+                            </div>
+                            <div class="sentiment-indicator sentiment-neutral">
+                                <span>😐</span>
+                                <span>ニュートラル (52%)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">基本情報</h4>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div><strong>日時:</strong> 2025/07/08 16:30</div>
+                                    <div><strong>形式:</strong> メール質問・回答</div>
+                                    <div><strong>往復:</strong> 3回</div>
+                                    <div class="recording-status status-analyzed">
+                                        <span>📧</span>
+                                        <span>テキスト解析完了</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">対応者</h4>
+                                <div class="participant-list">
+                                    <div class="participant">
+                                        <span>👤</span>
+                                        <span>佐藤美香氏（大和AM）</span>
+                                    </div>
+                                    <div class="participant">
+                                        <span>👤</span>
+                                        <span>鈴木IR担当（当社）</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">主要トピック</h4>
+                                <div class="key-topics">
+                                    <span class="topic-tag">四半期業績</span>
+                                    <span class="topic-tag">セグメント別</span>
+                                    <span class="topic-tag">コスト構造</span>
+                                    <span class="topic-tag">今後予想</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="text-sm font-bold text-gray-600 mb-2">質問・回答要約</h4>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                Q1四半期のセグメント別収益性について詳細な質問。特にクラウド事業のコスト構造と
+                                利益率改善の具体的施策について確認。当社回答に対して追加の数値的根拠を求める
+                                再質問があり、詳細な分析資料を提供して対応完了。
+                            </p>
+                        </div>
+                        
+                        <div class="ai-insights">
+                            <div class="insights-title">🤖 AI分析結果</div>
+                            <div class="insights-content">
+                                • 懸念レベル: 中程度 (収益性への不安)<br>
+                                • 質問の性質: 定量的分析重視<br>
+                                • 満足度: 70% (詳細回答により改善)<br>
+                                • 推奨アクション: 次四半期説明会での詳細説明
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="flex justify-between items-center">
+                            <div class="flex gap-5 text-sm text-gray-500">
+                                <div class="flex items-center gap-1.5">
+                                    <span>📝</span>
+                                    <span>対応者: 鈴木IR担当</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span>⏱️</span>
+                                    <span>回答時間: 2時間</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <a href="dialogue-detail.html" class="btn btn-primary btn-sm">詳細</a>
+                                <button class="btn btn-secondary btn-sm">メール履歴</button>
+                                <button class="btn btn-secondary btn-sm">回答テンプレート化</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center mt-8">
+                <nav class="flex items-center gap-2">
+                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700">前へ</button>
+                    <button class="px-3 py-2 bg-blue-500 text-white rounded">1</button>
+                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700">2</button>
+                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700">3</button>
+                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700">次へ</button>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // グローバル変数
+        let timeSeriesChart, categoryChart, investorSegmentChart, responseTimeChart;
+        let currentTimePeriod = 'week';
+        
+        // チャートの初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+        });
+        
+        // 時系列チャートの初期化
+        function initializeCharts() {
+            // 時系列問い合わせ件数チャート（積み上げ棒グラフ）
+            const timeSeriesCtx = document.getElementById('timeSeriesChart').getContext('2d');
+            timeSeriesChart = new Chart(timeSeriesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['6/15〜', '6/22〜', '6/29〜', '7/6〜', '7/13〜'],
+                    datasets: [{
+                        label: '財務・業績',
+                        data: [8, 12, 15, 22, 18],
+                        backgroundColor: '#3b82f6',
+                        borderColor: '#2563eb',
+                        borderWidth: 1
+                    }, {
+                        label: 'ESG・サステナビリティ',
+                        data: [3, 4, 6, 8, 7],
+                        backgroundColor: '#10b981',
+                        borderColor: '#059669',
+                        borderWidth: 1
+                    }, {
+                        label: '事業戦略',
+                        data: [5, 6, 4, 7, 5],
+                        backgroundColor: '#f59e0b',
+                        borderColor: '#d97706',
+                        borderWidth: 1
+                    }, {
+                        label: 'ガバナンス',
+                        data: [2, 3, 2, 4, 3],
+                        backgroundColor: '#8b5cf6',
+                        borderColor: '#7c3aed',
+                        borderWidth: 1
+                    }, {
+                        label: 'その他',
+                        data: [1, 2, 3, 2, 2],
+                        backgroundColor: '#6b7280',
+                        borderColor: '#4b5563',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { 
+                            stacked: true,
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '問い合わせ件数'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+            
+            // 問い合わせ種別チャート
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['財務・業績', 'ESG・サステナビリティ', '事業戦略', 'ガバナンス', 'その他'],
+                    datasets: [{
+                        data: [75, 28, 27, 14, 10],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#6b7280'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true }
+                        }
+                    }
+                }
+            });
+            
+            // 投資家セグメント別チャート
+            const investorSegmentCtx = document.getElementById('investorSegmentChart').getContext('2d');
+            investorSegmentChart = new Chart(investorSegmentCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['機関投資家', '個人投資家', '海外投資家', 'アナリスト'],
+                    datasets: [{
+                        label: '問い合わせ件数',
+                        data: [67, 23, 45, 19],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '件数'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 応答時間分析チャート
+            const responseTimeCtx = document.getElementById('responseTimeChart').getContext('2d');
+            responseTimeChart = new Chart(responseTimeCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
+                    datasets: [{
+                        label: '平均応答時間(時間)',
+                        data: [3.2, 2.8, 2.5, 2.1, 2.4, 2.2, 2.4],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: '目標値',
+                        data: [3, 3, 3, 3, 3, 3, 3],
+                        borderColor: '#ef4444',
+                        borderDash: [5, 5],
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '時間'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 時間期間切り替え
+        function setTimePeriod(period) {
+            currentTimePeriod = period;
+            
+            // ボタンのアクティブ状態を更新
+            document.querySelectorAll('.btn-secondary').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(period + 'Btn').classList.add('active');
+            
+            // チャートデータを更新
+            let labels, data;
+            switch(period) {
+                case 'week':
+                    labels = ['6/15〜', '6/22〜', '6/29〜', '7/6〜', '7/13〜'];
+                    data = {
+                        financial: [8, 12, 15, 22, 18],
+                        esg: [3, 4, 6, 8, 7],
+                        strategy: [5, 6, 4, 7, 5],
+                        governance: [2, 3, 2, 4, 3],
+                        other: [1, 2, 3, 2, 2]
+                    };
+                    break;
+                case 'month':
+                    labels = ['3月', '4月', '5月', '6月', '7月'];
+                    data = {
+                        financial: [45, 52, 48, 67, 75],
+                        esg: [18, 22, 19, 25, 28],
+                        strategy: [23, 28, 25, 29, 27],
+                        governance: [12, 15, 13, 16, 14],
+                        other: [8, 11, 9, 12, 10]
+                    };
+                    break;
+                case 'quarter':
+                    labels = ['2024 Q3', '2024 Q4', '2025 Q1', '2025 Q2'];
+                    data = {
+                        financial: [142, 156, 165, 142],
+                        esg: [67, 72, 69, 53],
+                        strategy: [78, 84, 80, 56],
+                        governance: [34, 38, 40, 30],
+                        other: [25, 28, 30, 22]
+                    };
+                    break;
+            }
+            
+            timeSeriesChart.data.labels = labels;
+            timeSeriesChart.data.datasets[0].data = data.financial;
+            timeSeriesChart.data.datasets[1].data = data.esg;
+            timeSeriesChart.data.datasets[2].data = data.strategy;
+            timeSeriesChart.data.datasets[3].data = data.governance;
+            timeSeriesChart.data.datasets[4].data = data.other;
+            timeSeriesChart.update();
+        }
+        
+        // フィルター更新
+        function updateCharts() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const investorFilter = document.getElementById('investorFilter').value;
+            
+            // フィルターに基づいてチャートを更新
+            console.log('フィルター更新:', {startDate, endDate, categoryFilter, investorFilter});
+            
+            // 実際の実装では、ここでサーバーにデータ要求を送信し、
+            // レスポンスに基づいてチャートを更新します
+            
+            // アニメーション効果でユーザーにフィードバック
+            document.querySelector('.card-body').style.opacity = '0.5';
+            setTimeout(() => {
+                document.querySelector('.card-body').style.opacity = '1';
+                alert('分析を更新しました（サンプル実装）');
+            }, 1000);
+        }
+        
+        // 詳細表示機能（既存のフィルタータブとの連携）
+        function filterByCategory(category) {
+            document.getElementById('categoryFilter').value = category;
+            updateCharts();
+        }
+        
+        // 投資家セグメント詳細
+        function showInvestorDetails(segment) {
+            document.getElementById('investorFilter').value = segment;
+            updateCharts();
+        }
+    </script>
+</body>
+</html> 

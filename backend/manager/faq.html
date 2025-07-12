@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-FAQ管理画面 - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* ===== FAQ管理画面固有のスタイル ===== */
+        .ai-confidence {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #718096;
+        }
+        .confidence-bar {
+            width: 60px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: #4299e1;
+            transition: all 0.3s;
+        }
+        .ai-suggestion {
+            background: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+        .suggestion-icon {
+            width: 24px;
+            height: 24px;
+            background: #4299e1;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .suggestion-content {
+            flex: 1;
+        }
+        .suggestion-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .suggestion-text {
+            font-size: 14px;
+            color: #4a5568;
+        }
+        .source-links {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+        .source-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+        .source-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4299e1;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .source-link:hover {
+            text-decoration: underline;
+        }
+        .bulk-actions {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background: #2d3748;
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        .bulk-actions.show {
+            transform: translateY(0);
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        .faq-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .faq-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item active">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="card mb-8">
+                <div class="card-body">
+                    <h1 class="text-3xl font-bold mb-4">AI-FAQ管理</h1>
+                    <div class="flex gap-10">
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">AI生成（未確認）</span>
+                            <span class="text-2xl font-bold text-blue-500">12</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">レビュー中</span>
+                            <span class="text-2xl font-bold text-blue-500">5</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">承認済み</span>
+                            <span class="text-2xl font-bold text-blue-500">148</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">本日の自動生成</span>
+                            <span class="text-2xl font-bold text-blue-500">8</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex gap-3">
+                    <select class="form-select">
+                        <option>すべてのステータス</option>
+                        <option>AI生成</option>
+                        <option>レビュー中</option>
+                        <option>承認済み</option>
+                    </select>
+                    <select class="form-select">
+                        <option>すべてのカテゴリ</option>
+                        <option>財務・業績</option>
+                        <option>事業戦略</option>
+                        <option>ESG・サステナビリティ</option>
+                        <option>ガバナンス</option>
+                    </select>
+                </div>
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" placeholder="FAQを検索...">
+                </div>
+            </div>
+            
+            <div class="space-y-5">
+                <div class="faq-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <span class="status-badge status-ai">AI生成</span>
+                            <div class="ai-confidence">
+                                <span>信頼度</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 85%;"></div>
+                                </div>
+                                <span>85%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="ai-suggestion">
+                            <div class="suggestion-icon">💡</div>
+                            <div class="suggestion-content">
+                                <div class="suggestion-title">AI分析結果</div>
+                                <div class="suggestion-text">
+                                    過去1週間で3名の投資家から類似の質問がありました。決算説明会資料P.24-26の内容を基に回答案を生成しました。
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold mb-4 text-gray-800">
+                            半導体事業の収益性改善について、具体的にどのような施策を検討していますか？
+                        </h3>
+                        
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            半導体事業の収益性改善に向けて、以下の3つの施策を推進しております。<br><br>
+                            1. <strong>製造原価の削減</strong>：次世代製造プロセスの導入により、2026年度までに製造原価を15%削減する計画です。<br><br>
+                            2. <strong>高付加価値製品へのシフト</strong>：車載向け半導体など、利益率の高い製品の売上構成比を現在の30%から50%へ引き上げます。<br><br>
+                            3. <strong>生産効率の向上</strong>：AIを活用した需要予測と在庫最適化により、稼働率を現在の75%から85%へ改善を目指します。<br><br>
+                            これらの施策により、2027年度には営業利益率を現在の8%から業界平均の15%水準まで改善する計画です。
+                        </p>
+                        
+                        <div class="source-links">
+                            <div class="source-title">参照元：</div>
+                            <a href="#" class="source-link">
+                                <span>📄</span>
+                                <span>2025年度第1四半期決算説明会資料 P.24-26</span>
+                            </a>
+                            <a href="#" class="source-link">
+                                <span>🎙️</span>
+                                <span>7月8日 〇〇アセットマネジメントとの面談記録</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="flex gap-5 text-sm text-gray-500">
+                            <div class="flex items-center gap-1.5">
+                                <span>📅</span>
+                                <span>生成日時: 2025/07/12 10:30</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span>🏷️</span>
+                                <span>カテゴリ: 事業戦略</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span>🔥</span>
+                                <span>関連質問数: 3件</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 mt-4">
+                            <button class="btn btn-success">承認</button>
+                            <button class="btn btn-secondary">編集</button>
+                            <button class="btn btn-danger">却下</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <span class="status-badge status-review">レビュー中</span>
+                            <div class="ai-confidence">
+                                <span>信頼度</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 92%;"></div>
+                                </div>
+                                <span>92%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <h3 class="text-lg font-bold mb-4 text-gray-800">
+                            ESG戦略における脱炭素化の取り組みについて教えてください。
+                        </h3>
+                        
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            当社は2050年カーボンニュートラル達成に向けて、以下の取り組みを推進しております。<br><br>
+                            <strong>1. 事業活動における脱炭素化</strong><br>
+                            • 2030年までに事業活動におけるCO2排出量を2019年比で50%削減<br>
+                            • 再生可能エネルギーの導入により、2035年までに100%再エネ化を目指す<br><br>
+                            <strong>2. 製品・サービスを通じた脱炭素化貢献</strong><br>
+                            • 省エネ技術の開発により、お客様のCO2削減に貢献<br>
+                            • 2025年度までに製品ライフサイクル全体でのCO2排出量を30%削減<br><br>
+                            <strong>3. サプライチェーン全体での取り組み</strong><br>
+                            • 主要サプライヤーとの協働により、サプライチェーン全体での脱炭素化を推進
+                        </p>
+                        
+                        <div class="source-links">
+                            <div class="source-title">参照元：</div>
+                            <a href="#" class="source-link">
+                                <span>📄</span>
+                                <span>2025年度サステナビリティ報告書 P.15-18</span>
+                            </a>
+                            <a href="#" class="source-link">
+                                <span>🎙️</span>
+                                <span>7月10日 ESG投資家フォーラムでの質疑応答</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="flex gap-5 text-sm text-gray-500">
+                            <div class="flex items-center gap-1.5">
+                                <span>📅</span>
+                                <span>生成日時: 2025/07/11 14:15</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span>🏷️</span>
+                                <span>カテゴリ: ESG・サステナビリティ</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span>🔥</span>
+                                <span>関連質問数: 7件</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 mt-4">
+                            <button class="btn btn-success">承認</button>
+                            <button class="btn btn-secondary">編集</button>
+                            <button class="btn btn-danger">却下</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div class="bulk-actions" id="bulkActions">
+        <span>選択されたFAQ: <strong>3件</strong></span>
+        <button class="btn btn-success btn-sm">一括承認</button>
+        <button class="btn btn-secondary btn-sm">一括編集</button>
+        <button class="btn btn-danger btn-sm">一括却下</button>
+    </div>
+</body>
+</html>
+</html>

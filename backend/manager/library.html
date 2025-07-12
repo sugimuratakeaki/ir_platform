@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRライブラリ - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* ===== IRライブラリ画面固有のスタイル ===== */
+        .document-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .document-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        .doc-type-badge {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        .earnings { background: #e6f3ff; color: #0066cc; }
+        .disclosure { background: #fff2e6; color: #cc6600; }
+        .presentation { background: #e6ffe6; color: #006600; }
+        .report { background: #f0e6ff; color: #6600cc; }
+        .other { background: #f7fafc; color: #4a5568; }
+        .usage-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #718096;
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .ai-analysis-badge {
+            background: #ebf8ff;
+            color: #2b6cb8;
+            border: 1px solid #bee3f8;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        .filter-tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .filter-tab.active {
+            background: #4299e1;
+            color: white;
+        }
+        .filter-tab:not(.active) {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .filter-tab:not(.active):hover {
+            background: #cbd5e0;
+        }
+        .document-preview {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        .key-insights {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        .insights-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 6px;
+        }
+        .insights-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .insights-list li {
+            font-size: 12px;
+            color: #374151;
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+        .insights-list li::before {
+            content: "•";
+            color: #3b82f6;
+            position: absolute;
+            left: 0;
+        }
+        .language-tags {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+        .lang-tag {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+        .upload-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            background: #f7fafc;
+            margin-bottom: 24px;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item active">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="card mb-8">
+                <div class="card-body">
+                    <h1 class="text-3xl font-bold mb-4">IRライブラリ</h1>
+                    <div class="flex gap-10">
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">総文書数</span>
+                            <span class="text-2xl font-bold text-blue-500">284</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">決算関連</span>
+                            <span class="text-2xl font-bold text-blue-500">89</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">AI解析済み</span>
+                            <span class="text-2xl font-bold text-blue-500">268</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">今月アップロード</span>
+                            <span class="text-2xl font-bold text-blue-500">15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="upload-area">
+                <div class="text-2xl mb-2">📁</div>
+                <div class="text-lg font-bold mb-2">ファイルをアップロード</div>
+                <div class="text-sm text-gray-600 mb-4">
+                    PDF、PowerPoint、Word文書をドラッグ&ドロップまたはクリックして選択
+                </div>
+                <button class="btn btn-primary">ファイルを選択</button>
+            </div>
+            
+            <div class="filter-tabs">
+                <div class="filter-tab active">すべて (284)</div>
+                <div class="filter-tab">決算資料 (89)</div>
+                <div class="filter-tab">説明会資料 (45)</div>
+                <div class="filter-tab">適時開示 (67)</div>
+                <div class="filter-tab">ESGレポート (28)</div>
+                <div class="filter-tab">その他 (55)</div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex gap-3">
+                    <select class="form-select">
+                        <option>日付順（新しい順）</option>
+                        <option>日付順（古い順）</option>
+                        <option>ファイル名順</option>
+                        <option>アクセス数順</option>
+                        <option>文書種別順</option>
+                    </select>
+                    <select class="form-select">
+                        <option>すべての期間</option>
+                        <option>2025年度</option>
+                        <option>2024年度</option>
+                        <option>2023年度</option>
+                        <option>今四半期</option>
+                    </select>
+                </div>
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" placeholder="文書名・内容で検索...">
+                </div>
+            </div>
+            
+            <div class="space-y-5">
+                <!-- 決算説明会資料例 -->
+                <div class="document-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="doc-type-badge presentation">説明会資料</span>
+                                <h3 class="text-lg font-bold">2025年度第1四半期 決算説明会資料</h3>
+                                <span class="ai-analysis-badge">AI解析完了</span>
+                            </div>
+                            <div class="usage-stats">
+                                <div class="stat-item">
+                                    <span>👁️</span>
+                                    <span>閲覧: 247回</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>⬇️</span>
+                                    <span>DL: 89回</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">文書情報</h4>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div><strong>作成日:</strong> 2025/07/08</div>
+                                    <div><strong>公開日:</strong> 2025/07/10</div>
+                                    <div><strong>ファイル:</strong> Q1_2025_presentation.pdf</div>
+                                    <div><strong>サイズ:</strong> 15.2MB (48ページ)</div>
+                                    <div class="language-tags">
+                                        <span class="lang-tag">日本語</span>
+                                        <span class="lang-tag">英語</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">主要内容</h4>
+                                <div class="text-sm text-gray-700">
+                                    Q1業績サマリー、セグメント別業績、
+                                    AI事業戦略、海外展開状況、
+                                    ESG取り組み、今期見通し、
+                                    質疑応答
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">関連ドキュメント</h4>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div>• Q1決算短信</div>
+                                    <div>• 補足資料（数値詳細）</div>
+                                    <div>• 説明会動画（60分）</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="document-preview">
+                            <strong>文書プレビュー:</strong> 
+                            2025年度第1四半期の業績は、売上高が前年同期比+15.2%の342億円、
+                            営業利益が+28.4%の48億円と大幅増収増益となりました。
+                            特にクラウド事業セグメントが...
+                        </div>
+                        
+                        <div class="key-insights">
+                            <div class="insights-title">🤖 AI抽出キーポイント</div>
+                            <ul class="insights-list">
+                                <li>クラウド事業売上が前年同期比+35%と大幅成長</li>
+                                <li>海外売上比率が40%に到達、アジア展開が順調</li>
+                                <li>AI関連投資を年間100億円に拡大予定</li>
+                                <li>ESGスコア向上により機関投資家の評価が改善</li>
+                                <li>2025年度通期見通しを上方修正</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="flex justify-between items-center">
+                            <div class="flex gap-5 text-sm text-gray-500">
+                                <div class="flex items-center gap-1.5">
+                                    <span>👤</span>
+                                    <span>作成者: IR部</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span>🔗</span>
+                                    <span>関連FAQ: 12件</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="btn btn-primary btn-sm">プレビュー</button>
+                                <button class="btn btn-secondary btn-sm">ダウンロード</button>
+                                <button class="btn btn-secondary btn-sm">FAQ生成</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 適時開示例 -->
+                <div class="document-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="doc-type-badge disclosure">適時開示</span>
+                                <h3 class="text-lg font-bold">海外子会社設立に関するお知らせ</h3>
+                                <span class="ai-analysis-badge">AI解析完了</span>
+                            </div>
+                            <div class="usage-stats">
+                                <div class="stat-item">
+                                    <span>👁️</span>
+                                    <span>閲覧: 156回</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>⬇️</span>
+                                    <span>DL: 34回</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">文書情報</h4>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div><strong>開示日:</strong> 2025/07/05</div>
+                                    <div><strong>TDnet公開:</strong> 15:30</div>
+                                    <div><strong>ファイル:</strong> subsidiary_establishment.pdf</div>
+                                    <div><strong>サイズ:</strong> 2.3MB (5ページ)</div>
+                                    <div class="language-tags">
+                                        <span class="lang-tag">日本語</span>
+                                        <span class="lang-tag">英語</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">開示概要</h4>
+                                <div class="text-sm text-gray-700">
+                                    シンガポールにおける
+                                    ASEAN地域統括子会社設立、
+                                    投資金額30億円、
+                                    2025年10月営業開始予定
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">影響度</h4>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div><strong>売上:</strong> 2026年度+50億円見込</div>
+                                    <div><strong>利益:</strong> 2027年度黒字化予定</div>
+                                    <div><strong>投資:</strong> 3年間で総額100億円</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="document-preview">
+                            <strong>開示要約:</strong>
+                            ASEAN地域での事業拡大を目的として、シンガポールに地域統括子会社
+                            「KAGAMI Singapore Pte. Ltd.」を設立。現地でのクラウドサービス展開を加速し...
+                        </div>
+                        
+                        <div class="key-insights">
+                            <div class="insights-title">🤖 AI分析・市場インパクト</div>
+                            <ul class="insights-list">
+                                <li>ASEAN戦略の本格始動として投資家から高評価</li>
+                                <li>現地人材50名採用予定、技術者確保が課題</li>
+                                <li>競合他社より2年先行でのマーケット参入</li>
+                                <li>為替リスクヘッジ戦略の詳細が投資家の関心事</li>
+                                <li>中期計画の海外売上目標達成に大きく寄与</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="flex justify-between items-center">
+                            <div class="flex gap-5 text-sm text-gray-500">
+                                <div class="flex items-center gap-1.5">
+                                    <span>👤</span>
+                                    <span>担当: 経営企画部・IR部</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span>🔗</span>
+                                    <span>関連FAQ: 8件</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="btn btn-primary btn-sm">プレビュー</button>
+                                <button class="btn btn-secondary btn-sm">ダウンロード</button>
+                                <button class="btn btn-secondary btn-sm">インパクト分析</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ESGレポート例 -->
+                <div class="document-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="doc-type-badge report">ESGレポート</span>
+                                <h3 class="text-lg font-bold">2024年度 サステナビリティレポート</h3>
+                                <span class="ai-analysis-badge">AI解析完了</span>
+                            </div>
+                            <div class="usage-stats">
+                                <div class="stat-item">
+                                    <span>👁️</span>
+                                    <span>閲覧: 89回</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>⬇️</span>
+                                    <span>DL: 67回</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">文書情報</h4>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div><strong>発行日:</strong> 2025/06/30</div>
+                                    <div><strong>対象期間:</strong> 2024年度</div>
+                                    <div><strong>ファイル:</strong> sustainability_report_2024.pdf</div>
+                                    <div><strong>サイズ:</strong> 8.7MB (32ページ)</div>
+                                    <div class="language-tags">
+                                        <span class="lang-tag">日本語</span>
+                                        <span class="lang-tag">英語</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">主要内容</h4>
+                                <div class="text-sm text-gray-700">
+                                    環境・社会・ガバナンス取組み、
+                                    CO2削減実績、ダイバーシティ推進、
+                                    コンプライアンス体制、
+                                    ステークホルダー対話
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-sm font-bold text-gray-600 mb-2">ESG評価</h4>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div><strong>MSCI:</strong> A評価</div>
+                                    <div><strong>FTSE:</strong> 3.2/5.0</div>
+                                    <div><strong>S&P:</strong> 65/100</div>
+                                    <div><strong>CDP:</strong> B評価</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="document-preview">
+                            <strong>レポート概要:</strong>
+                            2024年度は脱炭素化を最重要課題とし、CO2排出量を前年比18%削減。
+                            再生可能エネルギー導入率は35%に向上。女性管理職比率は...
+                        </div>
+                        
+                        <div class="key-insights">
+                            <div class="insights-title">🤖 ESG投資家注目ポイント</div>
+                            <ul class="insights-list">
+                                <li>2030年カーボンニュートラル目標に向け順調な進捗</li>
+                                <li>女性管理職比率30%達成（目標25%を上回る）</li>
+                                <li>サプライチェーン全体でのESG基準策定完了</li>
+                                <li>独立社外取締役比率が50%に向上</li>
+                                <li>ESGリスク管理体制の高度化が評価向上要因</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="flex justify-between items-center">
+                            <div class="flex gap-5 text-sm text-gray-500">
+                                <div class="flex items-center gap-1.5">
+                                    <span>👤</span>
+                                    <span>作成: サステナビリティ推進室</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span>🔗</span>
+                                    <span>関連FAQ: 15件</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <button class="btn btn-primary btn-sm">プレビュー</button>
+                                <button class="btn btn-secondary btn-sm">ダウンロード</button>
+                                <button class="btn btn-secondary btn-sm">ESG分析</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center mt-8">
+                <nav class="flex items-center gap-2">
+                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700">前へ</button>
+                    <button class="px-3 py-2 bg-blue-500 text-white rounded">1</button>
+                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700">2</button>
+                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700">3</button>
+                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700">次へ</button>
+                </nav>
+            </div>
+        </main>
+    </div>
+</body>
+</html> 

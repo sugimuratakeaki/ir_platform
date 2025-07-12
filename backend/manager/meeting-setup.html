@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web会議連携設定 - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* ===== Web会議連携設定画面固有のスタイル ===== */
+        .connection-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .connection-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .service-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+        .zoom-logo { background: #2d8cff; }
+        .teams-logo { background: #464eb8; }
+        .webex-logo { background: #00bceb; }
+        .meet-logo { background: #34a853; }
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .status-connected { color: #10b981; }
+        .status-disconnected { color: #ef4444; }
+        .status-pending { color: #f59e0b; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        .schedule-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .schedule-active {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+        .log-entry {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: between;
+            align-items: start;
+            gap: 12px;
+        }
+        .log-success { border-left: 4px solid #10b981; }
+        .log-error { border-left: 4px solid #ef4444; }
+        .log-warning { border-left: 4px solid #f59e0b; }
+        .auth-form {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #4299e1;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item active">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="card mb-8">
+                <div class="card-body">
+                    <h1 class="text-3xl font-bold mb-4">Web会議連携設定</h1>
+                    <div class="flex gap-10">
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">連携サービス</span>
+                            <span class="text-2xl font-bold text-blue-500">4</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">接続中</span>
+                            <span class="text-2xl font-bold text-green-500">2</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">今月取込件数</span>
+                            <span class="text-2xl font-bold text-blue-500">23</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">最終同期</span>
+                            <span class="text-2xl font-bold text-blue-500">12:30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API認証設定 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Zoom連携 -->
+                <div class="connection-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-4">
+                            <div class="service-logo zoom-logo">Z</div>
+                            <div>
+                                <h3 class="text-lg font-bold">Zoom</h3>
+                                <div class="status-indicator status-connected">
+                                    <span>●</span>
+                                    <span>接続中</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm font-bold">自動録音取込</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <div><strong>接続済みアカウント:</strong> ir@company.com</div>
+                            <div><strong>API権限:</strong> 録音ファイル取得、会議情報取得</div>
+                            <div><strong>最終同期:</strong> 2025/07/12 12:30</div>
+                            <div><strong>今月取込:</strong> 15件</div>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <button class="btn btn-secondary btn-sm">設定変更</button>
+                            <button class="btn btn-danger btn-sm">接続解除</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Teams連携 -->
+                <div class="connection-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-4">
+                            <div class="service-logo teams-logo">T</div>
+                            <div>
+                                <h3 class="text-lg font-bold">Microsoft Teams</h3>
+                                <div class="status-indicator status-connected">
+                                    <span>●</span>
+                                    <span>接続中</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm font-bold">自動録画取込</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <div><strong>接続済みアカウント:</strong> ir@company.onmicrosoft.com</div>
+                            <div><strong>API権限:</strong> 録画ファイル取得、トランスクリプト取得</div>
+                            <div><strong>最終同期:</strong> 2025/07/12 11:45</div>
+                            <div><strong>今月取込:</strong> 8件</div>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <button class="btn btn-secondary btn-sm">設定変更</button>
+                            <button class="btn btn-danger btn-sm">接続解除</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Webex連携 -->
+                <div class="connection-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-4">
+                            <div class="service-logo webex-logo">W</div>
+                            <div>
+                                <h3 class="text-lg font-bold">Cisco Webex</h3>
+                                <div class="status-indicator status-disconnected">
+                                    <span>●</span>
+                                    <span>未接続</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="auth-form">
+                            <div class="form-group">
+                                <label class="form-label">Client ID</label>
+                                <input type="text" class="form-input" placeholder="Webex Client IDを入力">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Client Secret</label>
+                                <input type="password" class="form-input" placeholder="Webex Client Secretを入力">
+                            </div>
+                            <button class="btn btn-primary">認証・接続</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Google Meet連携 -->
+                <div class="connection-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-4">
+                            <div class="service-logo meet-logo">G</div>
+                            <div>
+                                <h3 class="text-lg font-bold">Google Meet</h3>
+                                <div class="status-indicator status-pending">
+                                    <span>●</span>
+                                    <span>認証待ち</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-sm text-gray-600 mb-4">
+                            Google Workspace管理者による承認待ちです。
+                        </div>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <div><strong>申請日:</strong> 2025/07/10</div>
+                            <div><strong>管理者:</strong> admin@company.com</div>
+                            <div><strong>要求権限:</strong> 録画ファイル取得、カレンダー情報取得</div>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <button class="btn btn-secondary btn-sm">申請再送</button>
+                            <button class="btn btn-danger btn-sm">申請取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 自動取込スケジュール -->
+            <div class="card mb-8">
+                <div class="card-header">
+                    <h2 class="text-xl font-bold">📅 自動取込スケジュール</h2>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-bold mb-4">現在のスケジュール</h3>
+                            
+                            <div class="schedule-item schedule-active">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold">平日 定期同期</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    月〜金曜日 9:00, 13:00, 17:00に自動同期
+                                </div>
+                            </div>
+                            
+                            <div class="schedule-item">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold">週末 軽減同期</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    土日曜日 18:00に1回のみ同期
+                                </div>
+                            </div>
+                            
+                            <div class="schedule-item schedule-active">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold">即座同期</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    会議終了後15分以内に自動取込開始
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-bold mb-4">新規スケジュール追加</h3>
+                            <div class="auth-form">
+                                <div class="form-group">
+                                    <label class="form-label">スケジュール名</label>
+                                    <input type="text" class="form-input" placeholder="決算期間 集中同期など">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">実行頻度</label>
+                                    <select class="form-input">
+                                        <option>毎日</option>
+                                        <option>平日のみ</option>
+                                        <option>週末のみ</option>
+                                        <option>カスタム</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">実行時刻</label>
+                                    <input type="time" class="form-input" value="09:00">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">対象サービス</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2" checked> Zoom
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2" checked> Teams
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2"> Webex
+                                        </label>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary">スケジュール追加</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 取込履歴とエラーログ -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- 取込履歴 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">📊 取込履歴</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-3">
+                            <div class="log-entry log-success">
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Zoom: 野村AM 個別面談</div>
+                                    <div class="text-xs text-gray-600">2025/07/12 12:30 • 音声ファイル (48.2MB)</div>
+                                </div>
+                                <div class="text-xs text-green-600">成功</div>
+                            </div>
+                            
+                            <div class="log-entry log-success">
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Teams: SGP オンライン面談</div>
+                                    <div class="text-xs text-gray-600">2025/07/12 11:45 • 録画ファイル (67.8MB)</div>
+                                </div>
+                                <div class="text-xs text-green-600">成功</div>
+                            </div>
+                            
+                            <div class="log-entry log-success">
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Zoom: 決算説明会 Q1</div>
+                                    <div class="text-xs text-gray-600">2025/07/10 18:00 • 録画ファイル (234.6MB)</div>
+                                </div>
+                                <div class="text-xs text-green-600">成功</div>
+                            </div>
+                            
+                            <div class="log-entry log-warning">
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Teams: 定期同期</div>
+                                    <div class="text-xs text-gray-600">2025/07/10 17:00 • 新規ファイルなし</div>
+                                </div>
+                                <div class="text-xs text-orange-600">警告</div>
+                            </div>
+                            
+                            <div class="log-entry log-success">
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Zoom: 大和AM 電話会議</div>
+                                    <div class="text-xs text-gray-600">2025/07/09 16:30 • 音声ファイル (12.4MB)</div>
+                                </div>
+                                <div class="text-xs text-green-600">成功</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- エラーログ -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold">🚨 エラーログ</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="space-y-3">
+                            <div class="log-entry log-error">
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Zoom: API認証エラー</div>
+                                    <div class="text-xs text-gray-600">2025/07/11 14:00 • アクセストークン期限切れ</div>
+                                    <div class="text-xs text-red-600 mt-1">対処: トークン更新が必要</div>
+                                </div>
+                                <div class="text-xs text-red-600">エラー</div>
+                            </div>
+                            
+                            <div class="log-entry log-error">
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Teams: ファイル取得失敗</div>
+                                    <div class="text-xs text-gray-600">2025/07/10 09:15 • 権限不足エラー</div>
+                                    <div class="text-xs text-red-600 mt-1">対処: 管理者に権限追加依頼</div>
+                                </div>
+                                <div class="text-xs text-red-600">エラー</div>
+                            </div>
+                            
+                            <div class="log-entry log-warning">
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Zoom: 同期遅延</div>
+                                    <div class="text-xs text-gray-600">2025/07/09 17:00 • サーバー負荷高</div>
+                                    <div class="text-xs text-orange-600 mt-1">対処: 自動再試行予定</div>
+                                </div>
+                                <div class="text-xs text-orange-600">警告</div>
+                            </div>
+                            
+                            <div class="log-entry log-error">
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Webex: 接続エラー</div>
+                                    <div class="text-xs text-gray-600">2025/07/08 13:30 • 認証情報不正</div>
+                                    <div class="text-xs text-red-600 mt-1">対処: 設定画面から再認証</div>
+                                </div>
+                                <div class="text-xs text-red-600">エラー</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <button class="btn btn-secondary btn-sm">全ログ表示</button>
+                            <button class="btn btn-danger btn-sm">ログクリア</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html> 

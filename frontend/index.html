@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAGAMI IR Platform - 株式会社サンプル</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: #ffffff;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            color: white;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .company-logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        .company-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .header-nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.2s;
+            padding: 8px 16px;
+            border-radius: 6px;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+        .login-button, .ai-button {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .login-button:hover, .ai-button:hover {
+            background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 24px;
+            font-weight: 800;
+        }
+        .hero-description {
+            font-size: 20px;
+            opacity: 0.95;
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+        .ai-search-container {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .search-input {
+            width: 100%;
+            padding: 20px 60px 20px 24px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            outline: none;
+        }
+        .search-input::placeholder {
+            color: #718096;
+        }
+        .ai-search-button {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .ai-search-button:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+        .platform-features {
+            padding: 60px 20px;
+            background: #f7fafc;
+        }
+        .features-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .section-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #1a365d;
+        }
+        .section-subtitle {
+            font-size: 18px;
+            color: #4a5568;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .feature-card {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4299e1, #667eea, #764ba2);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            border-color: #4299e1;
+        }
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        .feature-title {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #1a365d;
+        }
+        .feature-description {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        .feature-access {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .access-type {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+        .access-public { background: #c6f6d5; color: #276749; }
+        .access-login { background: #bee3f8; color: #2c5282; }
+        .access-premium { background: #fed7d7; color: #c53030; }
+        .feature-arrow {
+            color: #4299e1;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+        .feature-card:hover .feature-arrow {
+            transform: translateX(4px);
+        }
+        .ai-capabilities {
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            color: white;
+        }
+        .capabilities-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .capabilities-text h2 {
+            font-size: 36px;
+            margin-bottom: 24px;
+            font-weight: bold;
+        }
+        .capabilities-text p {
+            font-size: 18px;
+            line-height: 1.7;
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+        .capability-list {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+        .capability-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+        .capability-check {
+            width: 24px;
+            height: 24px;
+            background: #48bb78;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        .ai-demo {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .demo-header {
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #90cdf4;
+        }
+        .demo-conversation {
+            space-y: 12px;
+        }
+        .demo-message {
+            margin-bottom: 12px;
+        }
+        .demo-user {
+            background: rgba(66, 153, 225, 0.2);
+            padding: 12px;
+            border-radius: 12px;
+            border-left: 3px solid #4299e1;
+        }
+        .demo-ai {
+            background: rgba(72, 187, 120, 0.2);
+            padding: 12px;
+            border-radius: 12px;
+            border-left: 3px solid #48bb78;
+        }
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 50px;
+        }
+        .enhanced-faq {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .faq-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .faq-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a365d;
+        }
+        .faq-ai-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .faq-controls {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .faq-filter {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        .faq-filter.active {
+            border-color: #4299e1;
+            background: #4299e1;
+            color: white;
+        }
+        .faq-item {
+            padding: 24px 0;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-question {
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #2d3748;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            padding-right: 40px;
+        }
+        .faq-question:hover {
+            color: #4299e1;
+        }
+        .faq-answer {
+            color: #4a5568;
+            line-height: 1.8;
+            display: none;
+            margin-bottom: 16px;
+        }
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        .faq-meta {
+            display: flex;
+            gap: 20px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #718096;
+        }
+        .faq-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .ai-confidence {
+            position: absolute;
+            top: 20px;
+            right: 0;
+            background: #48bb78;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .ai-confidence.medium { background: #ed8936; }
+        .ai-confidence.low { background: #f56565; }
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1a365d;
+        }
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 12px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .quick-action:hover {
+            background: #edf2f7;
+            border-color: #4299e1;
+            transform: translateX(4px);
+        }
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        .quick-action-content {
+            flex: 1;
+        }
+        .quick-action-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .quick-action-desc {
+            font-size: 12px;
+            color: #718096;
+        }
+        .update-item {
+            padding: 16px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 16px;
+        }
+        .update-item:last-child {
+            border-bottom: none;
+        }
+        .update-icon {
+            width: 12px;
+            height: 12px;
+            background: #4299e1;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+        .update-content {
+            flex: 1;
+        }
+        .update-date {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 4px;
+        }
+        .update-title {
+            font-weight: 500;
+            color: #2d3748;
+            text-decoration: none;
+            display: block;
+            line-height: 1.4;
+        }
+        .update-title:hover {
+            color: #4299e1;
+        }
+        .calendar-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .calendar-item:last-child {
+            border-bottom: none;
+        }
+        .calendar-date {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            min-width: 70px;
+        }
+        .calendar-month {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .calendar-day {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .calendar-content {
+            flex: 1;
+        }
+        .calendar-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #2d3748;
+        }
+        .calendar-time {
+            font-size: 14px;
+            color: #718096;
+        }
+        .contact-section {
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            color: white;
+            padding: 60px 20px;
+            margin-top: 60px;
+        }
+        .contact-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .contact-info h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .contact-description {
+            opacity: 0.9;
+            margin-bottom: 32px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .contact-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .contact-button {
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+        .contact-primary {
+            background: white;
+            color: #1a365d;
+        }
+        .contact-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255,255,255,0.3);
+        }
+        .contact-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        .contact-secondary:hover {
+            background: white;
+            color: #1a365d;
+            transform: translateY(-3px);
+        }
+        .expand-icon {
+            transition: transform 0.3s;
+            font-size: 18px;
+            color: #4299e1;
+        }
+        .faq-item.active .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .capabilities-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .contact-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .hero h1 {
+                font-size: 32px;
+            }
+            .hero-description {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="company-logo">
+                <div class="logo">🔮</div>
+                <div class="company-name">KAGAMI IR Platform</div>
+            </div>
+            <nav class="header-nav">
+                <a href="#" class="nav-link" onclick="showFeature('library')">📚 IRライブラリ</a>
+                <a href="#" class="nav-link" onclick="showFeature('meeting')">📅 説明会情報</a>
+                <a href="#" class="nav-link" onclick="showFeature('analysis')">📊 株式情報</a>
+                <a href="#" class="nav-link" onclick="showFeature('governance')">🏛️ ガバナンス</a>
+                <button class="login-button" onclick="handleInvestorLogin()">
+                    <span>👤</span>
+                    <span>投資家ログイン</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>AI駆動の次世代IRプラットフォーム</h1>
+            <p class="hero-description">
+                24時間365日、AIが投資家の質問に即座に回答。<br>
+                音声認識、自然言語処理、深層学習により、これまでにない対話体験を実現します。
+            </p>
+            <div class="ai-search-container">
+                <input type="text" class="search-input" id="aiSearchInput" 
+                       placeholder="「半導体事業の収益性改善策について教えてください」など、自然な言葉で質問してください">
+                <button class="ai-search-button" onclick="performAISearch()">
+                    <span>🤖</span>
+                    <span>AI検索</span>
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <section class="platform-features">
+        <div class="features-content">
+            <div class="section-header">
+                <h2 class="section-title">KAGAMI プラットフォーム機能</h2>
+                <p class="section-subtitle">
+                    投資家と企業をつなぐ革新的なAI機能により、透明性の高いIRコミュニケーションを実現
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <a href="#" class="feature-card" onclick="accessFeature('ai-faq')">
+                    <div class="feature-icon">🤖</div>
+                    <h3 class="feature-title">インテリジェントFAQ</h3>
+                    <p class="feature-description">
+                        AIが自動生成するFAQ、自然言語検索、関連質問の提案機能により、求める情報に瞬時にアクセス可能
+                    </p>
+                    <div class="feature-access">
+                        <span class="access-type access-public">パブリック</span>
+                        <span class="feature-arrow">→</span>
+                    </div>
+                </a>
+                
+                <a href="#" class="feature-card" onclick="accessFeature('ir-library')">
+                    <div class="feature-icon">📚</div>
+                    <h3 class="feature-title">IRライブラリ</h3>
+                    <p class="feature-description">
+                        決算説明会動画、プレゼン資料、過去の質疑応答をAIが構造化。関連情報を自動で関連付け
+                    </p>
+                    <div class="feature-access">
+                        <span class="access-type access-public">パブリック</span>
+                        <span class="feature-arrow">→</span>
+                    </div>
+                </a>
+                
+                <a href="#" class="feature-card" onclick="accessFeature('dialogue-request')">
+                    <div class="feature-icon">💬</div>
+                    <h3 class="feature-title">対話リクエスト</h3>
+                    <p class="feature-description">
+                        個別面談の申込み、質問の事前投稿、AIによる最適な担当者マッチング機能
+                    </p>
+                    <div class="feature-access">
+                        <span class="access-type access-login">要ログイン</span>
+                        <span class="feature-arrow">→</span>
+                    </div>
+                </a>
+                
+                <a href="#" class="feature-card" onclick="accessFeature('governance-forum')">
+                    <div class="feature-icon">🏛️</div>
+                    <h3 class="feature-title">社外取締役Q&A</h3>
+                    <p class="feature-description">
+                        社外取締役との直接対話、ガバナンステーマ別フォーラム、非同期での質疑応答
+                    </p>
+                    <div class="feature-access">
+                        <span class="access-type access-public">パブリック</span>
+                        <span class="feature-arrow">→</span>
+                    </div>
+                </a>
+                
+                <a href="#" class="feature-card" onclick="accessFeature('personalized-dashboard')">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">パーソナライズドダッシュボード</h3>
+                    <p class="feature-description">
+                        個人の関心事項に基づくおすすめコンテンツ、閲覧履歴、アラート設定機能
+                    </p>
+                    <div class="feature-access">
+                        <span class="access-type access-login">要ログイン</span>
+                        <span class="feature-arrow">→</span>
+                    </div>
+                </a>
+                
+                <a href="#" class="feature-card" onclick="accessFeature('mobile-voice')">
+                    <div class="feature-icon">🎙️</div>
+                    <h3 class="feature-title">音声質問機能</h3>
+                    <p class="feature-description">
+                        音声での質問投稿、自動文字起こし、リアルタイム音声翻訳（日英中対応）
+                    </p>
+                    <div class="feature-access">
+                        <span class="access-type access-login">要ログイン</span>
+                        <span class="feature-arrow">→</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="ai-capabilities">
+        <div class="capabilities-content">
+            <div class="capabilities-text">
+                <h2>AIが変革するIRコミュニケーション</h2>
+                <p>
+                    従来の定型的な質疑応答から、インテリジェントで個別最適化された対話体験へ。
+                    KAGAMIのAIエンジンが実現する次世代IR体験をご体験ください。
+                </p>
+                
+                <ul class="capability-list">
+                    <li class="capability-item">
+                        <span class="capability-check">✓</span>
+                        <span>音声・テキスト・動画の統合分析</span>
+                    </li>
+                    <li class="capability-item">
+                        <span class="capability-check">✓</span>
+                        <span>センチメント分析による投資家心理の可視化</span>
+                    </li>
+                    <li class="capability-item">
+                        <span class="capability-check">✓</span>
+                        <span>24時間365日のリアルタイム質疑応答</span>
+                    </li>
+                    <li class="capability-item">
+                        <span class="capability-check">✓</span>
+                        <span>多言語対応（日本語・英語・中国語）</span>
+                    </li>
+                </ul>
+                
+                <button class="ai-button" onclick="startAIDemo()">
+                    <span>🚀</span>
+                    <span>AI機能を体験する</span>
+                </button>
+            </div>
+            
+            <div class="ai-demo">
+                <div class="demo-header">💡 AI対話デモ</div>
+                <div class="demo-conversation">
+                    <div class="demo-message demo-user">
+                        Q: 半導体事業の将来性について教えてください
+                    </div>
+                    <div class="demo-message demo-ai">
+                        A: 当社の半導体事業は、車載向けを中心に成長を続けています。2027年度には売上高1,500億円、営業利益率15%を目標としており...
+                        <br><br>
+                        <strong>関連情報:</strong> 決算説明資料P.23、中期経営計画、投資家説明会Q&A
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <main class="main-content">
+        <section class="enhanced-faq">
+            <div class="faq-header">
+                <h2 class="faq-title">AI-FAQ システム</h2>
+                <div class="faq-ai-badge">
+                    <span>🤖</span>
+                    <span>AI生成・更新</span>
+                </div>
+            </div>
+            
+            <div class="faq-controls">
+                <button class="faq-filter active" onclick="filterFAQ('all')">すべて</button>
+                <button class="faq-filter" onclick="filterFAQ('business')">事業戦略</button>
+                <button class="faq-filter" onclick="filterFAQ('finance')">財務</button>
+                <button class="faq-filter" onclick="filterFAQ('governance')">ガバナンス</button>
+                <button class="faq-filter" onclick="filterFAQ('esg')">ESG</button>
+            </div>
+            
+            <div class="faq-item active" data-category="business">
+                <div class="ai-confidence">信頼度: 98%</div>
+                <div class="faq-question">
+                    <span>半導体事業の収益性改善について、具体的な施策を教えてください</span>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="faq-answer">
+                    半導体事業の収益性改善に向けて、3つの重点施策を推進しております。第一に、次世代製造プロセスの導入により2026年度までに製造原価を15%削減します。第二に、車載向けなど高付加価値製品の売上構成比を現在の30%から50%へ引き上げます。第三に、AI活用による需要予測で稼働率を75%から85%へ改善します。これらにより、2027年度には営業利益率を業界平均の15%水準まで改善する計画です。
+                </div>
+                <div class="faq-meta">
+                    <span class="faq-meta-item">📅 最終更新: 2025/07/10</span>
+                    <span class="faq-meta-item">👁️ 閲覧数: 523</span>
+                    <span class="faq-meta-item">👍 満足度: 92%</span>
+                    <span class="faq-meta-item">🤖 AI信頼度: 98%</span>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="finance">
+                <div class="ai-confidence medium">信頼度: 89%</div>
+                <div class="faq-question">
+                    <span>今期の配当方針と自社株買いの予定について</span>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="faq-answer">
+                    当社は連結配当性向40%を目標とし、安定的な配当を継続する方針です。今期は1株当たり年間配当金60円（中間30円、期末30円）を予定しています。自社株買いについては、資本効率の向上を目的に、市場環境や財務状況を総合的に勘案し、機動的に実施してまいります。
+                </div>
+                <div class="faq-meta">
+                    <span class="faq-meta-item">📅 最終更新: 2025/07/08</span>
+                    <span class="faq-meta-item">👁️ 閲覧数: 412</span>
+                    <span class="faq-meta-item">👍 満足度: 88%</span>
+                    <span class="faq-meta-item">🤖 AI信頼度: 89%</span>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="esg">
+                <div class="ai-confidence">信頼度: 95%</div>
+                <div class="faq-question">
+                    <span>ESGへの取り組みとカーボンニュートラル目標について</span>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="faq-answer">
+                    2050年カーボンニュートラル実現に向けて、2030年までに使用電力の50%を再生可能エネルギーに転換し、全工場で高効率設備への更新により20%の省エネを実現します。また、主要サプライヤーと協働してScope3排出量の削減も推進しています。
+                </div>
+                <div class="faq-meta">
+                    <span class="faq-meta-item">📅 最終更新: 2025/07/05</span>
+                    <span class="faq-meta-item">👁️ 閲覧数: 234</span>
+                    <span class="faq-meta-item">👍 満足度: 95%</span>
+                    <span class="faq-meta-item">🤖 AI信頼度: 95%</span>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="business">
+                <div class="faq-question">
+                    <span>中期経営計画の進捗状況について</span>
+                    <span class="expand-icon">▼</span>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="business">
+                <div class="faq-question">
+                    <span>研究開発投資の重点分野と期待される成果</span>
+                    <span class="expand-icon">▼</span>
+                </div>
+            </div>
+        </section>
+        
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <h3 class="card-title">🚀 クイックアクション</h3>
+                <div class="quick-actions">
+                    <a href="#" class="quick-action" onclick="accessFeature('question-form')">
+                        <div class="quick-action-icon">❓</div>
+                        <div class="quick-action-content">
+                            <div class="quick-action-title">質問を投稿</div>
+                            <div class="quick-action-desc">AIまたは担当者に質問</div>
+                        </div>
+                    </a>
+                    <a href="#" class="quick-action" onclick="accessFeature('meeting-request')">
+                        <div class="quick-action-icon">📅</div>
+                        <div class="quick-action-content">
+                            <div class="quick-action-title">面談を予約</div>
+                            <div class="quick-action-desc">個別面談の申込み</div>
+                        </div>
+                    </a>
+                    <a href="#" class="quick-action" onclick="accessFeature('voice-question')">
+                        <div class="quick-action-icon">🎙️</div>
+                        <div class="quick-action-content">
+                            <div class="quick-action-title">音声で質問</div>
+                            <div class="quick-action-desc">音声録音・自動認識</div>
+                        </div>
+                    </a>
+                    <a href="#" class="quick-action" onclick="accessFeature('watchlist')">
+                        <div class="quick-action-icon">⭐</div>
+                        <div class="quick-action-content">
+                            <div class="quick-action-title">ウォッチリスト</div>
+                            <div class="quick-action-desc">関心トピックの管理</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3 class="card-title">📢 最新情報</h3>
+                <div class="update-item">
+                    <div class="update-icon"></div>
+                    <div class="update-content">
+                        <div class="update-date">2025.07.12</div>
+                        <a href="#" class="update-title">AI-FAQ機能がアップデート：音声質問対応を開始</a>
+                    </div>
+                </div>
+                <div class="update-item">
+                    <div class="update-icon"></div>
+                    <div class="update-content">
+                        <div class="update-date">2025.07.10</div>
+                        <a href="#" class="update-title">2025年度第1四半期決算発表資料を掲載</a>
+                    </div>
+                </div>
+                <div class="update-item">
+                    <div class="update-icon"></div>
+                    <div class="update-content">
+                        <div class="update-date">2025.07.08</div>
+                        <a href="#" class="update-title">社外取締役Q&Aフォーラムをリニューアル</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-card">
+                <h3 class="card-title">📅 IRカレンダー</h3>
+                <div class="calendar-item">
+                    <div class="calendar-date">
+                        <div class="calendar-month">7月</div>
+                        <div class="calendar-day">25</div>
+                    </div>
+                    <div class="calendar-content">
+                        <div class="calendar-title">AI工場見学会（VR体験）</div>
+                        <div class="calendar-time">13:00-16:00</div>
+                    </div>
+                </div>
+                <div class="calendar-item">
+                    <div class="calendar-date">
+                        <div class="calendar-month">8月</div>
+                        <div class="calendar-day">5</div>
+                    </div>
+                    <div class="calendar-content">
+                        <div class="calendar-title">第2四半期決算発表</div>
+                        <div class="calendar-time">15:00（ライブ配信）</div>
+                    </div>
+                </div>
+                <div class="calendar-item">
+                    <div class="calendar-date">
+                        <div class="calendar-month">8月</div>
+                        <div class="calendar-day">6</div>
+                    </div>
+                    <div class="calendar-content">
+                        <div class="calendar-title">AIアシスト決算説明会</div>
+                        <div class="calendar-time">10:00-11:30</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+    
+    <section class="contact-section">
+        <div class="contact-content">
+            <div class="contact-info">
+                <h2>さらなる対話をお求めですか？</h2>
+                <p class="contact-description">
+                    AIが解決できない複雑な質問や、より深い議論をご希望の場合は、<br>
+                    経験豊富なIR担当者が直接対応いたします。
+                </p>
+                <div class="contact-buttons">
+                    <a href="#" class="contact-button contact-primary" onclick="accessFeature('contact-form')">
+                        <span>📧</span>
+                        <span>お問い合わせフォーム</span>
+                    </a>
+                    <a href="#" class="contact-button contact-secondary" onclick="accessFeature('meeting-booking')">
+                        <span>📅</span>
+                        <span>面談を予約する</span>
+                    </a>
+                    <a href="#" class="contact-button contact-secondary" onclick="accessFeature('voice-call')">
+                        <span>📞</span>
+                        <span>音声通話で相談</span>
+                    </a>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <img src="data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23ffffff' opacity='0.1' rx='10'/%3E%3Ctext x='150' y='100' text-anchor='middle' font-size='60' fill='%23ffffff' opacity='0.3'%3E🤖%3C/text%3E%3C/svg%3E" alt="AI Assistant illustration">
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        // FAQ開閉機能（拡張版）
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                const isActive = item.classList.contains('active');
+                
+                // 他のアクティブなアイテムを閉じる
+                document.querySelectorAll('.faq-item.active').forEach(activeItem => {
+                    if (activeItem !== item) {
+                        activeItem.classList.remove('active');
+                    }
+                });
+                
+                // 現在のアイテムをトグル
+                item.classList.toggle('active');
+                
+                // アクセス解析（実際の実装では解析APIを呼び出し）
+                if (!isActive) {
+                    console.log('FAQ閲覧:', question.textContent.trim());
+                }
+            });
+        });
+
+        // FAQフィルタリング機能
+        function filterFAQ(category) {
+            const items = document.querySelectorAll('.faq-item');
+            const filters = document.querySelectorAll('.faq-filter');
+            
+            // フィルターボタンの状態更新
+            filters.forEach(filter => filter.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // FAQ項目の表示/非表示
+            items.forEach(item => {
+                const itemCategory = item.getAttribute('data-category');
+                if (category === 'all' || itemCategory === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            console.log('FAQフィルター:', category);
+        }
+
+        // AI検索機能
+        function performAISearch() {
+            const query = document.getElementById('aiSearchInput').value;
+            if (!query.trim()) {
+                alert('質問を入力してください');
+                return;
+            }
+            
+            // 実際の実装では、バックエンドのAI検索APIを呼び出し
+            console.log('AI検索実行:', query);
+            
+            // デモ用のレスポンス表示
+            alert(`AI検索を実行しました。\n\n質問: "${query}"\n\n詳細な回答は、ログイン後のダッシュボードでご確認いただけます。`);
+        }
+
+        // 投資家ログイン処理
+        function handleInvestorLogin() {
+            // 実際の実装では、認証システムにリダイレクト
+            const confirmed = confirm('投資家向けKAGAMIダッシュボードにログインしますか？\n\n高度なAI機能、パーソナライズド情報、面談予約などがご利用いただけます。');
+            
+            if (confirmed) {
+                // デモ：バックエンドのmanager/dashboard.htmlに遷移
+                window.location.href = '/backend/manager/dashboard.html';
+            }
+        }
+
+        // 機能アクセス処理
+        function accessFeature(featureId) {
+            const featureConfig = {
+                'ai-faq': {
+                    title: 'インテリジェントFAQ',
+                    requiresLogin: false,
+                    url: '#faq-section'
+                },
+                'ir-library': {
+                    title: 'IRライブラリ',
+                    requiresLogin: false,
+                    url: '/backend/manager/library.html'
+                },
+                'dialogue-request': {
+                    title: '対話リクエスト',
+                    requiresLogin: true,
+                    url: '/backend/manager/dialogue.html'
+                },
+                'governance-forum': {
+                    title: '社外取締役Q&A',
+                    requiresLogin: false,
+                    url: '/backend/manager/investor.html'
+                },
+                'personalized-dashboard': {
+                    title: 'パーソナライズドダッシュボード',
+                    requiresLogin: true,
+                    url: '/backend/manager/dashboard.html'
+                },
+                'mobile-voice': {
+                    title: '音声質問機能',
+                    requiresLogin: true,
+                    url: '/backend/manager/dialogue.html'
+                },
+                'question-form': {
+                    title: '質問投稿',
+                    requiresLogin: true,
+                    url: '/backend/manager/faq.html'
+                },
+                'meeting-request': {
+                    title: '面談予約',
+                    requiresLogin: true,
+                    url: '/backend/manager/meeting-setup.html'
+                },
+                'voice-question': {
+                    title: '音声質問',
+                    requiresLogin: true,
+                    url: '/backend/manager/upload.html'
+                },
+                'watchlist': {
+                    title: 'ウォッチリスト',
+                    requiresLogin: true,
+                    url: '/backend/manager/investor.html'
+                },
+                'contact-form': {
+                    title: 'お問い合わせ',
+                    requiresLogin: false,
+                    url: '/backend/manager/email-setup.html'
+                },
+                'meeting-booking': {
+                    title: '面談予約',
+                    requiresLogin: true,
+                    url: '/backend/manager/meeting-setup.html'
+                },
+                'voice-call': {
+                    title: '音声通話',
+                    requiresLogin: true,
+                    url: '/backend/manager/dialogue.html'
+                }
+            };
+            
+            const feature = featureConfig[featureId];
+            if (!feature) {
+                console.error('不明な機能ID:', featureId);
+                return;
+            }
+            
+            if (feature.requiresLogin) {
+                const confirmed = confirm(`${feature.title}にアクセスするには投資家ログインが必要です。\n\nログインページに移動しますか？`);
+                if (confirmed) {
+                    // 実際の実装では認証フローを経由
+                    window.location.href = feature.url;
+                }
+            } else {
+                if (feature.url.startsWith('#')) {
+                    // ページ内リンク
+                    document.querySelector(feature.url)?.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    // 外部リンク
+                    window.location.href = feature.url;
+                }
+            }
+            
+            console.log('機能アクセス:', featureId, feature.title);
+        }
+
+        // 機能表示（ナビゲーション用）
+        function showFeature(featureType) {
+            const features = {
+                'library': 'IRライブラリへの直接アクセス機能は開発中です。現在はFAQから関連資料をご確認いただけます。',
+                'meeting': '説明会情報の詳細表示機能は開発中です。IRカレンダーで最新情報をご確認ください。',
+                'analysis': '株式情報分析機能はログイン後にご利用いただけます。',
+                'governance': 'ガバナンス情報は社外取締役Q&A機能でご確認いただけます。'
+            };
+            
+            alert(features[featureType] || '該当機能は開発中です。');
+            console.log('機能表示要求:', featureType);
+        }
+
+        // AIデモ開始
+        function startAIDemo() {
+            alert('AI機能のフルデモは投資家ログイン後にご体験いただけます。\n\n• 音声認識による質問\n• リアルタイム回答生成\n• 関連情報の自動提示\n• 感情分析フィードバック');
+        }
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('KAGAMI IR Platform initialized');
+            
+            // 検索ボックスのEnterキー対応
+            document.getElementById('aiSearchInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performAISearch();
+                }
+            });
+            
+            // 分析用のページビュー記録
+            console.log('ページビュー記録: frontend/index.html');
+        });
+    </script>
+</body>
+</html>

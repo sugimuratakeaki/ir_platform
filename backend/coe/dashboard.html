@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEO's IR Integrity Dashboard - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* ===== 透明性・誠実性重視のスタイル ===== */
+        .integrity-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(30, 58, 138, 0.3);
+        }
+        
+        .transparency-card {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.3);
+        }
+        
+        .dialogue-card {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
+        }
+        
+        .governance-card {
+            background: linear-gradient(135deg, #7c2d12 0%, #92400e 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(124, 45, 18, 0.3);
+        }
+        
+        .concern-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .concern-critical {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .concern-moderate {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .concern-minor {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .action-required {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        
+        .action-urgent {
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        
+        .transparency-score {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        
+        .score-excellent { border-left: 4px solid #10b981; }
+        .score-good { border-left: 4px solid #3b82f6; }
+        .score-poor { border-left: 4px solid #f59e0b; }
+        .score-critical { border-left: 4px solid #ef4444; }
+        
+        .investor-voice {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .quote-text {
+            font-style: italic;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .quote-source {
+            font-size: 12px;
+            opacity: 0.8;
+            text-align: right;
+        }
+        
+        .negative-sentiment {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .positive-sentiment {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .improvement-roadmap {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        
+        .roadmap-step {
+            display: flex;
+            align-items: start;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .roadmap-step:last-child {
+            border-bottom: none;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .step-urgent {
+            background: #ef4444;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .step-description {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        
+        .step-timeline {
+            font-size: 12px;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        
+        .risk-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .risk-high { background: #ef4444; color: white; }
+        .risk-medium { background: #f59e0b; color: white; }
+        .risk-low { background: #10b981; color: white; }
+        
+        /* ナビゲーション用スタイル */
+        .nav-sidebar {
+            width: 280px;
+            background: #1f2937;
+            padding: 20px;
+            color: white;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .nav-item.active {
+            background: #3b82f6;
+        }
+        
+        .nav-section {
+            margin-bottom: 24px;
+        }
+        
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding: 0 16px;
+        }
+        
+        .alert-badge {
+            background: #ef4444;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- ナビゲーションサイドバー -->
+        <aside class="nav-sidebar">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">CEO ダッシュボード</div>
+                    <a href="dashboard.html" class="nav-item active">
+                        <span>📊</span>
+                        <span>IR Integrity Dashboard</span>
+                    </a>
+                    <a href="workload-management.html" class="nav-item">
+                        <span>⚡</span>
+                        <span>稼働・フィードバック管理</span>
+                        <span class="alert-badge ml-auto">12</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Manager機能</div>
+                    <a href="../manager/dashboard.html" class="nav-item">
+                        <span>📈</span>
+                        <span>Manager Dashboard</span>
+                    </a>
+                    <a href="../manager/dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="../manager/investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="../manager/analytics.html" class="nav-item">
+                        <span>📊</span>
+                        <span>分析レポート</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・管理</div>
+                    <a href="../manager/upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>データ取込</span>
+                    </a>
+                    <a href="../manager/email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>通知設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- メインコンテンツ -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <!-- ヘッダー：IR誠実性の現状 -->
+            <div class="bg-white p-6 rounded-xl shadow-md mb-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h1 class="text-3xl font-bold text-gray-800">CEO's IR Integrity Dashboard</h1>
+                    <div class="flex gap-4 items-center">
+                        <div class="text-sm text-gray-500">最終更新: 2025年7月12日 14:30</div>
+                        <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                            緊急改善要 3件
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- クイックアクセス -->
+                <div class="flex gap-4 mb-4">
+                    <a href="workload-management.html" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-all">
+                        ⚡ 稼働・フィードバック管理
+                    </a>
+                    <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-all" onclick="showQuickFeedback()">
+                        💬 クイックフィードバック
+                    </button>
+                    <button class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-all" onclick="showWorkloadSummary()">
+                        📊 稼働状況確認
+                    </button>
+                </div>
+                
+                <!-- IR誠実性スコア -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="text-center p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                        <div class="text-2xl font-bold text-red-600 mb-2">45/100</div>
+                        <div class="text-sm text-gray-600">総合透明性スコア</div>
+                        <div class="text-xs text-red-600 mt-1">業界平均: 72点</div>
+                    </div>
+                    <div class="text-center p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
+                        <div class="text-2xl font-bold text-orange-600 mb-2">38%</div>
+                        <div class="text-sm text-gray-600">面談応諾率</div>
+                        <div class="text-xs text-orange-600 mt-1">業界平均: 78%</div>
+                    </div>
+                    <div class="text-center p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                        <div class="text-2xl font-bold text-red-600 mb-2">25%</div>
+                        <div class="text-sm text-gray-600">質疑応答完全開示率</div>
+                        <div class="text-xs text-red-600 mt-1">業界平均: 85%</div>
+                    </div>
+                    <div class="text-center p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                        <div class="text-2xl font-bold text-red-600 mb-2">0%</div>
+                        <div class="text-sm text-gray-600">社外取締役面談率</div>
+                        <div class="text-xs text-red-600 mt-1">業界平均: 45%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 投資家からの具体的な懸念・批判 -->
+            <div class="dialogue-card">
+                <h2 class="text-xl font-bold mb-4">🗣️ 投資家からの具体的な懸念・批判</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-bold mb-4">❌ 透明性に関する批判</h3>
+                        <div class="investor-voice">
+                            <div class="quote-text">
+                                "決算説明会で重要な質問をしたが、その部分だけスクリプトから削除されていた。これでは公平な情報開示とは言えない。"
+                            </div>
+                            <div class="quote-source">- 大手機関投資家A (保有比率: 8.5%)</div>
+                        </div>
+                        
+                        <div class="investor-voice">
+                            <div class="quote-text">
+                                "対面参加者のみに配布される資料があると聞いた。オンライン参加者への差別的扱いは問題だ。"
+                            </div>
+                            <div class="quote-source">- 海外投資家B (保有比率: 12.3%)</div>
+                        </div>
+                        
+                        <div class="investor-voice">
+                            <div class="quote-text">
+                                "アーカイブ配信はあるが、質疑応答部分が大幅にカットされている。最も重要な部分が見られない。"
+                            </div>
+                            <div class="quote-source">- 投資信託会社C</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-4">🚫 対話回避に関する批判</h3>
+                        <div class="investor-voice">
+                            <div class="quote-text">
+                                "3回面談を申し込んだが、全て合理的な理由なく断られた。他の企業では普通に応じてもらえるのに。"
+                            </div>
+                            <div class="quote-source">- 年金基金D (保有比率: 15.2%)</div>
+                        </div>
+                        
+                        <div class="investor-voice">
+                            <div class="quote-text">
+                                "フェアディスクロージャーを理由に断られたが、インサイダー情報を求めているわけではない。経営戦略について理解を深めたいだけだ。"
+                            </div>
+                            <div class="quote-source">- 投資顧問会社E</div>
+                        </div>
+                        
+                        <div class="investor-voice">
+                            <div class="quote-text">
+                                "社外取締役との面談を依頼したが、担当部署で即座に断られた。ガバナンス体制の実効性を確認したいのに。"
+                            </div>
+                            <div class="quote-source">- ESG投資ファンドF</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 透明性改善状況 -->
+            <div class="transparency-card">
+                <h2 class="text-xl font-bold mb-4">📊 情報開示透明性の現状分析</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <h3 class="font-bold mb-3">説明会資料の公平性</h3>
+                        <div class="transparency-score score-critical">
+                            <span>📄</span>
+                            <span>対面限定資料: 存在</span>
+                            <span class="risk-indicator risk-high">高リスク</span>
+                        </div>
+                        <div class="transparency-score score-critical">
+                            <span>🎥</span>
+                            <span>オンライン配信: 未実施</span>
+                            <span class="risk-indicator risk-high">高リスク</span>
+                        </div>
+                        <div class="transparency-score score-poor">
+                            <span>📺</span>
+                            <span>アーカイブ: 質疑カット版</span>
+                            <span class="risk-indicator risk-medium">中リスク</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">質疑応答の開示状況</h3>
+                        <div class="transparency-score score-critical">
+                            <span>❓</span>
+                            <span>完全開示率: 25%</span>
+                            <span class="risk-indicator risk-high">高リスク</span>
+                        </div>
+                        <div class="transparency-score score-critical">
+                            <span>✂️</span>
+                            <span>意図的カット: 確認済</span>
+                            <span class="risk-indicator risk-high">高リスク</span>
+                        </div>
+                        <div class="transparency-score score-poor">
+                            <span>📝</span>
+                            <span>要旨化: 75%</span>
+                            <span class="risk-indicator risk-medium">中リスク</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">投資家アクセス性</h3>
+                        <div class="transparency-score score-critical">
+                            <span>🌐</span>
+                            <span>海外投資家配慮: 不十分</span>
+                            <span class="risk-indicator risk-high">高リスク</span>
+                        </div>
+                        <div class="transparency-score score-poor">
+                            <span>⏰</span>
+                            <span>時差配慮: 限定的</span>
+                            <span class="risk-indicator risk-medium">中リスク</span>
+                        </div>
+                        <div class="transparency-score score-good">
+                            <span>📱</span>
+                            <span>多言語対応: 実施中</span>
+                            <span class="risk-indicator risk-low">低リスク</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 対話姿勢の問題分析 -->
+            <div class="integrity-card">
+                <h2 class="text-xl font-bold mb-4">🤝 経営陣の対話姿勢分析</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-bold mb-3">面談実施状況</h3>
+                        <div class="concern-item concern-critical">
+                            <div class="font-bold text-red-200 mb-2">面談応諾率: 38% (業界平均: 78%)</div>
+                            <div class="text-sm">
+                                <div>• 大手機関投資家からの面談要請: 12件中5件拒否</div>
+                                <div>• 海外投資家からの面談要請: 8件中6件拒否</div>
+                                <div>• 新規投資家からの面談要請: 15件中12件拒否</div>
+                            </div>
+                        </div>
+                        
+                        <div class="concern-item concern-critical">
+                            <div class="font-bold text-red-200 mb-2">社外取締役面談: 0% (業界平均: 45%)</div>
+                            <div class="text-sm">
+                                <div>• 担当部署レベルで全件拒否</div>
+                                <div>• 社外取締役の意向確認なし</div>
+                                <div>• ガバナンス透明性への重大な懸念</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">拒否理由の分析</h3>
+                        <div class="concern-item concern-moderate">
+                            <div class="font-bold text-orange-200 mb-2">フェアディスクロージャー理由: 60%</div>
+                            <div class="text-sm">投資家は中長期戦略の理解を求めているが、インサイダー情報と誤解</div>
+                        </div>
+                        
+                        <div class="concern-item concern-moderate">
+                            <div class="font-bold text-orange-200 mb-2">多忙を理由: 25%</div>
+                            <div class="text-sm">スモールミーティングなどの代替案を提示していない</div>
+                        </div>
+                        
+                        <div class="concern-item concern-critical">
+                            <div class="font-bold text-red-200 mb-2">明確な理由なし: 15%</div>
+                            <div class="text-sm">組織的な対話回避の可能性</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 緊急改善要項 -->
+            <div class="action-required">
+                <h2 class="text-xl font-bold text-red-800 mb-4">🚨 緊急改善要項</h2>
+                <div class="improvement-roadmap">
+                    <div class="roadmap-step">
+                        <div class="step-number step-urgent">1</div>
+                        <div class="step-content">
+                            <div class="step-title">説明会の完全透明化</div>
+                            <div class="step-description">
+                                対面限定資料の廃止、質疑応答の完全開示、オンライン配信の実施
+                            </div>
+                            <div class="step-timeline">実施期限: 次回決算説明会まで (3週間)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-step">
+                        <div class="step-number step-urgent">2</div>
+                        <div class="step-content">
+                            <div class="step-title">面談応諾方針の抜本的見直し</div>
+                            <div class="step-description">
+                                投資家面談の積極的受け入れ、拒否基準の明文化と公開
+                            </div>
+                            <div class="step-timeline">実施期限: 1ヶ月以内</div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-step">
+                        <div class="step-number step-urgent">3</div>
+                        <div class="step-content">
+                            <div class="step-title">社外取締役との面談制度確立</div>
+                            <div class="step-description">
+                                社外取締役との面談機会の提供、ガバナンス透明性の向上
+                            </div>
+                            <div class="step-timeline">実施期限: 2ヶ月以内</div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">IR部門の意識改革</div>
+                            <div class="step-description">
+                                対話回避文化の是正、投資家第一の姿勢確立
+                            </div>
+                            <div class="step-timeline">実施期限: 3ヶ月以内</div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <div class="step-title">継続的モニタリング体制構築</div>
+                            <div class="step-description">
+                                投資家満足度調査、透明性スコアの定期測定
+                            </div>
+                            <div class="step-timeline">実施期限: 6ヶ月以内</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 投資家の具体的なネガティブフィードバック -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold text-red-600">😞 ネガティブフィードバック</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="negative-sentiment">
+                            <div class="font-bold text-red-800 mb-2">情報開示の不公平性</div>
+                            <div class="text-sm text-red-700 mb-2">
+                                "同じ説明会に参加しているのに、対面参加者だけが追加資料をもらえるのは差別的だ。"
+                            </div>
+                            <div class="text-xs text-gray-600">投資家15名が同様の指摘</div>
+                        </div>
+                        
+                        <div class="negative-sentiment">
+                            <div class="font-bold text-red-800 mb-2">質疑応答の意図的カット</div>
+                            <div class="text-sm text-red-700 mb-2">
+                                "重要な質問への回答がスクリプトから削除されている。投資判断に必要な情報が隠されている。"
+                            </div>
+                            <div class="text-xs text-gray-600">投資家8名が同様の指摘</div>
+                        </div>
+                        
+                        <div class="negative-sentiment">
+                            <div class="font-bold text-red-800 mb-2">面談拒否の組織的問題</div>
+                            <div class="text-sm text-red-700 mb-2">
+                                "他社では普通に応じてもらえる面談を、この会社だけが一律で断る。経営陣の姿勢に疑問。"
+                            </div>
+                            <div class="text-xs text-gray-600">投資家23名が同様の指摘</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold text-green-600">😊 改善への期待</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="positive-sentiment">
+                            <div class="font-bold text-green-800 mb-2">オンライン配信への期待</div>
+                            <div class="text-sm text-green-700 mb-2">
+                                "海外投資家も参加しやすいオンライン配信を実施してもらえれば、より多くの投資家が参加できる。"
+                            </div>
+                            <div class="text-xs text-gray-600">海外投資家12名が要望</div>
+                        </div>
+                        
+                        <div class="positive-sentiment">
+                            <div class="font-bold text-green-800 mb-2">社外取締役との対話</div>
+                            <div class="text-sm text-green-700 mb-2">
+                                "ガバナンス体制の実効性を理解するため、社外取締役との面談機会を設けてほしい。"
+                            </div>
+                            <div class="text-xs text-gray-600">機関投資家7名が要望</div>
+                        </div>
+                        
+                        <div class="positive-sentiment">
+                            <div class="font-bold text-green-800 mb-2">継続的な対話関係</div>
+                            <div class="text-sm text-green-700 mb-2">
+                                "中長期的な信頼関係を築くため、定期的な面談機会を設けてもらいたい。"
+                            </div>
+                            <div class="text-xs text-gray-600">投資家18名が要望</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 競合他社との比較 -->
+            <div class="governance-card mt-6">
+                <h2 class="text-xl font-bold mb-4">🏢 業界ベンチマーク比較</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <h3 class="font-bold mb-3">透明性スコア比較</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span>競合A社</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-20 h-2 bg-white bg-opacity-30 rounded">
+                                        <div class="w-18 h-2 bg-green-400 rounded"></div>
+                                    </div>
+                                    <span class="text-sm">85点</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>競合B社</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-20 h-2 bg-white bg-opacity-30 rounded">
+                                        <div class="w-16 h-2 bg-blue-400 rounded"></div>
+                                    </div>
+                                    <span class="text-sm">78点</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">自社</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-20 h-2 bg-white bg-opacity-30 rounded">
+                                        <div class="w-9 h-2 bg-red-400 rounded"></div>
+                                    </div>
+                                    <span class="text-sm font-bold">45点</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">面談応諾率比較</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span>競合A社</span>
+                                <span class="text-sm">92%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>競合B社</span>
+                                <span class="text-sm">86%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">自社</span>
+                                <span class="text-sm font-bold text-red-300">38%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">投資家満足度</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span>競合A社</span>
+                                <span class="text-sm">4.2/5.0</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>競合B社</span>
+                                <span class="text-sm">3.8/5.0</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold">自社</span>
+                                <span class="text-sm font-bold text-red-300">2.1/5.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- クイックフィードバックモーダル -->
+    <div id="quickFeedbackModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-bold mb-4">クイックフィードバック</h3>
+            <div class="space-y-4">
+                <select class="w-full p-3 border rounded">
+                    <option>フィードバック対象を選択</option>
+                    <option>田中IR部長</option>
+                    <option>佐藤IR担当</option>
+                    <option>山田IR担当</option>
+                    <option>IR部門全体</option>
+                </select>
+                <textarea class="w-full p-3 border rounded" rows="4" placeholder="フィードバック内容を入力..."></textarea>
+                <div class="flex justify-end gap-2">
+                    <button class="px-4 py-2 bg-gray-300 rounded" onclick="closeQuickFeedback()">キャンセル</button>
+                    <button class="px-4 py-2 bg-blue-500 text-white rounded">送信</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 稼働状況サマリーモーダル -->
+    <div id="workloadSummaryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+            <h3 class="text-lg font-bold mb-4">稼働状況サマリー</h3>
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-bold mb-2">経営陣稼働率</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>CEO</span>
+                            <span class="text-red-600 font-bold">35%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>CFO</span>
+                            <span class="text-orange-600 font-bold">60%</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-2">IR担当稼働率</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>田中IR部長</span>
+                            <span class="text-red-600 font-bold">95%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>佐藤IR担当</span>
+                            <span class="text-green-600 font-bold">78%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 p-3 bg-red-50 rounded">
+                <div class="font-bold text-red-800">⚠️ 要注意</div>
+                <div class="text-sm text-red-700">田中IR部長の過負荷状態が継続しています。</div>
+            </div>
+            <div class="flex justify-end mt-4">
+                <button class="px-4 py-2 bg-gray-300 rounded" onclick="closeWorkloadSummary()">閉じる</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // クイックフィードバック表示
+        function showQuickFeedback() {
+            document.getElementById('quickFeedbackModal').classList.remove('hidden');
+        }
+        
+        function closeQuickFeedback() {
+            document.getElementById('quickFeedbackModal').classList.add('hidden');
+        }
+        
+        // 稼働状況サマリー表示
+        function showWorkloadSummary() {
+            document.getElementById('workloadSummaryModal').classList.remove('hidden');
+        }
+        
+        function closeWorkloadSummary() {
+            document.getElementById('workloadSummaryModal').classList.add('hidden');
+        }
+        
+        // モーダル外クリックで閉じる
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('fixed')) {
+                e.target.classList.add('hidden');
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // リアルタイム透明性スコア更新
+            function updateTransparencyScore() {
+                const scores = {
+                    disclosure: Math.floor(Math.random() * 20) + 40, // 40-60
+                    dialogue: Math.floor(Math.random() * 20) + 30, // 30-50
+                    governance: Math.floor(Math.random() * 15) + 20 // 20-35
+                };
+                
+                // スコア表示の更新
+                updateScoreDisplay(scores);
+            }
+            
+            function updateScoreDisplay(scores) {
+                // スコアカードの更新
+                const scoreElements = document.querySelectorAll('.text-2xl.font-bold');
+                if (scoreElements.length >= 4) {
+                    scoreElements[0].textContent = `${Math.floor((scores.disclosure + scores.dialogue + scores.governance) / 3)}/100`;
+                    scoreElements[1].textContent = `${scores.dialogue}%`;
+                    scoreElements[2].textContent = `${scores.disclosure}%`;
+                    scoreElements[3].textContent = `${scores.governance}%`;
+                }
+            }
+            
+            // 投資家フィードバックの動的更新
+            function updateInvestorFeedback() {
+                const negativeComments = [
+                    {
+                        title: "情報開示の不公平性",
+                        content: "同じ説明会に参加しているのに、対面参加者だけが追加資料をもらえるのは差別的だ。",
+                        count: Math.floor(Math.random() * 10) + 10
+                    },
+                    {
+                        title: "質疑応答の意図的カット",
+                        content: "重要な質問への回答がスクリプトから削除されている。投資判断に必要な情報が隠されている。",
+                        count: Math.floor(Math.random() * 5) + 5
+                    },
+                    {
+                        title: "面談拒否の組織的問題",
+                        content: "他社では普通に応じてもらえる面談を、この会社だけが一律で断る。経営陣の姿勢に疑問。",
+                        count: Math.floor(Math.random() * 15) + 15
+                    }
+                ];
+                
+                // フィードバック表示の更新
+                updateFeedbackDisplay(negativeComments);
+            }
+            
+            function updateFeedbackDisplay(comments) {
+                const negativeElements = document.querySelectorAll('.negative-sentiment');
+                comments.forEach((comment, index) => {
+                    if (negativeElements[index]) {
+                        const countElement = negativeElements[index].querySelector('.text-xs.text-gray-600');
+                        if (countElement) {
+                            countElement.textContent = `投資家${comment.count}名が同様の指摘`;
+                        }
+                    }
+                });
+            }
+            
+            // 緊急アラートの表示
+            function showUrgentAlert() {
+                const alertCount = Math.floor(Math.random() * 3) + 3; // 3-5件
+                const alertBadge = document.querySelector('.bg-red-500.text-white');
+                if (alertBadge) {
+                    alertBadge.textContent = `緊急改善要 ${alertCount}件`;
+                }
+            }
+            
+            // 初期化
+            updateTransparencyScore();
+            updateInvestorFeedback();
+            showUrgentAlert();
+            
+            // 定期更新（5分ごと）
+            setInterval(() => {
+                updateTransparencyScore();
+                updateInvestorFeedback();
+            }, 300000);
+            
+            // ロードマップステップのクリックイベント
+            document.querySelectorAll('.roadmap-step').forEach(step => {
+                step.addEventListener('click', function() {
+                    const stepTitle = this.querySelector('.step-title').textContent;
+                    showImplementationModal(stepTitle);
+                });
+            });
+        });
+        
+        // 実装モーダルの表示
+        function showImplementationModal(stepTitle) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
+                    <h3 class="text-lg font-bold mb-4">実装計画: ${stepTitle}</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">具体的実施項目</h4>
+                            <ul class="list-disc list-inside text-sm space-y-1">
+                                <li>関係部署との緊急協議</li>
+                                <li>実施方針の策定</li>
+                                <li>投資家への事前通知</li>
+                                <li>システム・体制の整備</li>
+                                <li>効果測定方法の確立</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">期待される効果</h4>
+                            <div class="text-sm space-y-1">
+                                <div>• 投資家満足度: +2.5ポイント向上</div>
+                                <div>• 透明性スコア: +25ポイント向上</div>
+                                <div>• 株価への正の影響: +5-8%</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">実施上のリスク</h4>
+                            <div class="text-sm space-y-1">
+                                <div>• 内部抵抗による遅延</div>
+                                <div>• 一時的な業務負荷増加</div>
+                                <div>• 競合他社からの反発</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-6">
+                        <button class="px-4 py-2 bg-gray-300 rounded" onclick="this.closest('.fixed').remove()">閉じる</button>
+                        <button class="px-4 py-2 bg-red-500 text-white rounded">緊急実施指示</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

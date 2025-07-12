@@ -1,0 +1,543 @@
+/* ===== Tailwind CSS カスタム設定 - KAGAMI IR Platform ===== */
+
+/* Tailwind CSS の基本スタイル */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* ===== カスタムカラーパレット ===== */
+:root {
+  --color-primary: #4299e1;
+  --color-primary-dark: #3182ce;
+  --color-secondary: #1a365d;
+  --color-success: #48bb78;
+  --color-warning: #ed8936;
+  --color-danger: #f56565;
+  --color-neutral: #718096;
+  --color-gray-light: #f5f7fa;
+  --color-gray-medium: #e2e8f0;
+  --color-gray-dark: #2d3748;
+}
+
+/* ===== カスタムコンポーネント ===== */
+@layer components {
+  /* ===== カードコンポーネント ===== */
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    overflow: hidden;
+  }
+  
+  .card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+  }
+  
+  .card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .card-body {
+    padding: 24px;
+  }
+  
+  .card-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #e2e8f0;
+    background: #f7fafc;
+  }
+  
+  /* ===== メトリクスカード ===== */
+  .metric-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+  }
+  
+  .metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  
+  .metric-label {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 8px;
+  }
+  
+  .metric-value {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .metric-change {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  /* ===== ボタンコンポーネント ===== */
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .btn-primary {
+    background: #4299e1;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background: #3182ce;
+  }
+  
+  .btn-secondary {
+    background: white;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .btn-secondary:hover {
+    background: #f7fafc;
+  }
+  
+  .btn-success {
+    background: #48bb78;
+    color: white;
+  }
+  
+  .btn-success:hover {
+    background: #38a169;
+  }
+  
+  .btn-danger {
+    background: #f56565;
+    color: white;
+  }
+  
+  .btn-danger:hover {
+    background: #e53e3e;
+  }
+  
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .btn-lg {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+  
+  /* ===== アクションボタン ===== */
+  .action-button {
+    background: #4299e1;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .action-button:hover {
+    background: #3182ce;
+  }
+  
+  /* ===== バッジコンポーネント ===== */
+  .badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+  }
+  
+  .badge-primary {
+    background: #4299e1;
+    color: white;
+  }
+  
+  .badge-success {
+    background: #48bb78;
+    color: white;
+  }
+  
+  .badge-warning {
+    background: #ed8936;
+    color: white;
+  }
+  
+  .badge-danger {
+    background: #f56565;
+    color: white;
+  }
+  
+  .badge-info {
+    background: #4299e1;
+    color: white;
+  }
+  
+  /* ===== ステータスバッジ ===== */
+  .status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  
+  .status-ai {
+    background: #f0f4ff;
+    color: #4299e1;
+  }
+  
+  .status-review {
+    background: #fff5f0;
+    color: #ed8936;
+  }
+  
+  .status-approved {
+    background: #f0fff4;
+    color: #48bb78;
+  }
+  
+  .status-pending {
+    background: #fef5e7;
+    color: #d69e2e;
+  }
+  
+  /* ===== アラートバッジ ===== */
+  .alert-badge {
+    background: #f56565;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  /* ===== フォームコンポーネント ===== */
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #2d3748;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  
+  .form-control:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  }
+  
+  .form-select {
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  /* ===== 検索ボックス ===== */
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 16px;
+    width: 300px;
+  }
+  
+  .search-box input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+  }
+  
+  .search-box:focus-within {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  }
+  
+  /* ===== アバターコンポーネント ===== */
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #4a5568;
+    background: #e2e8f0;
+  }
+  
+  .avatar-sm {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+  
+  .avatar-lg {
+    width: 48px;
+    height: 48px;
+    font-size: 16px;
+  }
+  
+  /* ===== プログレスバー ===== */
+  .progress {
+    width: 100%;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    background: #4299e1;
+    transition: width 0.3s;
+  }
+  
+  .progress-success {
+    background: #48bb78;
+  }
+  
+  .progress-warning {
+    background: #ed8936;
+  }
+  
+  .progress-danger {
+    background: #f56565;
+  }
+  
+  /* ===== ツールチップ ===== */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip .tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: #2d3748;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+  }
+  
+  .tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* ===== モーダル ===== */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+  }
+  
+  .modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .modal-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #718096;
+  }
+  
+  .modal-close:hover {
+    color: #2d3748;
+  }
+  
+  /* ===== ドロップダウン ===== */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    z-index: 1;
+    right: 0;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  .dropdown-item {
+    color: #2d3748;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background 0.2s;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #f7fafc;
+  }
+}
+
+/* ===== カスタムユーティリティ ===== */
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .backdrop-blur {
+    backdrop-filter: blur(8px);
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ===== アニメーション ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* ===== レスポンシブデザイン ===== */
+@media (max-width: 768px) {
+  .metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+  }
+  
+  .main-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .header-info {
+    flex-direction: column;
+    gap: 12px;
+  }
+} 

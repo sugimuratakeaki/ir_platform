@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IR稼働・フィードバック管理 - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* ===== 稼働管理専用スタイル ===== */
+        .workload-card {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(30, 64, 175, 0.3);
+        }
+        
+        .executive-card {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+        }
+        
+        .ir-team-card {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.3);
+        }
+        
+        .feedback-card {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
+        }
+        
+        .activity-timeline {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            opacity: 0.8;
+            min-width: 60px;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .timeline-description {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .workload-meter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        
+        .workload-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .workload-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .workload-low { background: #10b981; }
+        .workload-medium { background: #f59e0b; }
+        .workload-high { background: #ef4444; }
+        .workload-critical { background: #dc2626; }
+        
+        .inquiry-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .inquiry-urgent {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .inquiry-normal {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .feedback-form {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        
+        .feedback-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .feedback-textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .feedback-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .performance-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        
+        .performance-score {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .performance-trend {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .nav-sidebar {
+            width: 280px;
+            background: #1f2937;
+            padding: 20px;
+            color: white;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .nav-item.active {
+            background: #3b82f6;
+        }
+        
+        .nav-section {
+            margin-bottom: 24px;
+        }
+        
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding: 0 16px;
+        }
+        
+        .alert-badge {
+            background: #ef4444;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active { background: #10b981; }
+        .status-busy { background: #f59e0b; }
+        .status-offline { background: #6b7280; }
+        
+        .response-time {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .time-excellent { color: #10b981; }
+        .time-good { color: #3b82f6; }
+        .time-poor { color: #f59e0b; }
+        .time-critical { color: #ef4444; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- ナビゲーションサイドバー -->
+        <aside class="nav-sidebar">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">CEO ダッシュボード</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>IR Integrity Dashboard</span>
+                    </a>
+                    <a href="workload-management.html" class="nav-item active">
+                        <span>⚡</span>
+                        <span>稼働・フィードバック管理</span>
+                        <span class="alert-badge ml-auto">12</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Manager機能</div>
+                    <a href="../manager/dashboard.html" class="nav-item">
+                        <span>📈</span>
+                        <span>Manager Dashboard</span>
+                    </a>
+                    <a href="../manager/dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="../manager/investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="../manager/analytics.html" class="nav-item">
+                        <span>📊</span>
+                        <span>分析レポート</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・管理</div>
+                    <a href="../manager/upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>データ取込</span>
+                    </a>
+                    <a href="../manager/email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>通知設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- メインコンテンツ -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <!-- ヘッダー -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold mb-2">IR稼働・フィードバック管理</h1>
+                <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <span>最終更新: 2025/07/12 16:45</span>
+                    <span>•</span>
+                    <span>未対応問い合わせ: 12件</span>
+                    <span>•</span>
+                    <span class="text-orange-600 font-bold">要注意: IR担当過負荷</span>
+                </div>
+            </div>
+            
+            <!-- 経営陣稼働状況 -->
+            <div class="executive-card">
+                <h2 class="text-xl font-bold mb-4">👔 経営陣IR稼働状況</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <h3 class="font-bold mb-3">CEO 稼働状況</h3>
+                        <div class="workload-meter">
+                            <span class="text-sm">今週IR時間:</span>
+                            <div class="workload-bar">
+                                <div class="workload-fill workload-low" style="width: 35%;"></div>
+                            </div>
+                            <span class="text-sm font-bold">7h/20h</span>
+                        </div>
+                        <div class="performance-indicator">
+                            <span>投資家面談</span>
+                            <div>
+                                <div class="performance-score">3件</div>
+                                <div class="performance-trend">目標: 8件/週</div>
+                            </div>
+                        </div>
+                        <div class="performance-indicator">
+                            <span>説明会参加</span>
+                            <div>
+                                <div class="performance-score">1回</div>
+                                <div class="performance-trend">今月予定: 2回</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">CFO 稼働状況</h3>
+                        <div class="workload-meter">
+                            <span class="text-sm">今週IR時間:</span>
+                            <div class="workload-bar">
+                                <div class="workload-fill workload-medium" style="width: 60%;"></div>
+                            </div>
+                            <span class="text-sm font-bold">12h/20h</span>
+                        </div>
+                        <div class="performance-indicator">
+                            <span>投資家面談</span>
+                            <div>
+                                <div class="performance-score">5件</div>
+                                <div class="performance-trend">目標: 6件/週</div>
+                            </div>
+                        </div>
+                        <div class="performance-indicator">
+                            <span>資料作成</span>
+                            <div>
+                                <div class="performance-score">8h</div>
+                                <div class="performance-trend">今週実績</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">今日の活動予定</h3>
+                        <div class="activity-timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-time">10:00</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">機関投資家A 面談</div>
+                                    <div class="timeline-description">CEO参加予定</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-time">14:00</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">決算資料レビュー</div>
+                                    <div class="timeline-description">CFO主導</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-time">16:30</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">海外投資家B オンライン面談</div>
+                                    <div class="timeline-description">CEO・CFO参加</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IR担当チーム稼働状況 -->
+            <div class="ir-team-card">
+                <h2 class="text-xl font-bold mb-4">👥 IR担当チーム稼働状況</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-bold mb-3">チーム全体の業務負荷</h3>
+                        <div class="workload-meter">
+                            <span class="text-sm">今週稼働率:</span>
+                            <div class="workload-bar">
+                                <div class="workload-fill workload-high" style="width: 85%;"></div>
+                            </div>
+                            <span class="text-sm font-bold">85%</span>
+                        </div>
+                        
+                        <div class="space-y-3 mt-4">
+                            <div class="performance-indicator">
+                                <span>
+                                    <span class="status-indicator status-active"></span>
+                                    田中IR部長
+                                </span>
+                                <div>
+                                    <div class="performance-score">95%</div>
+                                    <div class="performance-trend">過負荷状態</div>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-indicator">
+                                <span>
+                                    <span class="status-indicator status-busy"></span>
+                                    佐藤IR担当
+                                </span>
+                                <div>
+                                    <div class="performance-score">78%</div>
+                                    <div class="performance-trend">適正範囲</div>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-indicator">
+                                <span>
+                                    <span class="status-indicator status-active"></span>
+                                    山田IR担当
+                                </span>
+                                <div>
+                                    <div class="performance-score">82%</div>
+                                    <div class="performance-trend">適正範囲</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">対応パフォーマンス</h3>
+                        <div class="space-y-3">
+                            <div class="performance-indicator">
+                                <span>平均応答時間</span>
+                                <div>
+                                    <div class="performance-score time-poor">4.2時間</div>
+                                    <div class="performance-trend">目標: 2時間以内</div>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-indicator">
+                                <span>問い合わせ解決率</span>
+                                <div>
+                                    <div class="performance-score time-good">87%</div>
+                                    <div class="performance-trend">目標: 90%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-indicator">
+                                <span>投資家満足度</span>
+                                <div>
+                                    <div class="performance-score time-poor">3.2/5.0</div>
+                                    <div class="performance-trend">前月: 3.5/5.0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-red-500 bg-opacity-20 rounded">
+                            <div class="font-bold text-red-200 mb-1">⚠️ 要注意事項</div>
+                            <div class="text-sm">
+                                田中IR部長の稼働率が95%に達しています。追加リソースの検討が必要です。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 問い合わせ状況 -->
+            <div class="workload-card">
+                <h2 class="text-xl font-bold mb-4">📞 問い合わせ状況</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2">
+                        <h3 class="font-bold mb-3">未対応問い合わせ (12件)</h3>
+                        <div class="space-y-3 max-h-96 overflow-y-auto">
+                            <div class="inquiry-item inquiry-urgent">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="font-bold">大手機関投資家A - 緊急</div>
+                                    <div class="text-xs">2時間前</div>
+                                </div>
+                                <div class="text-sm mb-2">
+                                    Q2決算の売上高修正について詳細な説明を求む。明日の投資委員会で議論予定。
+                                </div>
+                                <div class="response-time time-critical">
+                                    <span>⏰</span>
+                                    <span>応答期限: 4時間以内</span>
+                                </div>
+                            </div>
+                            
+                            <div class="inquiry-item inquiry-urgent">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="font-bold">海外投資家B - 緊急</div>
+                                    <div class="text-xs">3時間前</div>
+                                </div>
+                                <div class="text-sm mb-2">
+                                    半導体事業の収益性改善策について、具体的なタイムラインと数値目標を教えてほしい。
+                                </div>
+                                <div class="response-time time-critical">
+                                    <span>⏰</span>
+                                    <span>応答期限: 6時間以内</span>
+                                </div>
+                            </div>
+                            
+                            <div class="inquiry-item inquiry-normal">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="font-bold">投資信託会社C</div>
+                                    <div class="text-xs">1日前</div>
+                                </div>
+                                <div class="text-sm mb-2">
+                                    ESG戦略について、具体的な取り組み内容と成果指標を知りたい。
+                                </div>
+                                <div class="response-time time-good">
+                                    <span>⏰</span>
+                                    <span>応答期限: 24時間以内</span>
+                                </div>
+                            </div>
+                            
+                            <div class="inquiry-item inquiry-normal">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="font-bold">年金基金D</div>
+                                    <div class="text-xs">1日前</div>
+                                </div>
+                                <div class="text-sm mb-2">
+                                    資本配分方針について、配当政策と自社株買いの考え方を教えてほしい。
+                                </div>
+                                <div class="response-time time-good">
+                                    <span>⏰</span>
+                                    <span>応答期限: 24時間以内</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">問い合わせ統計</h3>
+                        <div class="space-y-4">
+                            <div class="performance-indicator">
+                                <span>今日の新規</span>
+                                <div class="performance-score">8件</div>
+                            </div>
+                            
+                            <div class="performance-indicator">
+                                <span>今週の累計</span>
+                                <div class="performance-score">47件</div>
+                            </div>
+                            
+                            <div class="performance-indicator">
+                                <span>緊急対応要</span>
+                                <div class="performance-score text-red-300">5件</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="font-bold mb-2">カテゴリ別内訳</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>決算・業績</span>
+                                    <span>35%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>事業戦略</span>
+                                    <span>28%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>ESG・ガバナンス</span>
+                                    <span>22%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>その他</span>
+                                    <span>15%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- フィードバック機能 -->
+            <div class="feedback-card">
+                <h2 class="text-xl font-bold mb-4">💬 IR担当へのフィードバック</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-bold mb-3">新規フィードバック送信</h3>
+                        <div class="feedback-form">
+                            <select class="feedback-input">
+                                <option>フィードバック対象を選択</option>
+                                <option>田中IR部長</option>
+                                <option>佐藤IR担当</option>
+                                <option>山田IR担当</option>
+                                <option>IR部門全体</option>
+                            </select>
+                            
+                            <select class="feedback-input">
+                                <option>フィードバック種別</option>
+                                <option>改善指示</option>
+                                <option>評価・称賛</option>
+                                <option>業務指示</option>
+                                <option>質問・確認</option>
+                            </select>
+                            
+                            <input type="text" class="feedback-input" placeholder="件名を入力">
+                            
+                            <textarea class="feedback-textarea" placeholder="具体的なフィードバック内容を入力してください。
+
+例：
+- 投資家Aからの問い合わせ対応について
+- 説明会資料の改善点
+- 今後の対応方針について
+- 評価すべき点や改善すべき点"></textarea>
+                            
+                            <div class="flex gap-2">
+                                <button class="px-4 py-2 bg-white bg-opacity-20 rounded hover:bg-opacity-30 transition-all">
+                                    下書き保存
+                                </button>
+                                <button class="px-4 py-2 bg-white text-red-600 rounded font-bold hover:bg-opacity-90 transition-all">
+                                    送信
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold mb-3">最近のフィードバック履歴</h3>
+                        <div class="space-y-3 max-h-96 overflow-y-auto">
+                            <div class="activity-timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-time">今日 14:30</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">田中IR部長への改善指示</div>
+                                        <div class="timeline-description">
+                                            投資家からの問い合わせ応答時間の短縮について
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-time">昨日 16:45</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">佐藤IR担当への評価</div>
+                                        <div class="timeline-description">
+                                            海外投資家対応の質の高さを評価
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-time">7/10 10:20</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">IR部門全体への業務指示</div>
+                                        <div class="timeline-description">
+                                            決算説明会の準備スケジュール確認
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-blue-500 bg-opacity-20 rounded">
+                            <div class="font-bold text-blue-200 mb-1">📊 フィードバック効果</div>
+                            <div class="text-sm">
+                                前月のフィードバック実施後、投資家満足度が3.5→4.1に向上しました。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 改善提案・アクション -->
+            <div class="card mt-6">
+                <div class="card-header">
+                    <h2 class="text-xl font-bold">🎯 改善提案・アクション</h2>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-bold mb-4 text-red-600">緊急対応要項</h3>
+                            <div class="space-y-3">
+                                <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r">
+                                    <div class="font-bold mb-2">IR担当の業務負荷軽減</div>
+                                    <div class="text-sm text-gray-700 mb-2">
+                                        田中IR部長の稼働率95%は危険水準。追加人員配置または業務分散が必要。
+                                    </div>
+                                    <div class="text-xs text-gray-500">実施期限: 1週間以内</div>
+                                </div>
+                                
+                                <div class="p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r">
+                                    <div class="font-bold mb-2">CEO面談参加率向上</div>
+                                    <div class="text-sm text-gray-700 mb-2">
+                                        目標8件/週に対し3件と大幅に不足。スケジュール調整が必要。
+                                    </div>
+                                    <div class="text-xs text-gray-500">実施期限: 2週間以内</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-bold mb-4 text-blue-600">効率化提案</h3>
+                            <div class="space-y-3">
+                                <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r">
+                                    <div class="font-bold mb-2">FAQ自動応答システム導入</div>
+                                    <div class="text-sm text-gray-700 mb-2">
+                                        定型的な問い合わせ35%を自動化することで、IR担当の負荷を軽減。
+                                    </div>
+                                    <div class="text-xs text-gray-500">期待効果: 稼働率-20%</div>
+                                </div>
+                                
+                                <div class="p-4 bg-green-50 border-l-4 border-green-500 rounded-r">
+                                    <div class="font-bold mb-2">投資家面談の効率化</div>
+                                    <div class="text-sm text-gray-700 mb-2">
+                                        スモールミーティング活用により、1回で複数投資家との面談を実現。
+                                    </div>
+                                    <div class="text-xs text-gray-500">期待効果: 面談数+50%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // リアルタイム稼働状況更新
+            function updateWorkloadStatus() {
+                // CEO稼働率の更新
+                const ceoWorkload = Math.floor(Math.random() * 30) + 20; // 20-50%
+                const ceoBar = document.querySelector('.workload-fill.workload-low');
+                if (ceoBar) {
+                    ceoBar.style.width = `${ceoWorkload}%`;
+                    ceoBar.parentElement.nextElementSibling.textContent = `${Math.floor(ceoWorkload * 0.4)}h/20h`;
+                }
+                
+                // CFO稼働率の更新
+                const cfoWorkload = Math.floor(Math.random() * 20) + 50; // 50-70%
+                const cfoBar = document.querySelector('.workload-fill.workload-medium');
+                if (cfoBar) {
+                    cfoBar.style.width = `${cfoWorkload}%`;
+                    cfoBar.parentElement.nextElementSibling.textContent = `${Math.floor(cfoWorkload * 0.4)}h/20h`;
+                }
+                
+                // IR担当稼働率の更新
+                const irWorkload = Math.floor(Math.random() * 15) + 80; // 80-95%
+                const irBar = document.querySelector('.workload-fill.workload-high');
+                if (irBar) {
+                    irBar.style.width = `${irWorkload}%`;
+                    irBar.parentElement.nextElementSibling.textContent = `${irWorkload}%`;
+                    
+                    // 過負荷警告の表示
+                    if (irWorkload > 90) {
+                        showOverloadAlert();
+                    }
+                }
+            }
+            
+            // 問い合わせ件数の更新
+            function updateInquiryCount() {
+                const newInquiries = Math.floor(Math.random() * 5) + 8; // 8-12件
+                const countElements = document.querySelectorAll('.alert-badge');
+                countElements.forEach(el => {
+                    el.textContent = newInquiries;
+                });
+                
+                // ヘッダーの未対応件数更新
+                const headerText = document.querySelector('main .text-sm.text-gray-600');
+                if (headerText) {
+                    headerText.innerHTML = headerText.innerHTML.replace(/未対応問い合わせ: \d+件/, `未対応問い合わせ: ${newInquiries}件`);
+                }
+            }
+            
+            // 過負荷アラートの表示
+            function showOverloadAlert() {
+                const existingAlert = document.querySelector('.overload-alert');
+                if (existingAlert) return;
+                
+                const alert = document.createElement('div');
+                alert.className = 'overload-alert fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50';
+                alert.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">⚠️</span>
+                        <div>
+                            <div class="font-bold">過負荷警告</div>
+                            <div class="text-sm">IR担当の稼働率が危険水準に達しています</div>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-300">×</button>
+                    </div>
+                `;
+                document.body.appendChild(alert);
+                
+                // 5秒後に自動削除
+                setTimeout(() => {
+                    if (alert.parentElement) {
+                        alert.remove();
+                    }
+                }, 5000);
+            }
+            
+            // フィードバック送信機能
+            function initializeFeedbackForm() {
+                const sendButton = document.querySelector('.bg-white.text-red-600');
+                if (sendButton) {
+                    sendButton.addEventListener('click', function() {
+                        const subject = document.querySelector('input[placeholder="件名を入力"]');
+                        const content = document.querySelector('.feedback-textarea');
+                        
+                        if (subject && content && subject.value && content.value) {
+                            showFeedbackSuccess();
+                            // フォームをリセット
+                            subject.value = '';
+                            content.value = '';
+                        } else {
+                            showFeedbackError();
+                        }
+                    });
+                }
+            }
+            
+            // フィードバック成功通知
+            function showFeedbackSuccess() {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50';
+                notification.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">✅</span>
+                        <div>
+                            <div class="font-bold">フィードバック送信完了</div>
+                            <div class="text-sm">IR担当に通知されました</div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+            
+            // フィードバックエラー通知
+            function showFeedbackError() {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50';
+                notification.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">❌</span>
+                        <div>
+                            <div class="font-bold">入力エラー</div>
+                            <div class="text-sm">件名と内容を入力してください</div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+            
+            // 問い合わせアイテムのクリックイベント
+            function initializeInquiryItems() {
+                document.querySelectorAll('.inquiry-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const title = this.querySelector('.font-bold').textContent;
+                        showInquiryDetailModal(title, this);
+                    });
+                });
+            }
+            
+            // 問い合わせ詳細モーダル
+            function showInquiryDetailModal(title, inquiryElement) {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+                        <h3 class="text-lg font-bold mb-4">問い合わせ詳細: ${title}</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-bold mb-2">投資家情報</h4>
+                                <div class="text-sm space-y-1">
+                                    <div>保有比率: 8.5%</div>
+                                    <div>投資期間: 3年</div>
+                                    <div>前回面談: 2ヶ月前</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold mb-2">問い合わせ履歴</h4>
+                                <div class="text-sm space-y-1">
+                                    <div>• 今回: 決算修正について</div>
+                                    <div>• 前回: ESG戦略について</div>
+                                    <div>• 前々回: 事業戦略について</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold mb-2">対応方針</h4>
+                                <textarea class="w-full p-3 border rounded" rows="4" placeholder="対応方針を入力してください..."></textarea>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-2 mt-6">
+                            <button class="px-4 py-2 bg-gray-300 rounded" onclick="this.closest('.fixed').remove()">閉じる</button>
+                            <button class="px-4 py-2 bg-blue-500 text-white rounded">対応完了</button>
+                            <button class="px-4 py-2 bg-red-500 text-white rounded">緊急エスカレーション</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.remove();
+                    }
+                });
+            }
+            
+            // 初期化
+            updateWorkloadStatus();
+            updateInquiryCount();
+            initializeFeedbackForm();
+            initializeInquiryItems();
+            
+            // 定期更新（2分ごと）
+            setInterval(() => {
+                updateWorkloadStatus();
+                updateInquiryCount();
+            }, 120000);
+        });
+    </script>
+</body>
+</html> 

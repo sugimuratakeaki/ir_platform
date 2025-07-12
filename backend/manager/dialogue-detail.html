@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>対話記録詳細 - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+            height: calc(100vh - 120px);
+        }
+        
+        .left-panel {
+            overflow-y: auto;
+        }
+        
+        .right-panel {
+            background: #f8fafc;
+            border-left: 1px solid #e2e8f0;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #3b82f6;
+            color: white;
+            padding: 16px 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-header.urgent {
+            background: #ef4444;
+        }
+        
+        .section-header.success {
+            background: #10b981;
+        }
+        
+        .section-header.info {
+            background: #6366f1;
+        }
+        
+        .section-content {
+            padding: 20px;
+        }
+        
+        .transcript-block {
+            margin-bottom: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .transcript-block.investor {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .transcript-block.company {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+        }
+        
+        .speaker-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .speaker-content {
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        .sentiment-indicator {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .sentiment-positive {
+            background: #10b981;
+        }
+        
+        .sentiment-negative {
+            background: #ef4444;
+        }
+        
+        .sentiment-neutral {
+            background: #6b7280;
+        }
+        
+        .action-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .action-item.urgent {
+            border-left: 4px solid #ef4444;
+            background: #fef2f2;
+        }
+        
+        .action-item.medium {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .action-item.low {
+            border-left: 4px solid #10b981;
+            background: #f0fdf4;
+        }
+        
+        .priority-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .priority-urgent {
+            background: #fecaca;
+            color: #dc2626;
+        }
+        
+        .priority-medium {
+            background: #fed7aa;
+            color: #ea580c;
+        }
+        
+        .priority-low {
+            background: #bbf7d0;
+            color: #16a34a;
+        }
+        
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .history-item:hover {
+            background: #f9fafb;
+        }
+        
+        .history-item.current {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .satisfaction-score {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .score-high {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .score-medium {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .score-low {
+            background: #fecaca;
+            color: #dc2626;
+        }
+        
+        .trend-indicator {
+            font-size: 12px;
+            margin-left: 4px;
+        }
+        
+        .trend-up {
+            color: #10b981;
+        }
+        
+        .trend-down {
+            color: #ef4444;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .nav-item.active {
+            background: #4299e1;
+        }
+        
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1000;
+        }
+        
+        .floating-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .floating-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .floating-btn.secondary {
+            background: #6b7280;
+        }
+        
+        .floating-btn.secondary:hover {
+            background: #4b5563;
+        }
+        
+        .quick-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .highlight-card {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .highlight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item active">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-hidden">
+            <!-- スティッキーヘッダー -->
+            <div class="sticky top-0 z-50 bg-white border-b shadow-sm">
+                <div class="p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <button onclick="window.history.back()" class="text-blue-600 hover:text-blue-800 flex items-center gap-2">
+                                ← 対話記録一覧
+                            </button>
+                            <div class="h-6 w-px bg-gray-300"></div>
+                            <h1 class="text-xl font-bold">ABC Capital Management - 山田太郎氏</h1>
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">継続投資意向 95%</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm hover:bg-gray-200" onclick="exportSummary()">📤 要約出力</button>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700" onclick="scheduleFollowup()">📅 次回面談設定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- 左パネル：メインコンテンツ -->
+                <div class="left-panel p-6">
+                    <!-- クイックサマリー -->
+                    <div class="quick-summary">
+                        <div class="grid grid-cols-4 gap-6">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold mb-1">90分</div>
+                                <div class="text-sm opacity-90">面談時間</div>
+                                <div class="text-xs opacity-75">2025/7/10 14:00-15:30</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold mb-1">8.2</div>
+                                <div class="text-sm opacity-90">満足度スコア</div>
+                                <div class="text-xs">↗ 前回+0.5</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold mb-1">3件</div>
+                                <div class="text-sm opacity-90">要フォローアップ</div>
+                                <div class="text-xs">1件緊急</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold mb-1">5回目</div>
+                                <div class="text-sm opacity-90">面談回数</div>
+                                <div class="text-xs opacity-75">初回: 2024/3/15</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 重要ハイライト -->
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="highlight-card bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-red-600">🚨</span>
+                                <h3 class="font-bold text-red-800">緊急課題</h3>
+                            </div>
+                            <p class="text-sm text-red-700">人材確保の持続可能性への懸念</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">期限: 7/17</span>
+                            </div>
+                        </div>
+                        
+                        <div class="highlight-card bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-green-600">✅</span>
+                                <h3 class="font-bold text-green-800">高評価ポイント</h3>
+                            </div>
+                            <p class="text-sm text-green-700">AI事業成長率+35%への評価</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">継続戦略推進</span>
+                            </div>
+                        </div>
+                        
+                        <div class="highlight-card bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-blue-600">💡</span>
+                                <h3 class="font-bold text-blue-800">投資機会</h3>
+                            </div>
+                            <p class="text-sm text-blue-700">海外人材採用への期待</p>
+                            <div class="mt-2">
+                                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">来年度開始予定</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 主要トピック・発言 -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <span>💬 主要トピック・発言</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-green-500 pl-4 py-2 bg-green-50">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="font-bold text-green-800">AI事業成長への評価</span>
+                                        <span class="text-xs text-green-600">😊 ポジティブ</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700">「今四半期のAI事業の進捗は非常に印象的。特にエンタープライズ向けSaaSの売上成長率+35%は予想を上回っている」</p>
+                                    <div class="text-xs text-gray-500 mt-1">14:05 山田氏発言</div>
+                                </div>
+                                
+                                <div class="border-l-4 border-orange-500 pl-4 py-2 bg-orange-50">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="font-bold text-orange-800">競争激化への懸念</span>
+                                        <span class="text-xs text-orange-600">⚠️ 質問</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700">「大手IT企業も同様のサービスを提供し始めている。価格競争の回避策について教えてほしい」</p>
+                                    <div class="text-xs text-gray-500 mt-1">14:22 山田氏発言</div>
+                                </div>
+                                
+                                <div class="border-l-4 border-red-500 pl-4 py-2 bg-red-50">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="font-bold text-red-800">人材確保の懸念</span>
+                                        <span class="text-xs text-red-600">😰 懸念</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700">「技術者の採用競争も激化。優秀な人材確保の持続可能性が心配」</p>
+                                    <div class="text-xs text-gray-500 mt-1">14:45 山田氏発言</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ候補 -->
+                    <div class="section-card">
+                        <div class="section-header info">
+                            <span>❓ FAQ候補</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="grid grid-cols-2 gap-6">
+                                <!-- ポジティブな質問事項 -->
+                                <div>
+                                    <h4 class="font-bold text-green-700 mb-3 flex items-center gap-2">
+                                        <span>✅</span>
+                                        ポジティブな質問事項
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <h5 class="font-bold text-green-800">AI事業の差別化要因について</h5>
+                                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">高頻度</span>
+                                            </div>
+                                            <p class="text-sm text-green-700 mb-2">「競合他社と比較して、どのような差別化要因がありますか？」</p>
+                                            <div class="text-xs text-gray-600">推奨回答: 独自アルゴリズム、価格設定、サポート体制の3つの差別化要因を説明</div>
+                                        </div>
+                                        
+                                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <h5 class="font-bold text-green-800">AI事業の成長戦略について</h5>
+                                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">中頻度</span>
+                                            </div>
+                                            <p class="text-sm text-green-700 mb-2">「今後のAI事業の成長戦略はどのようにお考えですか？」</p>
+                                            <div class="text-xs text-gray-600">推奨回答: 業界特化型ソリューション開発と海外展開計画を説明</div>
+                                        </div>
+                                        
+                                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <h5 class="font-bold text-green-800">カスタマーサクセス率について</h5>
+                                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">中頻度</span>
+                                            </div>
+                                            <p class="text-sm text-green-700 mb-2">「導入後のカスタマーサクセス率はどの程度ですか？」</p>
+                                            <div class="text-xs text-gray-600">推奨回答: 業界平均1.8倍の実績と継続的な改善施策を説明</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- ネガティブな質問事項 -->
+                                <div>
+                                    <h4 class="font-bold text-red-700 mb-3 flex items-center gap-2">
+                                        <span>⚠️</span>
+                                        ネガティブな質問事項
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <h5 class="font-bold text-red-800">人材確保の持続可能性</h5>
+                                                <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">緊急</span>
+                                            </div>
+                                            <p class="text-sm text-red-700 mb-2">「技術者の採用競争激化に対する対応策は？」</p>
+                                            <div class="text-xs text-gray-600">推奨回答: 海外人材採用、研修プログラム強化、リテンション施策の3本柱</div>
+                                        </div>
+                                        
+                                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <h5 class="font-bold text-red-800">競争激化への対応</h5>
+                                                <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">高頻度</span>
+                                            </div>
+                                            <p class="text-sm text-red-700 mb-2">「大手IT企業の参入に対する価格競争回避策は？」</p>
+                                            <div class="text-xs text-gray-600">推奨回答: 価値ベース戦略と業界特化型ソリューション開発を説明</div>
+                                        </div>
+                                        
+                                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <h5 class="font-bold text-red-800">海外展開のリスク</h5>
+                                                <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">中頻度</span>
+                                            </div>
+                                            <p class="text-sm text-red-700 mb-2">「海外展開におけるリスク管理はどのように考えていますか？」</p>
+                                            <div class="text-xs text-gray-600">推奨回答: 段階的展開と現地パートナーとの協力体制を説明</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 全文字起こし -->
+                    <div class="section-card">
+                        <div class="section-header info">
+                            <span>📝 全文字起こし</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="space-y-4 max-h-96 overflow-y-auto">
+                                <div class="transcript-block investor">
+                                    <div class="sentiment-indicator sentiment-positive"></div>
+                                    <div class="speaker-name">👤 山田太郎氏 (ABC Capital)</div>
+                                    <div class="speaker-content">
+                                        本日はお時間をいただき、ありがとうございます。早速ですが、今四半期のAI事業の進捗は非常に印象的ですね。特にエンタープライズ向けSaaSの売上成長率+35%は予想を上回っています。競合他社と比較して、どのような差別化要因があるのでしょうか？
+                                    </div>
+                                </div>
+                                
+                                <div class="transcript-block company">
+                                    <div class="sentiment-indicator sentiment-positive"></div>
+                                    <div class="speaker-name">👤 田中IR部長 (当社)</div>
+                                    <div class="speaker-content">
+                                        ありがとうございます。主な差別化要因は3つございます。第一に、独自のAIアルゴリズムによる高精度な予測機能。第二に、中小企業でも導入しやすい価格設定とUI設計。第三に、24時間日本語サポート体制です。特に導入後のカスタマーサクセス率は業界平均の1.8倍を達成しています。
+                                    </div>
+                                </div>
+                                
+                                <div class="transcript-block investor">
+                                    <div class="sentiment-indicator sentiment-neutral"></div>
+                                    <div class="speaker-name">👤 山田太郎氏 (ABC Capital)</div>
+                                    <div class="speaker-content">
+                                        素晴らしい成果ですね。一方で、大手IT企業も同様のサービスを提供し始めています。今後の競争激化に対する戦略的な対応策はいかがでしょうか？特に価格競争の回避策について教えてください。
+                                    </div>
+                                </div>
+                                
+                                <div class="transcript-block company">
+                                    <div class="sentiment-indicator sentiment-positive"></div>
+                                    <div class="speaker-name">👤 田中IR部長 (当社)</div>
+                                    <div class="speaker-content">
+                                        重要なご指摘をありがとうございます。価格競争を避けるため、我々は『価値ベース』の戦略を採用しています。具体的には、業界特化型のソリューション開発に注力し、単なる汎用ツールではなく、お客様の業務プロセスに深く統合されたサービスを提供しています。
+                                    </div>
+                                </div>
+                                
+                                <div class="transcript-block investor">
+                                    <div class="sentiment-indicator sentiment-negative"></div>
+                                    <div class="speaker-name">👤 山田太郎氏 (ABC Capital)</div>
+                                    <div class="speaker-content">
+                                        戦略は理解できました。ただし、技術者の採用競争も激化していると聞きます。優秀な人材確保の持続可能性について、どのような取り組みをされているのでしょうか？この点は少し心配しています。
+                                    </div>
+                                </div>
+                                
+                                <div class="transcript-block company">
+                                    <div class="sentiment-indicator sentiment-positive"></div>
+                                    <div class="speaker-name">👤 田中IR部長 (当社)</div>
+                                    <div class="speaker-content">
+                                        確かに人材確保は重要な課題です。我々は3つのアプローチで対応しています。1)新卒採用の強化と独自の研修プログラム、2)リモートワーク環境の整備による全国からの採用、3)ストックオプション制度の拡充による長期的なリテンション向上です。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- アクションアイテム -->
+                    <div class="section-card">
+                        <div class="section-header success">
+                            <span>✅ アクションアイテム・フォローアップ</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="action-item urgent">
+                                <div class="priority-badge priority-urgent">緊急</div>
+                                <h4 class="font-bold mb-2">人材戦略詳細資料の作成・送付</h4>
+                                <p class="text-sm text-gray-600 mb-3">海外人材採用計画、研修プログラム詳細、リテンション施策を含む包括的な人材戦略資料を作成し、1週間以内に送付する。</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm">
+                                        <strong>担当:</strong> HR部 + IR部
+                                        <strong class="ml-4">期限:</strong> 7月17日
+                                    </div>
+                                    <select class="text-sm border rounded px-2 py-1">
+                                        <option>未着手</option>
+                                        <option>進行中</option>
+                                        <option>完了</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="action-item medium">
+                                <div class="priority-badge priority-medium">中</div>
+                                <h4 class="font-bold mb-2">競合分析レポートの更新</h4>
+                                <p class="text-sm text-gray-600 mb-3">大手IT企業の参入状況、価格戦略、サービス比較を含む最新の競合分析資料を作成し、次回決算説明会で活用。</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm">
+                                        <strong>担当:</strong> 事業企画部
+                                        <strong class="ml-4">期限:</strong> 7月31日
+                                    </div>
+                                    <select class="text-sm border rounded px-2 py-1">
+                                        <option>未着手</option>
+                                        <option selected>進行中</option>
+                                        <option>完了</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="action-item low">
+                                <div class="priority-badge priority-low">低</div>
+                                <h4 class="font-bold mb-2">FAQ更新（人材戦略関連）</h4>
+                                <p class="text-sm text-gray-600 mb-3">今回の懸念事項を踏まえ、人材確保・技術者採用に関するFAQを作成し、IRライブラリに追加。</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm">
+                                        <strong>担当:</strong> IR部
+                                        <strong class="ml-4">期限:</strong> 8月5日
+                                    </div>
+                                    <select class="text-sm border rounded px-2 py-1">
+                                        <option selected>未着手</option>
+                                        <option>進行中</option>
+                                        <option>完了</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COEへの報告候補 -->
+                    <div class="section-card">
+                        <div class="section-header urgent">
+                            <span>📊 COEへの報告候補</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="space-y-4">
+                                <!-- 緊急報告事項 -->
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-bold text-red-800">🚨 緊急報告事項</h4>
+                                        <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">即座に報告</span>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="border-l-4 border-red-500 pl-3 py-2">
+                                            <h5 class="font-bold text-red-800 mb-1">人材確保戦略の見直し・強化</h5>
+                                            <p class="text-sm text-gray-700 mb-2">主要投資家から人材確保の持続可能性について懸念が表明された。海外人材採用の具体的計画と予算確保が必要。</p>
+                                            <div class="flex items-center gap-4 text-xs">
+                                                <span class="text-red-600">影響度: 高</span>
+                                                <span class="text-red-600">緊急度: 高</span>
+                                                <span class="text-red-600">対応期限: 7/17</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 重要報告事項 -->
+                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-bold text-orange-800">⚠️ 重要報告事項</h4>
+                                        <span class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">今週中に報告</span>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="border-l-4 border-orange-500 pl-3 py-2">
+                                            <h5 class="font-bold text-orange-800 mb-1">競合対応策の具体化</h5>
+                                            <p class="text-sm text-gray-700 mb-2">大手IT企業の市場参入に対する戦略的対応について投資家から質問があった。価値ベース戦略の具体化が必要。</p>
+                                            <div class="flex items-center gap-4 text-xs">
+                                                <span class="text-orange-600">影響度: 中</span>
+                                                <span class="text-orange-600">緊急度: 中</span>
+                                                <span class="text-orange-600">対応期限: 7/31</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="border-l-4 border-orange-500 pl-3 py-2">
+                                            <h5 class="font-bold text-orange-800 mb-1">AI事業の差別化戦略効果</h5>
+                                            <p class="text-sm text-gray-700 mb-2">投資家からAI事業の成長率と差別化戦略について高い評価を受けた。今後の戦略継続と追加投資の検討材料。</p>
+                                            <div class="flex items-center gap-4 text-xs">
+                                                <span class="text-green-600">影響度: 高</span>
+                                                <span class="text-orange-600">緊急度: 低</span>
+                                                <span class="text-orange-600">対応期限: 8/15</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 参考報告事項 -->
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-bold text-blue-800">📈 参考報告事項</h4>
+                                        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">次回取締役会</span>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="border-l-4 border-blue-500 pl-3 py-2">
+                                            <h5 class="font-bold text-blue-800 mb-1">投資家満足度トレンド</h5>
+                                            <p class="text-sm text-gray-700 mb-2">今四半期の投資家満足度は8.2/10で前回比+0.5ポイントの改善。AI事業評価は継続的に高く、人材戦略への関心が増加。</p>
+                                            <div class="flex items-center gap-4 text-xs">
+                                                <span class="text-green-600">満足度: 8.2/10</span>
+                                                <span class="text-green-600">前回比: +0.5</span>
+                                                <span class="text-blue-600">面談回数: 5回目</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="border-l-4 border-blue-500 pl-3 py-2">
+                                            <h5 class="font-bold text-blue-800 mb-1">主要懸念事項の変化</h5>
+                                            <p class="text-sm text-gray-700 mb-2">人材確保は初回面談から継続的な懸念。競争激化は今回新たに言及。AI事業成長は継続的な高評価。</p>
+                                            <div class="flex items-center gap-4 text-xs">
+                                                <span class="text-red-600">継続懸念: 人材確保</span>
+                                                <span class="text-orange-600">新規懸念: 競争激化</span>
+                                                <span class="text-green-600">高評価: AI事業</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右パネル：過去履歴・分析 -->
+                <div class="right-panel">
+                    <!-- 面談履歴 -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <span>📅 面談履歴</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="history-item current">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="font-bold text-sm">今回 (2025/7/10)</div>
+                                    <span class="satisfaction-score score-high">8.2 ↗</span>
+                                </div>
+                                <div class="text-xs text-gray-600 mb-2">AI事業評価、人材確保懸念</div>
+                                <div class="text-xs text-blue-600">90分面談</div>
+                            </div>
+                            
+                            <div class="history-item" onclick="viewPastMeeting('2025-04-15')">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="font-bold text-sm">2025/4/15</div>
+                                    <span class="satisfaction-score score-high">7.7 ↗</span>
+                                </div>
+                                <div class="text-xs text-gray-600 mb-2">決算説明会フィードバック</div>
+                                <div class="text-xs text-gray-500">60分面談</div>
+                            </div>
+                            
+                            <div class="history-item" onclick="viewPastMeeting('2025-01-20')">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="font-bold text-sm">2025/1/20</div>
+                                    <span class="satisfaction-score score-medium">7.3 →</span>
+                                </div>
+                                <div class="text-xs text-gray-600 mb-2">中期経営計画説明</div>
+                                <div class="text-xs text-gray-500">75分面談</div>
+                            </div>
+                            
+                            <div class="history-item" onclick="viewPastMeeting('2024-10-15')">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="font-bold text-sm">2024/10/15</div>
+                                    <span class="satisfaction-score score-medium">7.1 ↗</span>
+                                </div>
+                                <div class="text-xs text-gray-600 mb-2">第2四半期決算説明</div>
+                                <div class="text-xs text-gray-500">45分面談</div>
+                            </div>
+                            
+                            <div class="history-item" onclick="viewPastMeeting('2024-07-20')">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="font-bold text-sm">2024/7/20</div>
+                                    <span class="satisfaction-score score-low">6.8 ↗</span>
+                                </div>
+                                <div class="text-xs text-gray-600 mb-2">初回面談・事業説明</div>
+                                <div class="text-xs text-gray-500">90分面談</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 関係性トレンド -->
+                    <div class="section-card">
+                        <div class="section-header success">
+                            <span>📈 関係性トレンド</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">満足度推移</span>
+                                    <span class="text-green-600 font-bold">↗ 改善傾向</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">関心領域</span>
+                                    <span class="text-blue-600 font-bold">AI事業 → 人材戦略</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">投資姿勢</span>
+                                    <span class="text-green-600 font-bold">積極的維持</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">面談頻度</span>
+                                    <span class="text-blue-600 font-bold">3ヶ月間隔</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 主要懸念事項の変化 -->
+                    <div class="section-card">
+                        <div class="section-header urgent">
+                            <span>⚠️ 懸念事項の変化</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="space-y-3">
+                                <div class="border-l-4 border-red-500 pl-3 py-2">
+                                    <div class="font-bold text-sm text-red-800">人材確保</div>
+                                    <div class="text-xs text-gray-600">初回面談から継続的な懸念</div>
+                                    <div class="text-xs text-red-600">緊急度: 高</div>
+                                </div>
+                                
+                                <div class="border-l-4 border-orange-500 pl-3 py-2">
+                                    <div class="font-bold text-sm text-orange-800">競争激化</div>
+                                    <div class="text-xs text-gray-600">今回新たに言及</div>
+                                    <div class="text-xs text-orange-600">緊急度: 中</div>
+                                </div>
+                                
+                                <div class="border-l-4 border-green-500 pl-3 py-2">
+                                    <div class="font-bold text-sm text-green-800">AI事業成長</div>
+                                    <div class="text-xs text-gray-600">継続的な高評価</div>
+                                    <div class="text-xs text-green-600">評価: 高</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 次回面談準備 -->
+                    <div class="section-card">
+                        <div class="section-header info">
+                            <span>📋 次回面談準備</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="space-y-3">
+                                <div class="bg-blue-50 border border-blue-200 rounded p-3">
+                                    <div class="font-bold text-sm text-blue-800 mb-1">準備すべき資料</div>
+                                    <ul class="text-xs text-blue-700 space-y-1">
+                                        <li>• 人材戦略詳細資料</li>
+                                        <li>• 海外人材採用計画</li>
+                                        <li>• 競合分析最新版</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-green-50 border border-green-200 rounded p-3">
+                                    <div class="font-bold text-sm text-green-800 mb-1">強調すべきポイント</div>
+                                    <ul class="text-xs text-green-700 space-y-1">
+                                        <li>• AI事業の継続成長</li>
+                                        <li>• 差別化戦略の効果</li>
+                                        <li>• 人材確保の具体策</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-orange-50 border border-orange-200 rounded p-3">
+                                    <div class="font-bold text-sm text-orange-800 mb-1">予想される質問</div>
+                                    <ul class="text-xs text-orange-700 space-y-1">
+                                        <li>• 人材戦略の進捗</li>
+                                        <li>• 競合対応の具体策</li>
+                                        <li>• 海外展開の計画</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- フローティングアクション -->
+            <div class="floating-actions">
+                <button class="floating-btn" onclick="exportReport()">
+                    📄 取締役会資料出力
+                </button>
+                <button class="floating-btn secondary" onclick="shareWithTeam()">
+                    👥 チーム共有
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 過去面談表示
+        function viewPastMeeting(date) {
+            console.log('過去面談表示:', date);
+            alert(`${date}の面談記録を表示します（実装例）`);
+        }
+        
+        // 要約出力
+        function exportSummary() {
+            console.log('要約をPDF出力');
+            alert('面談要約をPDF出力します（実装例）');
+        }
+        
+        // 次回面談設定
+        function scheduleFollowup() {
+            console.log('次回面談をスケジュール');
+            alert('Googleカレンダー連携で次回面談を設定（実装例）');
+        }
+        
+        // その他の機能
+        function exportReport() {
+            console.log('取締役会資料をPDF出力します');
+            alert('取締役会資料をPDF出力します（実装例）');
+        }
+        
+        function shareWithTeam() {
+            console.log('チームメンバーと共有');
+            alert('Slack/Teams連携でチーム共有（実装例）');
+        }
+    </script>
+</body>
+</html> 

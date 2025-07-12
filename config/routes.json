@@ -1,0 +1,206 @@
+{
+  "kagami_platform_routes": {
+    "public_routes": {
+      "description": "認証不要でアクセス可能な機能",
+      "routes": {
+        "/": {
+          "file": "frontend/index.html",
+          "title": "KAGAMI IRプラットフォーム",
+          "features": ["ai-search", "public-faq", "ir-calendar", "governance-qa"]
+        },
+        "/faq": {
+          "file": "frontend/index.html#enhanced-faq",
+          "title": "AI-FAQ検索",
+          "ai_features": ["natural_language_search", "category_filter", "confidence_scoring"]
+        },
+        "/library": {
+          "file": "backend/manager/library.html",
+          "title": "IRライブラリ（パブリック）",
+          "access_level": "public_readonly"
+        },
+        "/governance": {
+          "file": "backend/manager/investor.html",
+          "title": "社外取締役Q&A",
+          "access_level": "public_readonly"
+        }
+      }
+    },
+    
+    "investor_routes": {
+      "description": "投資家ログイン後にアクセス可能な機能",
+      "auth_required": true,
+      "routes": {
+        "/dashboard": {
+          "file": "backend/manager/dashboard.html",
+          "title": "投資家ダッシュボード",
+          "features": ["personalized_content", "watchlist", "analytics", "notifications"]
+        },
+        "/dialogue": {
+          "file": "backend/manager/dialogue.html",
+          "title": "対話管理・面談予約",
+          "ai_features": ["meeting_scheduler", "voice_questions", "sentiment_analysis"]
+        },
+        "/analytics": {
+          "file": "backend/manager/analytics.html",
+          "title": "高度分析レポート",
+          "ai_features": ["trend_analysis", "competitor_comparison", "risk_assessment"]
+        },
+        "/portfolio": {
+          "file": "backend/manager/investor.html",
+          "title": "マイポートフォリオ",
+          "features": ["watchlist_management", "alert_settings", "communication_history"]
+        },
+        "/meeting": {
+          "file": "backend/manager/meeting-setup.html",
+          "title": "面談・説明会参加",
+          "features": ["booking_system", "calendar_integration", "pre_questions"]
+        },
+        "/voice": {
+          "file": "backend/manager/upload.html",
+          "title": "音声質問機能",
+          "ai_features": ["voice_recognition", "real_time_transcription", "multilingual_support"]
+        },
+        "/documents": {
+          "file": "backend/manager/library.html",
+          "title": "プライベート資料庫",
+          "access_level": "investor_full"
+        }
+      }
+    },
+    
+    "ir_manager_routes": {
+      "description": "IR担当者向け管理機能",
+      "auth_required": true,
+      "role": "ir_manager",
+      "routes": {
+        "/manager/dashboard": {
+          "file": "backend/manager/dashboard.html",
+          "title": "IR管理ダッシュボード",
+          "features": ["inquiry_management", "ai_insights", "workload_tracking"]
+        },
+        "/manager/faq": {
+          "file": "backend/manager/faq.html",
+          "title": "FAQ管理・編集",
+          "ai_features": ["auto_generation", "approval_workflow", "confidence_monitoring"]
+        },
+        "/manager/dialogue": {
+          "file": "backend/manager/dialogue-detail.html",
+          "title": "対話記録詳細管理",
+          "ai_features": ["transcription", "sentiment_tracking", "topic_extraction"]
+        },
+        "/manager/analytics": {
+          "file": "backend/manager/analytics.html",
+          "title": "投資家行動分析",
+          "ai_features": ["behavior_analysis", "engagement_metrics", "prediction_models"]
+        },
+        "/manager/upload": {
+          "file": "backend/manager/upload.html",
+          "title": "データ取込・処理",
+          "ai_features": ["auto_processing", "content_extraction", "quality_assessment"]
+        }
+      }
+    },
+    
+    "ceo_routes": {
+      "description": "経営陣向け戦略的インサイト",
+      "auth_required": true,
+      "role": "ceo",
+      "routes": {
+        "/ceo/integrity": {
+          "file": "backend/coe/dashboard.html",
+          "title": "IR Integrity Dashboard",
+          "features": ["transparency_metrics", "governance_insights", "stakeholder_sentiment"]
+        },
+        "/ceo/workload": {
+          "file": "backend/coe/workload-management.html",
+          "title": "IR稼働・負荷管理",
+          "features": ["team_workload", "efficiency_metrics", "resource_optimization"]
+        }
+      }
+    }
+  },
+  
+  "authentication": {
+    "login_page": "/login",
+    "logout_redirect": "/",
+    "session_timeout": 3600,
+    "roles": {
+      "public": {
+        "access_level": 0,
+        "features": ["basic_search", "public_faq", "calendar_view"]
+      },
+      "investor": {
+        "access_level": 1,
+        "features": ["personalized_dashboard", "advanced_search", "meeting_booking", "voice_questions"]
+      },
+      "ir_manager": {
+        "access_level": 2,
+        "features": ["content_management", "analytics", "ai_training", "workflow_management"]
+      },
+      "ceo": {
+        "access_level": 3,
+        "features": ["strategic_insights", "transparency_monitoring", "governance_metrics"]
+      }
+    }
+  },
+  
+  "ai_features": {
+    "natural_language_processing": {
+      "enabled": true,
+      "languages": ["ja", "en", "zh"],
+      "confidence_threshold": 0.8
+    },
+    "voice_recognition": {
+      "enabled": true,
+      "real_time": true,
+      "supported_formats": ["mp3", "wav", "m4a"]
+    },
+    "sentiment_analysis": {
+      "enabled": true,
+      "real_time": true,
+      "granularity": ["positive", "neutral", "negative", "concerned", "enthusiastic"]
+    },
+    "content_generation": {
+      "faq_auto_generation": true,
+      "response_suggestions": true,
+      "meeting_summaries": true
+    }
+  },
+  
+  "integration": {
+    "external_apis": {
+      "tdnet": {
+        "enabled": true,
+        "auto_sync": true,
+        "sync_interval": "1h"
+      },
+      "zoom": {
+        "enabled": true,
+        "auto_meeting_creation": true
+      },
+      "teams": {
+        "enabled": true,
+        "notification_integration": true
+      }
+    },
+    "data_sources": {
+      "earnings_reports": "auto",
+      "press_releases": "auto",
+      "meeting_transcripts": "ai_processed",
+      "email_inquiries": "ai_classified"
+    }
+  },
+  
+  "security": {
+    "data_encryption": "AES256",
+    "access_logging": true,
+    "ip_restrictions": {
+      "enabled": false,
+      "whitelist": []
+    },
+    "two_factor_auth": {
+      "enabled": true,
+      "methods": ["sms", "email", "app"]
+    }
+  }
+} 

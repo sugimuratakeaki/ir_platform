@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>決算資料自動生成 - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        .generation-step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+        .generation-step.completed {
+            background: #f0fff4;
+            border-left: 4px solid #38a169;
+        }
+        .generation-step.processing {
+            background: #fffaf0;
+            border-left: 4px solid #ed8936;
+        }
+        .generation-step.pending {
+            background: #f8f9fa;
+            border-left: 4px solid #e2e8f0;
+        }
+        
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        .step-icon.completed { background: #38a169; }
+        .step-icon.processing { background: #ed8936; }
+        .step-icon.pending { background: #e2e8f0; color: #718096; }
+        
+        .template-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .template-card:hover {
+            border-color: #4299e1;
+            transform: translateY(-2px);
+        }
+        .template-card.selected {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+        
+        .data-mapping {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .chart-preview {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ai-insight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        
+        .upload-zone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f7fafc;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-zone:hover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+        .upload-zone.dragover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+            transform: scale(1.02);
+        }
+        
+        .upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .upload-progress {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .progress-circle {
+            width: 40px;
+            height: 40px;
+            background: #4299e1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #4299e1;
+            transition: width 0.3s;
+        }
+        
+        .upload-result {
+            background: #f0fff4;
+            border: 1px solid #c6f6d5;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .validation-results {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .validation-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .validation-item.success {
+            color: #38a169;
+        }
+        .validation-item.warning {
+            color: #ed8936;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📈</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item active">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="card mb-8">
+                <div class="card-body">
+                    <h1 class="text-3xl font-bold mb-4">決算資料自動生成</h1>
+                    <div class="ai-insight">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-2xl">🤖</span>
+                            <div>
+                                <h3 class="text-lg font-bold">AI分析結果</h3>
+                                <p class="text-sm opacity-90">過去4期分の決算資料パターンを学習し、最適なフォーマットと表現を提案します</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold">96%</div>
+                                <div class="text-sm opacity-75">自動生成精度</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold">78%</div>
+                                <div class="text-sm opacity-75">工数削減率</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold">2.5時間</div>
+                                <div class="text-sm opacity-75">想定作成時間</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-8">
+                <div class="col-span-2">
+                    <div class="card mb-6">
+                        <div class="card-header">
+                            <h3 class="text-lg font-bold">生成プロセス</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="generation-step completed">
+                                <div class="step-icon completed">✓</div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold">1. テンプレート選択</h4>
+                                    <p class="text-sm text-gray-600">2024年Q4決算説明会資料をベースに選択済み</p>
+                                </div>
+                                <span class="text-green-600 font-bold">完了</span>
+                            </div>
+                            
+                            <div class="generation-step completed">
+                                <div class="step-icon completed">✓</div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold">2. 財務データ取込</h4>
+                                    <p class="text-sm text-gray-600">2025年Q1総勘定元帳データを解析・マッピング済み</p>
+                                </div>
+                                <span class="text-green-600 font-bold">完了</span>
+                            </div>
+                            
+                            <div class="generation-step processing">
+                                <div class="step-icon processing">⚡</div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold">3. グラフ・チャート自動生成</h4>
+                                    <p class="text-sm text-gray-600">売上・利益推移、セグメント別分析を生成中...</p>
+                                </div>
+                                <span class="text-orange-600 font-bold">処理中 (73%)</span>
+                            </div>
+                            
+                            <div class="generation-step pending">
+                                <div class="step-icon pending">4</div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold">4. 文章・解説自動生成</h4>
+                                    <p class="text-sm text-gray-600">数値変動の要因分析と将来見通しを生成</p>
+                                </div>
+                                <span class="text-gray-500 font-bold">待機中</span>
+                            </div>
+                            
+                            <div class="generation-step pending">
+                                <div class="step-icon pending">5</div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold">5. 最終レビュー・調整</h4>
+                                    <p class="text-sm text-gray-600">生成内容の確認と微調整</p>
+                                </div>
+                                <span class="text-gray-500 font-bold">待機中</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="text-lg font-bold">自動生成グラフプレビュー</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-bold mb-2">売上高推移</h4>
+                                    <div class="chart-preview">
+                                        <canvas id="revenueChart" width="250" height="150"></canvas>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-2">営業利益率</h4>
+                                    <div class="chart-preview">
+                                        <canvas id="profitChart" width="250" height="150"></canvas>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-2">セグメント別売上</h4>
+                                    <div class="chart-preview">
+                                        <canvas id="segmentChart" width="250" height="150"></canvas>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-2">四半期比較</h4>
+                                    <div class="chart-preview">
+                                        <canvas id="quarterChart" width="250" height="150"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="text-lg font-bold">経理データアップロード</h3>
+                            <span class="text-sm text-gray-500">総勘定元帳・試算表 (Excel/CSV)</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="upload-zone" id="generalLedgerUpload">
+                                <div class="upload-content">
+                                    <span class="text-4xl mb-4">📊</span>
+                                    <h4 class="text-lg font-bold mb-2">総勘定元帳をアップロード</h4>
+                                    <p class="text-sm text-gray-600 mb-4">
+                                        Excel (.xlsx) または CSV ファイルをドラッグ&ドロップ<br>
+                                        または クリックしてファイルを選択
+                                    </p>
+                                    <button class="btn btn-primary">ファイルを選択</button>
+                                    <input type="file" id="fileInput" accept=".xlsx,.csv" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <div class="upload-progress" id="uploadProgress" style="display: none;">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="progress-circle">
+                                        <span>📈</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-bold">データ解析中...</div>
+                                        <div class="text-sm text-gray-600">勘定科目の自動マッピングを実行中</div>
+                                    </div>
+                                    <span class="text-blue-600 font-bold">72%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 72%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="upload-result" id="uploadResult" style="display: none;">
+                                <div class="result-header">
+                                    <span class="text-green-600 text-2xl">✅</span>
+                                    <div>
+                                        <h4 class="font-bold text-green-700">アップロード完了</h4>
+                                        <p class="text-sm text-gray-600">2025年Q1総勘定元帳_0712.xlsx</p>
+                                    </div>
+                                </div>
+                                <div class="result-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-value">2,847</span>
+                                        <span class="stat-label">仕訳件数</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">156</span>
+                                        <span class="stat-label">勘定科目</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-value">98%</span>
+                                        <span class="stat-label">マッピング精度</span>
+                                    </div>
+                                </div>
+                                <div class="validation-results">
+                                    <h5 class="font-bold mb-2">データ検証結果</h5>
+                                    <div class="validation-item success">
+                                        <span>✓</span>
+                                        <span>貸借一致確認済み</span>
+                                    </div>
+                                    <div class="validation-item success">
+                                        <span>✓</span>
+                                        <span>期間整合性確認済み</span>
+                                    </div>
+                                    <div class="validation-item warning">
+                                        <span>⚠️</span>
+                                        <span>3件の勘定科目要確認</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="text-lg font-bold">テンプレート選択</h3>
+                        </div>
+                        <div class="card-body space-y-4">
+                            <div class="template-card selected">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="text-2xl">📊</span>
+                                    <h4 class="font-bold">2024年Q4決算説明会</h4>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">最新の説明会資料フォーマット。投資家からの評価が高く、理解しやすい構成</p>
+                                <div class="flex gap-2 text-xs">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">45スライド</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded">高評価</span>
+                                </div>
+                            </div>
+                            
+                            <div class="template-card">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="text-2xl">📈</span>
+                                    <h4 class="font-bold">2024年Q3決算説明会</h4>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">前四半期の資料。セグメント分析に特化した構成</p>
+                                <div class="flex gap-2 text-xs">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">42スライド</span>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">標準評価</span>
+                                </div>
+                            </div>
+                            
+                            <div class="template-card">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="text-2xl">📄</span>
+                                    <h4 class="font-bold">決算短信テンプレート</h4>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">シンプルな構成の決算短信用フォーマット</p>
+                                <div class="flex gap-2 text-xs">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">12ページ</span>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded">法定様式</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="text-lg font-bold">データマッピング設定</h3>
+                        </div>
+                        <div class="card-body space-y-3">
+                            <div class="data-mapping">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm">売上高</span>
+                                    <span class="text-green-600 text-sm">✓ マッピング済み</span>
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    総勘定元帳「売上」→ P&L「売上高」
+                                </div>
+                            </div>
+                            
+                            <div class="data-mapping">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm">営業利益</span>
+                                    <span class="text-green-600 text-sm">✓ マッピング済み</span>
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    計算式：売上高 - 売上原価 - 販管費
+                                </div>
+                            </div>
+                            
+                            <div class="data-mapping">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm">セグメント別売上</span>
+                                    <span class="text-green-600 text-sm">✓ マッピング済み</span>
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    部門別売上集計 → セグメント分析
+                                </div>
+                            </div>
+                            
+                            <div class="data-mapping">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm">研究開発費</span>
+                                    <span class="text-orange-600 text-sm">要確認</span>
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    複数勘定科目の集計が必要
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="text-lg font-bold">生成オプション</h3>
+                        </div>
+                        <div class="card-body space-y-4">
+                            <label class="flex items-center gap-3">
+                                <input type="checkbox" checked class="form-checkbox">
+                                <span>前年同期比較分析を含める</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3">
+                                <input type="checkbox" checked class="form-checkbox">
+                                <span>業界平均との比較を追加</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3">
+                                <input type="checkbox" class="form-checkbox">
+                                <span>将来予測グラフを生成</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3">
+                                <input type="checkbox" checked class="form-checkbox">
+                                <span>AI解説コメントを挿入</span>
+                            </label>
+                            
+                            <div class="border-t pt-4">
+                                <button class="btn btn-primary w-full">
+                                    決算資料生成を開始
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // アップロード機能
+        const uploadZone = document.getElementById('generalLedgerUpload');
+        const fileInput = document.getElementById('fileInput');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const uploadResult = document.getElementById('uploadResult');
+        
+        // ドラッグ&ドロップ機能
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+        
+        // クリックでファイル選択
+        uploadZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+        
+        // ファイルアップロード処理
+        function handleFileUpload(file) {
+            // アップロード開始
+            uploadZone.style.display = 'none';
+            uploadProgress.style.display = 'block';
+            
+            // プログレスバーアニメーション
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                    
+                    // アップロード完了
+                    setTimeout(() => {
+                        uploadProgress.style.display = 'none';
+                        uploadResult.style.display = 'block';
+                        
+                        // データマッピング更新
+                        updateDataMappingStatus();
+                        
+                        // 生成プロセス更新
+                        updateGenerationProcess();
+                    }, 1000);
+                }
+                
+                const progressFill = document.querySelector('.progress-fill');
+                const progressText = document.querySelector('#uploadProgress .text-blue-600');
+                if (progressFill) progressFill.style.width = progress + '%';
+                if (progressText) progressText.textContent = Math.round(progress) + '%';
+            }, 200);
+        }
+        
+        // データマッピング状態更新
+        function updateDataMappingStatus() {
+            const mappingElements = document.querySelectorAll('.data-mapping .text-orange-600');
+            mappingElements.forEach(el => {
+                el.textContent = '✓ マッピング済み';
+                el.className = 'text-green-600 text-sm';
+            });
+        }
+        
+        // 生成プロセス更新
+        function updateGenerationProcess() {
+            const step2 = document.querySelectorAll('.generation-step')[1];
+            if (step2) {
+                step2.className = 'generation-step completed';
+                const icon = step2.querySelector('.step-icon');
+                const status = step2.querySelector('.text-orange-600, .text-gray-500');
+                if (icon) {
+                    icon.className = 'step-icon completed';
+                    icon.textContent = '✓';
+                }
+                if (status) {
+                    status.textContent = '完了';
+                    status.className = 'text-green-600 font-bold';
+                }
+            }
+        }
+        
+        // 売上高推移チャート
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q1'],
+                datasets: [{
+                    label: '売上高(億円)',
+                    data: [280, 295, 315, 340, 298],
+                    borderColor: '#4299e1',
+                    backgroundColor: 'rgba(66, 153, 225, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 営業利益率チャート
+        const profitCtx = document.getElementById('profitChart').getContext('2d');
+        new Chart(profitCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q1'],
+                datasets: [{
+                    label: '営業利益率(%)',
+                    data: [12.5, 13.2, 14.1, 15.3, 13.8],
+                    backgroundColor: ['#48bb78', '#48bb78', '#48bb78', '#48bb78', '#4299e1']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // セグメント別売上チャート
+        const segmentCtx = document.getElementById('segmentChart').getContext('2d');
+        new Chart(segmentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['クラウド', 'AI/ML', 'セキュリティ', 'その他'],
+                datasets: [{
+                    data: [45, 30, 20, 5],
+                    backgroundColor: ['#4299e1', '#48bb78', '#ed8936', '#e2e8f0']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', display: false } }
+            }
+        });
+
+        // 四半期比較チャート
+        const quarterCtx = document.getElementById('quarterChart').getContext('2d');
+        new Chart(quarterCtx, {
+            type: 'radar',
+            data: {
+                labels: ['売上', '利益', '成長率', 'シェア', 'ROI'],
+                datasets: [{
+                    label: '今四半期',
+                    data: [85, 78, 92, 68, 75],
+                    borderColor: '#4299e1',
+                    backgroundColor: 'rgba(66, 153, 225, 0.2)'
+                }, {
+                    label: '前四半期',
+                    data: [80, 75, 85, 65, 70],
+                    borderColor: '#48bb78',
+                    backgroundColor: 'rgba(72, 187, 120, 0.2)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { r: { beginAtZero: true, max: 100 } }
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析レポート - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* ===== 分析レポート画面固有のスタイル ===== */
+        .analytics-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .analytics-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        .analysis-type-badge {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        .sentiment { background: #e6f3ff; color: #0066cc; }
+        .behavior { background: #fff2e6; color: #cc6600; }
+        .trend { background: #e6ffe6; color: #006600; }
+        .prediction { background: #f0e6ff; color: #6600cc; }
+        .chart-container {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .metric-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .metric-change {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .change-positive { color: #10b981; }
+        .change-negative { color: #ef4444; }
+        .change-neutral { color: #64748b; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        .insights-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .insights-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .insight-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        .insight-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .insight-content {
+            flex: 1;
+        }
+        .insight-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .priority-high { border-left: 4px solid #ef4444; }
+        .priority-medium { border-left: 4px solid #f59e0b; }
+        .priority-low { border-left: 4px solid #10b981; }
+        .filter-tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .filter-tab.active {
+            background: #4299e1;
+            color: white;
+        }
+        .filter-tab:not(.active) {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .filter-tab:not(.active):hover {
+            background: #cbd5e0;
+        }
+        .word-cloud {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 16px 0;
+        }
+        .keyword {
+            display: inline-block;
+            margin: 4px;
+            padding: 4px 8px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .keyword.size-lg { font-size: 18px; padding: 8px 16px; }
+        .keyword.size-md { font-size: 14px; padding: 6px 12px; }
+        .keyword.size-sm { font-size: 12px; padding: 4px 8px; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <aside class="w-70 bg-gray-800 p-5 text-white">
+            <div class="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>🔮</span>
+                <span>KAGAMI</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item">
+                        <span>🎙️</span>
+                        <span>対話記録</span>
+                    </a>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="analytics.html" class="nav-item active">
+                        <span>📈</span>
+                        <span>分析レポート</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価・IR統合分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>🤖</span>
+                        <span>決算資料自動生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算資料比較・生成</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">設定・取込</div>
+                    <a href="upload.html" class="nav-item">
+                        <span>📤</span>
+                        <span>音声・動画アップロード</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>🔗</span>
+                        <span>Web会議連携設定</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算資料管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール取込設定</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="card mb-8">
+                <div class="card-body">
+                    <h1 class="text-3xl font-bold mb-4">AI分析レポート</h1>
+                    <div class="flex gap-10">
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">分析データソース</span>
+                            <span class="text-2xl font-bold text-blue-500">1,247</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">今月の対話分析</span>
+                            <span class="text-2xl font-bold text-blue-500">47</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">アクションアラート</span>
+                            <span class="text-2xl font-bold text-red-500">3</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 mb-1">最終更新</span>
+                            <span class="text-2xl font-bold text-blue-500">7/12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-tabs">
+                <div class="filter-tab active">総合分析</div>
+                <div class="filter-tab">センチメント分析</div>
+                <div class="filter-tab">質問傾向分析</div>
+                <div class="filter-tab">投資家行動分析</div>
+                <div class="filter-tab">予測分析</div>
+            </div>
+            
+            <!-- AI洞察パネル -->
+            <div class="insights-panel">
+                <div class="insights-title">🤖 今週のAI洞察・要注意事項</div>
+                <div class="space-y-3">
+                    <div class="insight-item priority-high">
+                        <div class="insight-icon">🚨</div>
+                        <div class="insight-content">
+                            <div class="insight-text">
+                                <strong>高優先度:</strong> 海外投資家3社から「人材確保戦略」について類似質問が集中。
+                                競合他社の大型買収発表が影響している可能性。早急な説明資料準備を推奨。
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insight-item priority-medium">
+                        <div class="insight-icon">⚠️</div>
+                        <div class="insight-content">
+                            <div class="insight-text">
+                                <strong>中優先度:</strong> クラウド事業の収益性に関する質問が前月比+40%増加。
+                                次回説明会でセグメント別詳細開示の検討が必要。
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insight-item priority-low">
+                        <div class="insight-icon">💡</div>
+                        <div class="insight-content">
+                            <div class="insight-text">
+                                <strong>機会:</strong> ESG取り組みへの評価が大幅改善（+25%）。
+                                サステナビリティレポートの積極的PR展開を推奨。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- センチメント分析 -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-3">
+                            <span class="analysis-type-badge sentiment">センチメント分析</span>
+                            <h3 class="text-xl font-bold">投資家感情の推移</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="metric-grid">
+                            <div class="metric-item">
+                                <div class="metric-value" style="color: #10b981;">78%</div>
+                                <div class="metric-label">ポジティブ感情</div>
+                                <div class="metric-change change-positive">+12% vs 前月</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value" style="color: #64748b;">18%</div>
+                                <div class="metric-label">ニュートラル</div>
+                                <div class="metric-change change-negative">-8% vs 前月</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value" style="color: #ef4444;">4%</div>
+                                <div class="metric-label">ネガティブ感情</div>
+                                <div class="metric-change change-negative">-4% vs 前月</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value" style="color: #3b82f6;">8.2</div>
+                                <div class="metric-label">総合スコア（10点満点）</div>
+                                <div class="metric-change change-positive">+0.8 vs 前月</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            📊 センチメント推移グラフ（過去6ヶ月）<br>
+                            <small>* 実装時にChart.jsなどで可視化</small>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h4 class="font-bold mb-2">主要なポジティブ要因</h4>
+                            <ul class="text-sm text-gray-700 space-y-1">
+                                <li>• Q1業績の大幅上方修正（+28%営業利益成長）</li>
+                                <li>• シンガポール子会社設立による海外展開評価</li>
+                                <li>• AI事業戦略の具体性と実行可能性</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 質問傾向分析 -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-3">
+                            <span class="analysis-type-badge trend">質問傾向分析</span>
+                            <h3 class="text-xl font-bold">投資家関心事項の変化</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold mb-3">今月の質問カテゴリ分析</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">事業戦略・成長性</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 h-2 bg-gray-200 rounded">
+                                                <div class="w-16 h-2 bg-blue-500 rounded"></div>
+                                            </div>
+                                            <span class="text-sm font-bold">42%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">財務・収益性</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 h-2 bg-gray-200 rounded">
+                                                <div class="w-12 h-2 bg-green-500 rounded"></div>
+                                            </div>
+                                            <span class="text-sm font-bold">28%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">ESG・ガバナンス</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 h-2 bg-gray-200 rounded">
+                                                <div class="w-8 h-2 bg-purple-500 rounded"></div>
+                                            </div>
+                                            <span class="text-sm font-bold">18%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm">リスク・コンプライアンス</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-20 h-2 bg-gray-200 rounded">
+                                                <div class="w-4 h-2 bg-orange-500 rounded"></div>
+                                            </div>
+                                            <span class="text-sm font-bold">12%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-3">前月からの変化</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>AI・テクノロジー関連</span>
+                                        <span class="text-green-600 font-bold">+35%</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>海外展開・グローバル戦略</span>
+                                        <span class="text-green-600 font-bold">+28%</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>人材・組織体制</span>
+                                        <span class="text-green-600 font-bold">+22%</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>配当・株主還元</span>
+                                        <span class="text-red-600 font-bold">-15%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="word-cloud">
+                            <h4 class="font-bold mb-4">頻出キーワード（今月）</h4>
+                            <span class="keyword size-lg">AI戦略</span>
+                            <span class="keyword size-md">クラウド事業</span>
+                            <span class="keyword size-lg">海外展開</span>
+                            <span class="keyword size-sm">人材確保</span>
+                            <span class="keyword size-md">競合優位性</span>
+                            <span class="keyword size-sm">ESG</span>
+                            <span class="keyword size-md">収益性</span>
+                            <span class="keyword size-sm">シンガポール</span>
+                            <span class="keyword size-lg">成長戦略</span>
+                            <span class="keyword size-sm">投資計画</span>
+                            <span class="keyword size-md">技術力</span>
+                            <span class="keyword size-sm">市場シェア</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 投資家行動分析 -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-3">
+                            <span class="analysis-type-badge behavior">投資家行動分析</span>
+                            <h3 class="text-xl font-bold">エンゲージメント・行動パターン</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="font-bold mb-3">投資家タイプ別エンゲージメント</h4>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sm">機関投資家</span>
+                                            <span class="text-sm font-bold">87%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-gray-200 rounded">
+                                            <div class="w-5/6 h-2 bg-blue-500 rounded"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sm">海外投資家</span>
+                                            <span class="text-sm font-bold">92%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-gray-200 rounded">
+                                            <div class="w-11/12 h-2 bg-green-500 rounded"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sm">個人投資家代表</span>
+                                            <span class="text-sm font-bold">65%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-gray-200 rounded">
+                                            <div class="w-2/3 h-2 bg-orange-500 rounded"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-3">コミュニケーション頻度</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>週次以上</span>
+                                        <span class="font-bold">12投資家</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>月次</span>
+                                        <span class="font-bold">34投資家</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>四半期毎</span>
+                                        <span class="font-bold">156投資家</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>年次のみ</span>
+                                        <span class="font-bold">45投資家</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-3">高エンゲージメント投資家</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="p-2 bg-blue-50 rounded">
+                                        <div class="font-bold">野村アセットマネジメント</div>
+                                        <div class="text-gray-600">月3回 / スコア: 95%</div>
+                                    </div>
+                                    <div class="p-2 bg-green-50 rounded">
+                                        <div class="font-bold">Singapore Growth Partners</div>
+                                        <div class="text-gray-600">月2回 / スコア: 92%</div>
+                                    </div>
+                                    <div class="p-2 bg-orange-50 rounded">
+                                        <div class="font-bold">みずほ信託銀行</div>
+                                        <div class="text-gray-600">月2回 / スコア: 88%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 予測分析 -->
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <div class="flex items-center gap-3">
+                            <span class="analysis-type-badge prediction">予測分析</span>
+                            <h3 class="text-xl font-bold">AI予測・推奨アクション</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold mb-3">次四半期の予測</h4>
+                                <div class="space-y-3">
+                                    <div class="p-3 bg-blue-50 rounded">
+                                        <div class="font-bold text-blue-800">質問増加予測分野</div>
+                                        <div class="text-sm text-blue-600 mt-1">
+                                            • AI事業のマネタイゼーション戦略<br>
+                                            • 海外展開のリスクファクター<br>
+                                            • 人材獲得競争の影響
+                                        </div>
+                                    </div>
+                                    <div class="p-3 bg-green-50 rounded">
+                                        <div class="font-bold text-green-800">投資家満足度向上要因</div>
+                                        <div class="text-sm text-green-600 mt-1">
+                                            • ESG取り組みの透明性向上<br>
+                                            • 技術競争力の明確化<br>
+                                            • 長期ビジョンの具体化
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold mb-3">推奨アクション</h4>
+                                <div class="space-y-3">
+                                    <div class="p-3 border-l-4 border-red-500 bg-red-50">
+                                        <div class="font-bold text-red-800">緊急（1週間以内）</div>
+                                        <div class="text-sm text-red-700 mt-1">
+                                            人材戦略に関する詳細説明資料作成と主要投資家への個別説明実施
+                                        </div>
+                                    </div>
+                                    <div class="p-3 border-l-4 border-orange-500 bg-orange-50">
+                                        <div class="font-bold text-orange-800">重要（1ヶ月以内）</div>
+                                        <div class="text-sm text-orange-700 mt-1">
+                                            AI事業セグメント開示の詳細化と収益性指標の追加開示検討
+                                        </div>
+                                    </div>
+                                    <div class="p-3 border-l-4 border-green-500 bg-green-50">
+                                        <div class="font-bold text-green-800">機会活用</div>
+                                        <div class="text-sm text-green-700 mt-1">
+                                            ESG評価向上を活かした海外ESG投資家向けロードショー企画
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html> 
