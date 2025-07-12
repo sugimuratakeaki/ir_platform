@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クイックスタートガイド - KAGAMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/tailwind.css">
+    <style>
+        /* クイックスタートガイド固有のスタイル */
+        .guide-step {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s;
+            border-left: 4px solid #4299e1;
+            margin-bottom: 24px;
+        }
+        .guide-step:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        .step-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .step-content {
+            padding: 24px;
+        }
+        .feature-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            border: 1px solid #e2e8f0;
+        }
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .nav-item.active {
+            background: #4299e1;
+        }
+        .nav-section {
+            margin-bottom: 16px;
+        }
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding: 0 16px;
+        }
+        .tip-box {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .screenshot-placeholder {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin: 16px 0;
+            color: #64748b;
+        }
+        .quick-nav {
+            position: sticky;
+            top: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .quick-nav a {
+            display: block;
+            padding: 8px 12px;
+            color: #4b5563;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        .quick-nav a:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        .video-placeholder {
+            background: #1f2937;
+            border-radius: 8px;
+            padding: 60px 20px;
+            text-align: center;
+            color: white;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- サイドバー -->
+        <aside class="w-70 bg-gray-800 p-5 text-white overflow-y-auto">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-lg font-bold">
+                    🔮
+                </div>
+                <h1 class="text-xl font-bold">KAGAMI</h1>
+            </div>
+            
+            <nav class="space-y-2">
+                <div class="nav-section">
+                    <div class="nav-section-title">メイン機能</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <span>📊</span>
+                        <span>ダッシュボード</span>
+                    </a>
+                    <a href="quickstart-guide.html" class="nav-item active">
+                        <span>🚀</span>
+                        <span>クイックスタート</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">IR機能</div>
+                    <a href="faq.html" class="nav-item">
+                        <span>❓</span>
+                        <span>FAQ管理</span>
+                    </a>
+                    <a href="dialogue.html" class="nav-item">
+                        <span>💬</span>
+                        <span>対話管理</span>
+                    </a>
+                    <a href="library.html" class="nav-item">
+                        <span>📚</span>
+                        <span>IRライブラリ</span>
+                    </a>
+                    <a href="meeting-setup.html" class="nav-item">
+                        <span>📅</span>
+                        <span>面談設定</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">分析・AI</div>
+                    <a href="analytics.html" class="nav-item">
+                        <span>📈</span>
+                        <span>アナリティクス</span>
+                    </a>
+                    <a href="stock-analysis.html" class="nav-item">
+                        <span>📊</span>
+                        <span>株価分析</span>
+                    </a>
+                    <a href="earnings-generator.html" class="nav-item">
+                        <span>📄</span>
+                        <span>決算書生成</span>
+                    </a>
+                    <a href="earnings-comparison.html" class="nav-item">
+                        <span>🔄</span>
+                        <span>決算書比較</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">コミュニケーション</div>
+                    <a href="investor.html" class="nav-item">
+                        <span>👥</span>
+                        <span>投資家管理</span>
+                    </a>
+                    <a href="email-setup.html" class="nav-item">
+                        <span>📧</span>
+                        <span>メール設定</span>
+                    </a>
+                    <a href="upload.html" class="nav-item">
+                        <span>📁</span>
+                        <span>ファイル管理</span>
+                    </a>
+                    <a href="document-manage.html" class="nav-item">
+                        <span>📋</span>
+                        <span>文書管理</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- メインコンテンツ -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <div class="max-w-7xl mx-auto">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900">🚀 KAGAMI クイックスタートガイド</h1>
+                            <p class="text-gray-600 mt-2">AIパワードIRプラットフォームの使い方を順を追って学びましょう</p>
+                        </div>
+                        <button onclick="window.location.href='dashboard.html'" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
+                            ダッシュボードに戻る
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        <!-- メインコンテンツ -->
+                        <div class="lg:col-span-3">
+                            <!-- はじめに -->
+                            <div class="guide-step">
+                                <div class="step-header">
+                                    <div class="step-number">👋</div>
+                                    <div>
+                                        <h2 class="text-xl font-bold">はじめに</h2>
+                                        <p class="opacity-90">KAGAMI IRプラットフォームへようこそ</p>
+                                    </div>
+                                </div>
+                                <div class="step-content">
+                                    <p class="mb-4">KAGAMI IRプラットフォームは、AI技術を活用した次世代のIR管理システムです。投資家との対話、FAQ管理、文書生成、分析レポートなど、IRに必要な機能を統合的に提供します。</p>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                                        <div class="feature-card">
+                                            <div class="feature-icon">🤖</div>
+                                            <h4 class="font-bold mb-2">AI駆動</h4>
+                                            <p class="text-sm text-gray-600">自然言語処理による自動回答生成</p>
+                                        </div>
+                                        <div class="feature-card">
+                                            <div class="feature-icon">📊</div>
+                                            <h4 class="font-bold mb-2">リアルタイム分析</h4>
+                                            <p class="text-sm text-gray-600">投資家センチメントの即座な把握</p>
+                                        </div>
+                                        <div class="feature-card">
+                                            <div class="feature-icon">🔒</div>
+                                            <h4 class="font-bold mb-2">セキュア</h4>
+                                            <p class="text-sm text-gray-600">エンタープライズレベルのセキュリティ</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tip-box">
+                                        <h4 class="font-bold text-green-800 mb-2">💡 使い始める前に</h4>
+                                        <ul class="text-sm text-green-700 space-y-1">
+                                            <li>• 各機能は段階的に学習できるよう設計されています</li>
+                                            <li>• サンプルデータが用意されているため、すぐに体験できます</li>
+                                            <li>• 不明な点があれば、各画面のヘルプボタンをご利用ください</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- ステップ1: ダッシュボードの確認 -->
+                            <div class="guide-step">
+                                <div class="step-header">
+                                    <div class="step-number">1</div>
+                                    <div>
+                                        <h2 class="text-xl font-bold">ダッシュボードの確認</h2>
+                                        <p class="opacity-90">全体の状況を把握しましょう</p>
+                                    </div>
+                                </div>
+                                <div class="step-content">
+                                    <p class="mb-4">まずはダッシュボードで現在の状況を確認します。ここには主要なKPI、最近の活動、アラートなどが表示されます。</p>
+                                    
+                                    <div class="screenshot-placeholder">
+                                        📊 ダッシュボード画面のスクリーンショット<br>
+                                        <small>（KPI、最近の活動、アラートエリアを表示）</small>
+                                    </div>
+                                    
+                                    <h4 class="font-bold mb-3">主要な確認項目：</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="bg-blue-50 p-4 rounded-lg">
+                                            <h5 class="font-bold text-blue-800">📈 KPI指標</h5>
+                                            <ul class="text-sm text-blue-700 mt-2 space-y-1">
+                                                <li>• 今日の質問数</li>
+                                                <li>• 平均回答時間</li>
+                                                <li>• 投資家満足度</li>
+                                                <li>• アクティブユーザー数</li>
+                                            </ul>
+                                        </div>
+                                        <div class="bg-green-50 p-4 rounded-lg">
+                                            <h5 class="font-bold text-green-800">⚠️ アラート</h5>
+                                            <ul class="text-sm text-green-700 mt-2 space-y-1">
+                                                <li>• 未回答の質問</li>
+                                                <li>• システム通知</li>
+                                                <li>• 重要なイベント</li>
+                                                <li>• パフォーマンス異常</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button onclick="window.location.href='dashboard.html'" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                                            ダッシュボードを開く →
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- ステップ2: FAQ管理 -->
+                            <div class="guide-step">
+                                <div class="step-header">
+                                    <div class="step-number">2</div>
+                                    <div>
+                                        <h2 class="text-xl font-bold">FAQ管理の設定</h2>
+                                        <p class="opacity-90">よくある質問をAIで自動化</p>
+                                    </div>
+                                </div>
+                                <div class="step-content">
+                                    <p class="mb-4">FAQシステムは投資家からの質問に自動的に回答する重要な機能です。AIが過去のデータから学習し、適切な回答を生成します。</p>
+                                    
+                                    <div class="video-placeholder">
+                                        🎥 FAQ設定のビデオガイド（3分）<br>
+                                        <small>実際の設定手順をステップバイステップで解説</small>
+                                    </div>
+                                    
+                                    <h4 class="font-bold mb-3">設定手順：</h4>
+                                    <ol class="space-y-3 mb-6">
+                                        <li class="flex items-start gap-3">
+                                            <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                                            <div>
+                                                <strong>基本カテゴリの設定</strong>
+                                                <p class="text-sm text-gray-600">事業戦略、財務、ガバナンス、ESGなどのカテゴリを設定</p>
+                                            </div>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                                            <div>
+                                                <strong>既存データのインポート</strong>
+                                                <p class="text-sm text-gray-600">過去の決算資料やQ&Aデータをアップロード</p>
+                                            </div>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                                            <div>
+                                                <strong>AI学習の実行</strong>
+                                                <p class="text-sm text-gray-600">データからAIが質問パターンと回答を学習</p>
+                                            </div>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                                            <div>
+                                                <strong>回答精度の確認</strong>
+                                                <p class="text-sm text-gray-600">テスト質問で回答の精度をチェック</p>
+                                            </div>
+                                        </li>
+                                    </ol>
+                                    
+                                    <div class="warning-box">
+                                        <h4 class="font-bold text-amber-800 mb-2">⚠️ 重要な注意点</h4>
+                                        <ul class="text-sm text-amber-700 space-y-1">
+                                            <li>• 最初は監視モードで運用し、回答精度を確認してください</li>
+                                            <li>• 機密情報を含む回答は事前に承認プロセスを設定しましょう</li>
+                                            <li>• 定期的にAIの学習データを更新することをお勧めします</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button onclick="window.location.href='faq.html'" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition mr-3">
+                                            FAQ管理を開始 →
+                                        </button>
+                                        <button onclick="alert('デモデータをロードしました')" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                                            デモデータを使用
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- ステップ3: 投資家対話の管理 -->
+                            <div class="guide-step">
+                                <div class="step-header">
+                                    <div class="step-number">3</div>
+                                    <div>
+                                        <h2 class="text-xl font-bold">投資家対話の管理</h2>
+                                        <p class="opacity-90">個別対話とコミュニケーション</p>
+                                    </div>
+                                </div>
+                                <div class="step-content">
+                                    <p class="mb-4">個別の投資家との対話を効率的に管理し、AIアシスタントによる回答支援を活用します。</p>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="bg-purple-50 p-4 rounded-lg">
+                                            <h4 class="font-bold text-purple-800 mb-3">💬 対話機能</h4>
+                                            <ul class="text-sm text-purple-700 space-y-2">
+                                                <li>• リアルタイムチャット</li>
+                                                <li>• 音声質問の文字起こし</li>
+                                                <li>• AI回答候補の提案</li>
+                                                <li>• 感情分析とトーン調整</li>
+                                                <li>• 多言語翻訳サポート</li>
+                                            </ul>
+                                        </div>
+                                        <div class="bg-indigo-50 p-4 rounded-lg">
+                                            <h4 class="font-bold text-indigo-800 mb-3">📊 分析機能</h4>
+                                            <ul class="text-sm text-indigo-700 space-y-2">
+                                                <li>• 質問傾向の分析</li>
+                                                <li>• 投資家満足度測定</li>
+                                                <li>• 応答時間の最適化</li>
+                                                <li>• トピック別関心度</li>
+                                                <li>• フォローアップ提案</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="screenshot-placeholder mt-6">
+                                        💬 対話管理画面のスクリーンショット<br>
+                                        <small>（チャット画面、AI提案、分析ダッシュボードを表示）</small>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button onclick="window.location.href='dialogue.html'" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition">
+                                            対話管理を開く →
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- ステップ4: IRライブラリの活用 -->
+                            <div class="guide-step">
+                                <div class="step-header">
+                                    <div class="step-number">4</div>
+                                    <div>
+                                        <h2 class="text-xl font-bold">IRライブラリの活用</h2>
+                                        <p class="opacity-90">資料管理と知識ベース構築</p>
+                                    </div>
+                                </div>
+                                <div class="step-content">
+                                    <p class="mb-4">IRに関する全ての資料を一元管理し、AIが内容を理解して自動的に関連情報を提供します。</p>
+                                    
+                                    <h4 class="font-bold mb-3">主要機能：</h4>
+                                    <div class="space-y-4">
+                                        <div class="border-l-4 border-blue-400 pl-4">
+                                            <h5 class="font-bold">📄 文書管理</h5>
+                                            <p class="text-sm text-gray-600">決算資料、プレゼン、レポートなどの自動分類と検索</p>
+                                        </div>
+                                        <div class="border-l-4 border-green-400 pl-4">
+                                            <h5 class="font-bold">🔍 AI検索</h5>
+                                            <p class="text-sm text-gray-600">自然言語での質問に対して関連資料を自動抽出</p>
+                                        </div>
+                                        <div class="border-l-4 border-orange-400 pl-4">
+                                            <h5 class="font-bold">🔗 関連付け</h5>
+                                            <p class="text-sm text-gray-600">類似トピックや関連情報の自動リンク生成</p>
+                                        </div>
+                                        <div class="border-l-4 border-purple-400 pl-4">
+                                            <h5 class="font-bold">📊 利用分析</h5>
+                                            <p class="text-sm text-gray-600">どの資料がよく参照されるかの分析とレポート</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button onclick="window.location.href='library.html'" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition">
+                                            IRライブラリを開く →
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- ステップ5: 分析とレポーティング -->
+                            <div class="guide-step">
+                                <div class="step-header">
+                                    <div class="step-number">5</div>
+                                    <div>
+                                        <h2 class="text-xl font-bold">分析とレポーティング</h2>
+                                        <p class="opacity-90">データドリブンな意思決定支援</p>
+                                    </div>
+                                </div>
+                                <div class="step-content">
+                                    <p class="mb-4">投資家の関心事項、市場動向、競合分析など、多角的な視点での分析機能を活用します。</p>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
+                                            <div class="text-2xl mb-2">📈</div>
+                                            <h4 class="font-bold text-blue-800">市場分析</h4>
+                                            <p class="text-xs text-blue-600 mt-1">株価動向、業界比較、市場センチメント</p>
+                                        </div>
+                                        <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
+                                            <div class="text-2xl mb-2">👥</div>
+                                            <h4 class="font-bold text-green-800">投資家分析</h4>
+                                            <p class="text-xs text-green-600 mt-1">質問傾向、満足度、エンゲージメント</p>
+                                        </div>
+                                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg">
+                                            <div class="text-2xl mb-2">🎯</div>
+                                            <h4 class="font-bold text-purple-800">パフォーマンス</h4>
+                                            <p class="text-xs text-purple-600 mt-1">KPI追跡、効率性測定、改善提案</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tip-box">
+                                        <h4 class="font-bold text-green-800 mb-2">🚀 活用のコツ</h4>
+                                        <ul class="text-sm text-green-700 space-y-1">
+                                            <li>• 週次・月次レポートを自動生成して定期的な振り返りを実施</li>
+                                            <li>• アラート機能で重要な変化を見逃さないように設定</li>
+                                            <li>• カスタムダッシュボードで組織に合わせた表示をカスタマイズ</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="mt-6">
+                                        <button onclick="window.location.href='analytics.html'" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition mr-3">
+                                            アナリティクスを開く →
+                                        </button>
+                                        <button onclick="window.location.href='stock-analysis.html'" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition">
+                                            株価分析を開く →
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 次のステップ -->
+                            <div class="guide-step">
+                                <div class="step-header">
+                                    <div class="step-number">🎓</div>
+                                    <div>
+                                        <h2 class="text-xl font-bold">次のステップ</h2>
+                                        <p class="opacity-90">さらなる活用に向けて</p>
+                                    </div>
+                                </div>
+                                <div class="step-content">
+                                    <p class="mb-4">基本的な機能をマスターしたら、以下の高度な機能もぜひお試しください：</p>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <h4 class="font-bold mb-3">🔧 高度な設定</h4>
+                                            <ul class="space-y-2 text-sm">
+                                                <li>• カスタムワークフローの構築</li>
+                                                <li>• 外部システムとの連携設定</li>
+                                                <li>• ユーザー権限の詳細管理</li>
+                                                <li>• セキュリティポリシーの設定</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold mb-3">📚 学習リソース</h4>
+                                            <ul class="space-y-2 text-sm">
+                                                <li>• 詳細ユーザーガイド</li>
+                                                <li>• ビデオチュートリアル</li>
+                                                <li>• ベストプラクティス集</li>
+                                                <li>• FAQ &  トラブルシューティング</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6 p-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg">
+                                        <h4 class="font-bold text-lg mb-2">🎉 おめでとうございます！</h4>
+                                        <p class="mb-4">KAGAMI IRプラットフォームの基本機能をマスターしました。これで効率的なIR活動を始める準備が整いました。</p>
+                                        <div class="flex gap-3">
+                                            <button onclick="window.location.href='dashboard.html'" class="bg-white text-blue-600 px-4 py-2 rounded font-bold hover:bg-gray-100 transition">
+                                                ダッシュボードで開始
+                                            </button>
+                                            <button onclick="alert('サポートチームに連絡しました')" class="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition">
+                                                サポートに相談
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- クイックナビゲーション -->
+                        <div class="lg:col-span-1">
+                            <div class="quick-nav">
+                                <h3 class="font-bold text-gray-900 mb-4">📋 目次</h3>
+                                <a href="#" onclick="scrollToStep(0)">👋 はじめに</a>
+                                <a href="#" onclick="scrollToStep(1)">1. ダッシュボード確認</a>
+                                <a href="#" onclick="scrollToStep(2)">2. FAQ管理設定</a>
+                                <a href="#" onclick="scrollToStep(3)">3. 投資家対話管理</a>
+                                <a href="#" onclick="scrollToStep(4)">4. IRライブラリ活用</a>
+                                <a href="#" onclick="scrollToStep(5)">5. 分析レポーティング</a>
+                                <a href="#" onclick="scrollToStep(6)">🎓 次のステップ</a>
+                                
+                                <div class="mt-6 pt-6 border-t border-gray-200">
+                                    <h4 class="font-bold text-gray-900 mb-3">⚡ クイックアクション</h4>
+                                    <div class="space-y-2">
+                                        <button onclick="window.location.href='dashboard.html'" class="w-full text-left text-sm py-2 px-3 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition">
+                                            📊 ダッシュボード
+                                        </button>
+                                        <button onclick="window.location.href='faq.html'" class="w-full text-left text-sm py-2 px-3 bg-green-50 text-green-700 rounded hover:bg-green-100 transition">
+                                            ❓ FAQ設定
+                                        </button>
+                                        <button onclick="alert('ヘルプチャットを起動しました')" class="w-full text-left text-sm py-2 px-3 bg-purple-50 text-purple-700 rounded hover:bg-purple-100 transition">
+                                            💬 ヘルプチャット
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-6 pt-6 border-t border-gray-200">
+                                    <h4 class="font-bold text-gray-900 mb-3">📈 進捗状況</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span>基本設定</span>
+                                            <span class="text-green-600">完了</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span>FAQ設定</span>
+                                            <span class="text-yellow-600">進行中</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span>対話管理</span>
+                                            <span class="text-gray-400">未開始</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // ステップスクロール機能
+        function scrollToStep(stepIndex) {
+            const steps = document.querySelectorAll('.guide-step');
+            if (steps[stepIndex]) {
+                steps[stepIndex].scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+        
+        // 進捗状況の更新
+        function updateProgress(step, status) {
+            console.log(`ステップ ${step} を ${status} に更新`);
+            // 実際の実装では、ユーザーの進捗をローカルストレージまたはサーバーに保存
+        }
+        
+        // 機能デモ
+        function showFeatureDemo(feature) {
+            alert(`${feature}のデモを表示します。\n\n実際の環境では、インタラクティブなチュートリアルが開始されます。`);
+        }
+        
+        // ヘルプチャットの起動
+        function startHelpChat() {
+            alert('AIアシスタントとのヘルプチャットを起動しました。\n\n実際の環境では、リアルタイムサポートチャットが開始されます。');
+        }
+        
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('クイックスタートガイドが読み込まれました');
+            
+            // 現在の進捗状況を確認（実際の実装ではサーバーから取得）
+            const progress = JSON.parse(localStorage.getItem('kagami_progress') || '{}');
+            console.log('現在の進捗:', progress);
+            
+            // 各ステップの展開/折りたたみ機能
+            const stepHeaders = document.querySelectorAll('.step-header');
+            stepHeaders.forEach((header, index) => {
+                header.style.cursor = 'pointer';
+                header.addEventListener('click', () => {
+                    const step = header.parentElement;
+                    const content = step.querySelector('.step-content');
+                    const isExpanded = !content.style.display || content.style.display !== 'none';
+                    
+                    content.style.display = isExpanded ? 'none' : 'block';
+                    header.style.opacity = isExpanded ? '0.7' : '1';
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
