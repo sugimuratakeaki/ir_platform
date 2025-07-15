@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KAGAMI IR Platform - AI駆動型次世代IRエンゲージメントプラットフォームの要件定義書">
+    <meta name="keywords" content="IR, インベスターリレーションズ, AI, プラットフォーム, 投資家対話">
+    <title>KAGAMI IR Platform - 要件定義書</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- メインヘッダー -->
+        <header class="page-header">
+            <h1>🔮 KAGAMI IR Platform</h1>
+            <p class="subtitle">AI駆動型次世代IRエンゲージメントプラットフォーム</p>
+            <div class="version">要件定義書 v1.0 - 2025年1月</div>
+        </header>
+
+        <main>
+            <!-- エグゼクティブサマリー -->
+            <section class="section" id="executive-summary">
+                <h2>エグゼクティブサマリー</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 KAGAMIが解決する根本課題</h3>
+                    <p><strong>日本企業のIR活動は「対話」ではなく「一方通行の報告」に留まっている</strong> - これが企業価値が適正に評価されない最大の要因です。</p>
+                </div>
+                
+                <p>KAGAMIは、この構造的課題を解決する革新的なプラットフォームです。AIとデータの力で、企業と投資家の「真の対話」を実現し、企業価値の最大化を支援します。</p>
+                
+                <div class="metrics-grid" role="list" aria-label="主要成果指標">
+                    <div class="metric-card" role="listitem">
+                        <div class="icon" aria-hidden="true">📊</div>
+                        <div class="metric-value">90%</div>
+                        <div class="metric-label">IR業務効率化</div>
+                    </div>
+                    <div class="metric-card" role="listitem">
+                        <div class="icon" aria-hidden="true">💬</div>
+                        <div class="metric-value">3倍</div>
+                        <div class="metric-label">対話品質向上</div>
+                    </div>
+                    <div class="metric-card" role="listitem">
+                        <div class="icon" aria-hidden="true">📈</div>
+                        <div class="metric-value">0.5pt</div>
+                        <div class="metric-label">PBR改善期待値</div>
+                    </div>
+                    <div class="metric-card" role="listitem">
+                        <div class="icon" aria-hidden="true">💰</div>
+                        <div class="metric-value">8,500万円</div>
+                        <div class="metric-label">年間価値創出</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 課題の本質 -->
+            <section class="section" id="problem-analysis">
+                <h2>第1章：なぜ今、IR変革が必要なのか</h2>
+                
+                <h3>1.1 日本企業が直面する4つの構造的課題</h3>
+                
+                <div class="card-grid">
+                    <article class="card">
+                        <h4>🏢 課題1：IR体制の脆弱性</h4>
+                        <ul>
+                            <li>62.5%の企業でIR専門部署が不在</li>
+                            <li>総務・広報の片手間業務化</li>
+                            <li>権限・責任の不明確さ</li>
+                            <li>属人的ノウハウの散逸</li>
+                        </ul>
+                        <div class="critical-box">
+                            <strong>結果：</strong>投資家の期待に応えられず、対話を避ける悪循環
+                        </div>
+                    </article>
+                    
+                    <article class="card">
+                        <h4>🚧 課題2：経営とIRの断絶</h4>
+                        <ul>
+                            <li>投資家の声が経営陣に届かない</li>
+                            <li>IR活動が形式的な報告に終始</li>
+                            <li>経営戦略とIR戦略の乖離</li>
+                            <li>フィードバックループの欠如</li>
+                        </ul>
+                        <div class="critical-box">
+                            <strong>結果：</strong>市場との認識ギャップ拡大、株価ディスカウント
+                        </div>
+                    </article>
+                    
+                    <article class="card">
+                        <h4>⚖️ 課題3：情報提供の不公平性</h4>
+                        <ul>
+                            <li>オンライン説明会の未実施</li>
+                            <li>質疑応答の非公開</li>
+                            <li>個人投資家の情報格差</li>
+                            <li>フェアディスクロージャー違反リスク</li>
+                        </ul>
+                        <div class="critical-box">
+                            <strong>結果：</strong>投資家の不信感増大、流動性低下
+                        </div>
+                    </article>
+                    
+                    <article class="card">
+                        <h4>😰 課題4：IR担当者の過重負担</h4>
+                        <ul>
+                            <li>同じ質問への繰り返し対応</li>
+                            <li>面談調整の煩雑さ</li>
+                            <li>手作業での資料作成</li>
+                            <li>戦略的業務への時間不足</li>
+                        </ul>
+                        <div class="critical-box">
+                            <strong>結果：</strong>IR活動の質低下、人材の疲弊・離職
+                        </div>
+                    </article>
+                </div>
+                
+                <h3>1.2 変革の必要性 - 3つの外部要因</h3>
+                
+                <div class="visual-box">
+                    <h4>🌊 押し寄せる変化の波</h4>
+                    <div class="process-flow">
+                        <div class="process-step">
+                            <h4>規制強化</h4>
+                            <p>2025年7月22日<br>IR体制義務化</p>
+                        </div>
+                        <div class="arrow" aria-hidden="true">→</div>
+                        <div class="process-step">
+                            <h4>投資家の要求高度化</h4>
+                            <p>ESG・ガバナンス<br>対話品質への期待</p>
+                        </div>
+                        <div class="arrow" aria-hidden="true">→</div>
+                        <div class="process-step">
+                            <h4>デジタル化の進展</h4>
+                            <p>AI・データ活用<br>リアルタイム対応</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ソリューション概要 -->
+            <section class="section" id="solution-overview">
+                <h2>第2章：KAGAMIが実現する未来</h2>
+                
+                <h3>2.1 「鏡」のコンセプト - なぜKAGAMIなのか</h3>
+                
+                <div class="visual-box">
+                    <h4>🔮 KAGAMIの3つの本質的機能</h4>
+                    <div class="card-grid">
+                        <article class="card">
+                            <h4>1. 真実を映す（Reflection）</h4>
+                            <p>企業の実態を歪みなく、データとAIの力で正確に映し出す</p>
+                        </article>
+                        <article class="card">
+                            <h4>2. 自己認識を促す（Self-Awareness）</h4>
+                            <p>投資家からの真の評価を知り、改善への気づきを与える</p>
+                        </article>
+                        <article class="card">
+                            <h4>3. 双方向性を持つ（Interaction）</h4>
+                            <p>企業と投資家の相互作用による価値共創を実現</p>
+                        </article>
+                    </div>
+                </div>
+                
+                <h3>2.2 革新的な価値創造メカニズム</h3>
+                
+                <div class="process-flow">
+                    <div class="process-step">
+                        <h4>📞 Step 1</h4>
+                        <p><strong>対話の完全データ化</strong><br>全てのIR接点を捕捉</p>
+                    </div>
+                    <div class="arrow" aria-hidden="true">→</div>
+                    <div class="process-step">
+                        <h4>🤖 Step 2</h4>
+                        <p><strong>AIによる知見抽出</strong><br>本質的な課題を発見</p>
+                    </div>
+                    <div class="arrow" aria-hidden="true">→</div>
+                    <div class="process-step">
+                        <h4>💡 Step 3</h4>
+                        <p><strong>インサイトの提供</strong><br>経営判断の高度化</p>
+                    </div>
+                    <div class="arrow" aria-hidden="true">→</div>
+                    <div class="process-step">
+                        <h4>🚀 Step 4</h4>
+                        <p><strong>企業価値向上</strong><br>市場評価の改善</p>
+                    </div>
+                </div>
+                
+                <div class="success-box">
+                    <h4>✨ 実現される未来</h4>
+                    <p>KAGAMIにより、IR活動は「コスト」から「投資」へ、「義務」から「機会」へと転換されます。企業と投資家の建設的な対話が、持続的な企業価値向上を生み出します。</p>
+                </div>
+            </section>
+
+            <!-- 機能要件詳細 -->
+            <section class="section" id="functional-requirements">
+                <h2>第3章：機能要件詳細</h2>
+                <p class="subtitle">誰が、何を、どのように使い、どんな価値を得るのか</p>
+
+                <!-- 経営者・役員セクション -->
+                <article class="subsection" id="ceo-requirements">
+                    <h3><span aria-hidden="true">👔</span>経営者・役員のためのKAGAMI</h3>
+                    
+                    <!-- ペルソナ紹介 -->
+                    <div class="persona-card">
+                        <div class="persona-header">
+                            <div class="persona-avatar" aria-hidden="true">👔</div>
+                            <div class="persona-info">
+                                <h4>山田 太郎 CEO</h4>
+                                <div class="role">代表取締役社長</div>
+                                <div class="company">東証プライム上場 製造業（売上高3,000億円）</div>
+                            </div>
+                        </div>
+                        <div class="persona-details">
+                            <p><strong>現状の課題：</strong></p>
+                            <ul>
+                                <li>投資家の本音が見えない。IRから上がってくる報告は「問題ありません」ばかり</li>
+                                <li>株価が適正に評価されていないが、何が原因か分からない</li>
+                                <li>決算説明会での質疑応答に自信が持てない</li>
+                                <li>競合他社と比べてIR活動で劣っている気がする</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>山田CEOの1日 - KAGAMIが変える経営判断</h4>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-time">8:00 AM</div>
+                            <div class="timeline-title">朝のダッシュボード確認</div>
+                            <div class="timeline-content">
+                                出社してすぐ、iPadでKAGAMIのCEOダッシュボードを開く。昨日の投資家との面談で出た「海外展開の具体的ロードマップが不明確」という懸念がハイライトされている。センチメントスコアは前週比-5ポイント。
+                            </div>
+                            <div class="timeline-value">所要時間：5分（従来：30分のIR報告書読み込み）</div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-time">9:00 AM</div>
+                            <div class="timeline-title">経営会議での活用</div>
+                            <div class="timeline-content">
+                                経営会議で海外展開を議論。KAGAMIの競合分析機能で、同業A社が先月発表した東南アジア戦略に対する投資家の高評価（株価+8%）を確認。自社戦略の差別化ポイントを明確化。
+                            </div>
+                            <div class="timeline-value">意思決定スピード：2倍向上</div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-time">2:00 PM</div>
+                            <div class="timeline-title">重要投資家との面談準備</div>
+                            <div class="timeline-content">
+                                大手年金基金との面談前に、KAGAMIの投資家プロファイルを確認。過去3回の面談で繰り返し質問されている「ESG戦略の定量目標」について、AIが推奨回答を提示。想定質問10個すべてに自信を持って臨める。
+                            </div>
+                            <div class="timeline-value">準備時間：15分（従来：2時間）</div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-time">3:00 PM</div>
+                            <div class="timeline-title">面談実施とリアルタイムサポート</div>
+                            <div class="timeline-content">
+                                面談中、投資家から「競合B社の新技術についてどう考えるか」と想定外の質問。手元のタブレットでKAGAMIが関連情報を即座に表示。的確な回答により投資家の信頼を獲得。
+                            </div>
+                            <div class="timeline-value">回答精度：95%（AIサポートによる）</div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-time">5:00 PM</div>
+                            <div class="timeline-title">戦略的インサイト確認</div>
+                            <div class="timeline-content">
+                                週次の投資家センチメント分析を確認。主要20社の投資家の73%が「DX投資の具体的成果」に関心。来週の決算説明会でDX事例を追加することを決定。
+                            </div>
+                            <div class="timeline-value">戦略修正の迅速化：3日→即日</div>
+                        </div>
+                    </div>
+
+                    <h4>CEO's Strategic Dashboard - 実際の画面</h4>
+                    
+                    <div class="screen-mockup">
+                        <div class="screen-header">
+                            <div class="screen-dot"></div>
+                            <div class="screen-dot"></div>
+                            <div class="screen-dot"></div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="mock-header">
+                                <h5>🔮 KAGAMI CEO Dashboard</h5>
+                                <div>2025年1月15日 8:00 AM</div>
+                            </div>
+                            <div class="mock-body">
+                                <div class="metrics-dashboard">
+                                    <div class="metric-card">
+                                        <div class="metric-icon" aria-hidden="true">😊</div>
+                                        <div class="metric-value">73%</div>
+                                        <div class="metric-label">投資家満足度</div>
+                                        <div class="metric-change">▲ 5% vs 先週</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-icon" aria-hidden="true">⚠️</div>
+                                        <div class="metric-value">3件</div>
+                                        <div class="metric-label">要対応事項</div>
+                                        <div class="metric-change">海外展開への懸念</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-icon" aria-hidden="true">📈</div>
+                                        <div class="metric-value">+12%</div>
+                                        <div class="metric-label">関心度上昇</div>
+                                        <div class="metric-change">DX・ESGテーマ</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-icon" aria-hidden="true">🏆</div>
+                                        <div class="metric-value">業界2位</div>
+                                        <div class="metric-label">IR評価ランク</div>
+                                        <div class="metric-change">▲ 1ランクUP</div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: 30px;">
+                                    <h6 style="margin-bottom: 15px;">📊 投資家の声 - リアルタイムインサイト</h6>
+                                    <div style="background: #f8fafc; padding: 20px; border-radius: 10px;">
+                                        <blockquote style="font-style: italic; color: #64748b;">
+                                            "海外展開の具体的なロードマップとKPIが不明確。特に東南アジア市場への参入時期と投資規模について明確な説明が欲しい"
+                                        </blockquote>
+                                        <cite style="margin-top: 10px; font-size: 0.9em; color: #94a3b8;">
+                                            - 大手機関投資家A社（保有比率3.2%）昨日の面談より
+                                        </cite>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>経営者が得られる具体的価値</h4>
+                    
+                    <div class="value-proposition">
+                        <h5>KAGAMIが実現する経営革新</h5>
+                        <div class="value-list">
+                            <div class="value-item">
+                                <div class="value-number">90%</div>
+                                <div class="value-metric">情報収集時間削減</div>
+                            </div>
+                            <div class="value-item">
+                                <div class="value-number">2倍</div>
+                                <div class="value-metric">意思決定スピード</div>
+                            </div>
+                            <div class="value-item">
+                                <div class="value-number">73%</div>
+                                <div class="value-metric">投資家満足度向上</div>
+                            </div>
+                            <div class="value-item">
+                                <div class="value-number">0.5pt</div>
+                                <div class="value-metric">PBR改善期待値</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>主要機能の詳細</h4>
+                    
+                    <div class="feature-grid">
+                        <article class="feature-card">
+                            <div class="feature-icon" aria-hidden="true">📊</div>
+                            <h5 class="feature-title">リアルタイム経営ダッシュボード</h5>
+                            <div class="feature-description">
+                                投資家の声を即座に可視化し、経営判断に必要な情報を一元管理
+                            </div>
+                            <ul class="feature-list">
+                                <li>投資家センチメント分析（ポジティブ/ネガティブ/中立）</li>
+                                <li>重要懸念事項のアラート機能</li>
+                                <li>競合他社との相対評価</li>
+                                <li>アクションアイテムの自動抽出</li>
+                            </ul>
+                        </article>
+                        
+                        <article class="feature-card">
+                            <div class="feature-icon" aria-hidden="true">🎯</div>
+                            <h5 class="feature-title">AI対話シミュレーター</h5>
+                            <div class="feature-description">
+                                重要な面談や説明会前に、AIが投資家役となって想定問答を実施
+                            </div>
+                            <ul class="feature-list">
+                                <li>過去の質問パターンから想定質問を生成</li>
+                                <li>回答の評価とフィードバック</li>
+                                <li>競合他社の回答事例との比較</li>
+                                <li>説得力スコアの測定</li>
+                            </ul>
+                        </article>
+                        
+                        <article class="feature-card">
+                            <div class="feature-icon" aria-hidden="true">🔍</div>
+                            <h5 class="feature-title">競合インテリジェンス</h5>
+                            <div class="feature-description">
+                                競合他社のIR活動と投資家反応を分析し、自社の差別化戦略を支援
+                            </div>
+                            <ul class="feature-list">
+                                <li>競合の開示情報自動収集</li>
+                                <li>投資家評価の比較分析</li>
+                                <li>ベストプラクティスの抽出</li>
+                                <li>差別化ポイントの提案</li>
+                            </ul>
+                        </article>
+                        
+                        <article class="feature-card">
+                            <div class="feature-icon" aria-hidden="true">📈</div>
+                            <h5 class="feature-title">戦略的インサイト生成</h5>
+                            <div class="feature-description">
+                                投資家の関心事項から、経営戦略への示唆を自動生成
+                            </div>
+                            <ul class="feature-list">
+                                <li>投資家関心度の定量分析</li>
+                                <li>未対応リスクの早期警告</li>
+                                <li>成長機会の発見支援</li>
+                                <li>株価影響度の予測</li>
+                            </ul>
+                        </article>
+                    </div>
+
+                    <h4>導入による変革 - Before & After</h4>
+                    
+                    <div class="comparison-container">
+                        <div class="comparison-card comparison-before">
+                            <div class="comparison-label">導入前</div>
+                            <h5 style="color: #dc2626; margin-bottom: 20px;">従来の経営者のIR関与</h5>
+                            <ul style="color: #7f1d1d;">
+                                <li>月1回のIR報告書を読むだけ</li>
+                                <li>投資家の本音が分からない</li>
+                                <li>決算説明会の準備に多大な時間</li>
+                                <li>想定外の質問に答えられない</li>
+                                <li>競合他社の動向を後追い</li>
+                                <li>IR活動の効果が測定できない</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="comparison-card comparison-after">
+                            <div class="comparison-label">導入後</div>
+                            <h5 style="color: #059669; margin-bottom: 20px;">KAGAMIによる新たな経営スタイル</h5>
+                            <ul style="color: #14532d;">
+                                <li>毎朝5分で市場の声を把握</li>
+                                <li>投資家の真の関心事を定量的に理解</li>
+                                <li>AIサポートで準備時間90%削減</li>
+                                <li>どんな質問にも自信を持って回答</li>
+                                <li>競合を先回りする戦略立案</li>
+                                <li>IR活動のROIを明確に測定</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 他のユーザーセクションは省略（元のHTMLの該当部分と同様の構造で実装） -->
+            </section>
+
+            <!-- 仮説と検証 -->
+            <section class="section" id="hypothesis-validation">
+                <h2>第4章：仮説と検証メカニズム</h2>
+                
+                <h3>4.1 中核仮説</h3>
+                
+                <div class="visual-box">
+                    <h4>🔬 KAGAMIの基本仮説</h4>
+                    <p style="font-size: 1.2em; text-align: center; margin: 20px 0;">
+                        <strong>「すべてのIRコミュニケーションをデジタル化・構造化することで、<br>
+                        企業と投資家の情報非対称性を解消し、適正な企業評価を実現できる」</strong>
+                    </p>
+                </div>
+                
+                <h3>4.2 検証プロセス</h3>
+                
+                <div class="process-flow">
+                    <div class="process-step">
+                        <h4>Phase 1</h4>
+                        <p><strong>データ収集</strong><br>3ヶ月<br>1,000件の対話</p>
+                    </div>
+                    <div class="arrow" aria-hidden="true">→</div>
+                    <div class="process-step">
+                        <h4>Phase 2</h4>
+                        <p><strong>効果測定</strong><br>6ヶ月<br>KPI追跡</p>
+                    </div>
+                    <div class="arrow" aria-hidden="true">→</div>
+                    <div class="process-step">
+                        <h4>Phase 3</h4>
+                        <p><strong>最適化</strong><br>12ヶ月<br>ROI実証</p>
+                    </div>
+                </div>
+                
+                <h3>4.3 因果関係の明確化</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>原因（INPUT）</th>
+                            <th>プロセス</th>
+                            <th>結果（OUTPUT）</th>
+                            <th>成果（OUTCOME）</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>対話データの蓄積</td>
+                            <td>AI分析・パターン認識</td>
+                            <td>投資家ニーズの可視化</td>
+                            <td>的確な情報開示</td>
+                        </tr>
+                        <tr>
+                            <td>FAQ自動生成</td>
+                            <td>品質チェック・承認</td>
+                            <td>回答時間短縮</td>
+                            <td>投資家満足度向上</td>
+                        </tr>
+                        <tr>
+                            <td>経営へのフィードバック</td>
+                            <td>戦略への反映</td>
+                            <td>経営改善</td>
+                            <td>企業価値向上</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>4.4 測定指標（KPI）</h3>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h4>効率性指標</h4>
+                        <ul style="list-style: none; font-size: 0.9em;">
+                            <li>• FAQ作成時間: -90%</li>
+                            <li>• 面談調整時間: -80%</li>
+                            <li>• レポート作成: -70%</li>
+                        </ul>
+                    </div>
+                    <div class="metric-card">
+                        <h4>品質指標</h4>
+                        <ul style="list-style: none; font-size: 0.9em;">
+                            <li>• 回答精度: 95%以上</li>
+                            <li>• 投資家満足度: +40%</li>
+                            <li>• 情報の一貫性: 100%</li>
+                        </ul>
+                    </div>
+                    <div class="metric-card">
+                        <h4>ビジネス指標</h4>
+                        <ul style="list-style: none; font-size: 0.9em;">
+                            <li>• PBR改善: +0.5pt</li>
+                            <li>• 株式流動性: +30%</li>
+                            <li>• アナリストカバレッジ: +2社</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 未来展望 -->
+            <section class="section" id="future-vision">
+                <h2>第5章：未来の展望 - 5年後のIR</h2>
+                
+                <h3>5.1 段階的な進化シナリオ</h3>
+                
+                <div class="visual-box">
+                    <h4>🚀 KAGAMIが実現する進化のロードマップ</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>フェーズ</th>
+                                <th>時期</th>
+                                <th>実現される状態</th>
+                                <th>企業価値への影響</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Phase 1<br>基盤構築</strong></td>
+                                <td>0-1年</td>
+                                <td>• 全対話のデジタル化<br>• 基本的な自動化実現<br>• データ蓄積開始</td>
+                                <td>効率化による<br>コスト削減</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phase 2<br>知能化</strong></td>
+                                <td>1-2年</td>
+                                <td>• AI予測精度向上<br>• 個別最適化実現<br>• 経営との連携強化</td>
+                                <td>対話品質向上による<br>評価改善</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phase 3<br>共創</strong></td>
+                                <td>2-3年</td>
+                                <td>• 投資家との共創基盤<br>• リアルタイム対話<br>• 予測的IR実現</td>
+                                <td>持続的な<br>企業価値向上</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phase 4<br>革新</strong></td>
+                                <td>3-5年</td>
+                                <td>• 完全自律型IR<br>• グローバル標準化<br>• 新たな資本市場創造</td>
+                                <td>競争優位の<br>確立</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>5.2 実現される未来像</h3>
+                
+                <div class="card-grid">
+                    <article class="card">
+                        <h4>🌟 企業にとっての未来</h4>
+                        <ul>
+                            <li>IRが戦略的価値創造の中核に</li>
+                            <li>市場との継続的な対話による経営進化</li>
+                            <li>適正な企業評価の実現</li>
+                            <li>グローバル投資家からの信頼獲得</li>
+                        </ul>
+                    </article>
+                    <article class="card">
+                        <h4>🌟 投資家にとっての未来</h4>
+                        <ul>
+                            <li>24時間365日の情報アクセス</li>
+                            <li>深い企業理解に基づく投資判断</li>
+                            <li>経営陣との建設的な対話</li>
+                            <li>投資リターンの最大化</li>
+                        </ul>
+                    </article>
+                    <article class="card">
+                        <h4>🌟 社会にとっての未来</h4>
+                        <ul>
+                            <li>資本市場の効率性向上</li>
+                            <li>企業価値の適正評価</li>
+                            <li>持続可能な経済成長</li>
+                            <li>日本市場の国際競争力強化</li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+
+            <!-- 投資価値提案 -->
+            <section class="section" id="investment-proposition">
+                <h2>第6章：なぜKAGAMIに投資すべきか</h2>
+                
+                <h3>6.1 市場機会</h3>
+                
+                <div class="visual-box">
+                    <h4>📊 巨大な市場ポテンシャル</h4>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value">3,800社</div>
+                            <div class="metric-label">日本の上場企業数</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">200億円</div>
+                            <div class="metric-label">TAM（2030年）</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">62.5%</div>
+                            <div class="metric-label">IR体制未整備企業</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">150%</div>
+                            <div class="metric-label">年間成長率（CAGR）</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>6.2 競争優位性</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>優位性の源泉</th>
+                            <th>具体的な強み</th>
+                            <th>参入障壁</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>技術優位性</strong></td>
+                            <td>
+                                • IR特化型AI（特許申請中）<br>
+                                • 98%の音声認識精度<br>
+                                • 日本語処理の最適化
+                            </td>
+                            <td>
+                                開発に3年以上<br>
+                                専門知識の蓄積<br>
+                                データの先行優位
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>ネットワーク効果</strong></td>
+                            <td>
+                                • 企業×投資家の相互価値<br>
+                                • データ蓄積による精度向上<br>
+                                • ベストプラクティスの共有
+                            </td>
+                            <td>
+                                先行者優位<br>
+                                スイッチングコスト<br>
+                                ブランド力
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>業界知見</strong></td>
+                            <td>
+                                • IR実務の深い理解<br>
+                                • 規制要件への対応力<br>
+                                • 主要企業との関係性
+                            </td>
+                            <td>
+                                信頼関係の構築<br>
+                                実績の蓄積<br>
+                                専門人材の確保
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>6.3 投資リターン</h3>
+                
+                <div class="highlight-box">
+                    <h4>💰 期待されるリターン（5年後）</h4>
+                    <ul style="list-style: none;">
+                        <li>📈 売上高：100億円（CAGR 150%）</li>
+                        <li>📊 営業利益率：40%（SaaS水準）</li>
+                        <li>🏢 導入企業数：500社（シェア13%）</li>
+                        <li>💎 企業価値：1,000億円（売上の10倍）</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 最終メッセージ -->
+            <section class="section" id="final-message">
+                <h2>最終メッセージ</h2>
+                
+                <div class="success-box">
+                    <h3>🌟 KAGAMIが創る新たな資本市場</h3>
+                    <p style="font-size: 1.1em; line-height: 1.8;">
+                        KAGAMIは単なるIRツールではありません。<br><br>
+                        
+                        これは、日本企業と投資家の関係を根本から変革し、<br>
+                        <strong>「対話による価値共創」</strong>という新たなパラダイムを創造するプラットフォームです。<br><br>
+                        
+                        2025年7月22日のIR体制義務化は、単なる規制対応ではなく、<br>
+                        日本企業が世界最高水準のIRを実現する千載一遇のチャンスです。<br><br>
+                        
+                        KAGAMIへの投資は、この歴史的転換点において、<br>
+                        <strong>日本の資本市場の未来を創る投資</strong>となるでしょう。
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px;">
+                    <a href="#contact" class="button">投資のご相談はこちら</a>
+                </div>
+            </section>
+        </main>
+
+        <footer style="text-align: center; padding: 40px 0; color: #64748b; border-top: 1px solid #e5e7eb;">
+            <p>&copy; 2025 KAGAMI IR Platform. All rights reserved.</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">本資料は機密情報を含みます。無断複製・転載を禁じます。</p>
+        </footer>
+    </div>
+
+    <!-- スクリプト（必要に応じて） -->
+    <script>
+        // アクセシビリティ向上のためのスクリプト
+        document.addEventListener('DOMContentLoaded', function() {
+            // フォーカス可能な要素にキーボードナビゲーションを追加
+            const cards = document.querySelectorAll('.card, .feature-card, .metric-card');
+            cards.forEach(card => {
+                card.setAttribute('tabindex', '0');
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        card.click();
+                    }
+                });
+            });
+
+            // スムーズスクロール
+            const links = document.querySelectorAll('a[href^="#"]');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
