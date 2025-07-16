@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+<!-- サイドバー -->
+<aside class="sidebar">
+    <div class="quick-actions">
+        <h3>🚀 クイックアクション</h3>
+        <button class="quick-btn" onclick="quickAction('new-faq')">
+            <span class="icon">📝</span>
+            新規FAQ作成
+        </button>
+        <button class="quick-btn" onclick="quickAction('upload-audio')">
+            <span class="icon">🎤</span>
+            音声アップロード
+        </button>
+        <button class="quick-btn" onclick="quickAction('schedule-meeting')">
+            <span class="icon">📅</span>
+            面談スケジュール
+        </button>
+        <button class="quick-btn" onclick="quickAction('generate-report')">
+            <span class="icon">📊</span>
+            レポート生成
+        </button>
+    </div>
+
+    <div class="notification-center">
+        <h3>🔔 通知センター</h3>
+        <div class="notification-item urgent">
+            <span class="notification-icon">🚨</span>
+            <div class="notification-content">
+                <div class="notification-title">緊急対応必要</div>
+                <div class="notification-desc">大型機関投資家からの重要質問</div>
+                <div class="notification-time">5分前</div>
+            </div>
+        </div>
+        <div class="notification-item">
+            <span class="notification-icon">✅</span>
+            <div class="notification-content">
+                <div class="notification-title">FAQ承認完了</div>
+                <div class="notification-desc">「Q1業績について」が公開されました</div>
+                <div class="notification-time">1時間前</div>
+            </div>
+        </div>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!-- ダッシュボードコンテンツ -->
+<div class="dashboard-content">
+    <!-- ヘルスチェック -->
+    <div class="health-check">
+        <h2>📊 システムヘルスチェック</h2>
+        <div class="health-grid">
+            {% for key, item in health_status.items() %}
+            <div class="health-item">
+                <div class="health-icon">
+                    {% if key == 'ai_system' %}🤖
+                    {% elif key == 'api_connection' %}📡
+                    {% elif key == 'security' %}🔒
+                    {% elif key == 'database' %}💾
+                    {% endif %}
+                </div>
+                <div class="health-info">
+                    <div class="health-label">
+                        {% if key == 'ai_system' %}AI システム
+                        {% elif key == 'api_connection' %}API連携
+                        {% elif key == 'security' %}セキュリティ
+                        {% elif key == 'database' %}データベース
+                        {% endif %}
+                    </div>
+                    <div class="health-status {{ item.status }}">
+                        {% if item.status == 'online' %}稼働中
+                        {% elif item.status == 'warning' %}注意
+                        {% endif %}
+                    </div>
+                    <div class="health-detail">
+                        {% if key == 'ai_system' %}精度: {{ item.accuracy }}
+                        {% elif key == 'api_connection' %}レスポンス: {{ item.response_time }}
+                        {% elif key == 'security' %}脅威: {{ item.threats }}
+                        {% elif key == 'database' %}容量: {{ item.capacity }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 今日のタスク概要 -->
+    <div class="today-tasks">
+        <h2>📋 今日のタスク概要</h2>
+        <div class="task-summary">
+            {% for task in task_summary %}
+            <div class="task-card">
+                <div class="task-number">{{ task.number }}</div>
+                <div class="task-label">{{ task.label }}</div>
+                <div class="task-action">
+                    <button class="btn-primary" onclick="navigateTo('{{ task.action }}')">
+                        {% if task.action == 'dialogue' %}対応する
+                        {% elif task.action == 'ai-faq' %}確認する
+                        {% elif task.action == 'meetings' %}準備する
+                        {% elif task.action == 'data-input' %}確認する
+                        {% endif %}
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- KPIサマリー -->
+    <div class="kpi-summary">
+        <h2>📈 KPIサマリー（今週）</h2>
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon">👥</div>
+                <div class="kpi-content">
+                    <div class="kpi-value">{{ kpi_data.engagement.value }}</div>
+                    <div class="kpi-label">投資家エンゲージメント</div>
+                    <div class="kpi-change {{ 'positive' if kpi_data.engagement.positive else 'negative' }}">
+                        {{ kpi_data.engagement.change }}
+                    </div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon">🎯</div>
+                <div class="kpi-content">
+                    <div class="kpi-value">{{ kpi_data.satisfaction.value }}</div>
+                    <div class="kpi-label">FAQ満足度</div>
+                    <div class="kpi-change {{ 'positive' if kpi_data.satisfaction.positive else 'negative' }}">
+                        {{ kpi_data.satisfaction.change }}
+                    </div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon">⏱️</div>
+                <div class="kpi-content">
+                    <div class="kpi-value">{{ kpi_data.response_time.value }}</div>
+                    <div class="kpi-label">平均回答時間</div>
+                    <div class="kpi-change {{ 'positive' if kpi_data.response_time.positive else 'negative' }}">
+                        {{ kpi_data.response_time.change }}
+                    </div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon">🎤</div>
+                <div class="kpi-content">
+                    <div class="kpi-value">{{ kpi_data.voice_processing.value }}</div>
+                    <div class="kpi-label">音声質問処理</div>
+                    <div class="kpi-change {{ 'positive' if kpi_data.voice_processing.positive else 'negative' }}">
+                        {{ kpi_data.voice_processing.change }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Insights -->
+    <div class="ai-insights">
+        <h2>🔮 AI Insights</h2>
+        <div class="insights-grid">
+            <div class="insight-card trend">
+                <div class="insight-icon">📊</div>
+                <div class="insight-content">
+                    <h3>トレンド分析</h3>
+                    <p>「ESG戦略」に関する質問が過去30日間で<strong>+45%</strong>増加しています。関連FAQ の充実を推奨します。</p>
+                    <button class="insight-action" onclick="createESGFAQ()">ESG FAQ作成</button>
+                </div>
+            </div>
+            <div class="insight-card alert">
+                <div class="insight-icon">⚠️</div>
+                <div class="insight-content">
+                    <h3>注意喚起</h3>
+                    <p>「収益性改善」について<strong>ネガティブセンチメント</strong>が検出されました。説明資料の見直しをお勧めします。</p>
+                    <button class="insight-action" onclick="reviewContent()">内容確認</button>
+                </div>
+            </div>
+            <div class="insight-card opportunity">
+                <div class="insight-icon">💡</div>
+                <div class="insight-content">
+                    <h3>改善提案</h3>
+                    <p>音声質問の処理時間を<strong>23%短縮</strong>できるAI最適化案があります。実装を検討してください。</p>
+                    <button class="insight-action" onclick="optimizeAI()">最適化実行</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ダッシュボード固有のJavaScript
+async function quickAction(action) {
+    console.log(`🚀 クイックアクション: ${action}`);
+    
+    try {
+        switch(action) {
+            case 'new-faq':
+                window.location.href = '/ai-faq';
+                break;
+            case 'upload-audio':
+                window.location.href = '/data-input';
+                break;
+            case 'schedule-meeting':
+                KAGAMI.notify.toast('面談スケジュール機能は開発中です', 'info');
+                break;
+            case 'generate-report':
+                const response = await fetch('/api/analytics/kpi');
+                const data = await response.json();
+                KAGAMI.notify.toast('レポート生成を開始しました', 'success');
+                break;
+        }
+    } catch (error) {
+        KAGAMI.notify.toast('エラーが発生しました', 'error');
+        console.error('クイックアクションエラー:', error);
+    }
+}
+
+async function createESGFAQ() {
+    try {
+        const response = await fetch('/api/ai-faq/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic: 'ESG戦略' })
+        });
+        const data = await response.json();
+        KAGAMI.notify.toast('ESG FAQ生成を開始しました', 'success');
+    } catch (error) {
+        KAGAMI.notify.toast('FAQ生成でエラーが発生しました', 'error');
+    }
+}
+
+// ページ固有の初期化
+document.addEventListener('DOMContentLoaded', function() {
+    // リアルタイムデータ更新
+    setInterval(async () => {
+        try {
+            const response = await fetch('/api/dashboard/data');
+            const data = await response.json();
+            // ダッシュボードデータ更新処理
+        } catch (error) {
+            console.error('データ更新エラー:', error);
+        }
+    }, 30000); // 30秒間隔
+});
+</script>
+{% endblock %} 

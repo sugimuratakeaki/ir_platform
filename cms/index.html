@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KAGAMI IR管理センター - AI技術を活用したIR業務支援システム v2.0">
+    <meta name="keywords" content="IR, 投資家向け広報, AI, FAQ管理, データ分析, ダッシュボード">
+    <meta name="author" content="KAGAMI Development Team">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- セキュリティヘッダー -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- CSP Nonce -->
+    <meta name="csp-nonce" content="KAGAMInonce2024">
+    
+    <title>🔮 KAGAMI IR管理センター v2.0 - AIパワードダッシュボード</title>
+    
+    <!-- Critical Resource Preloading -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="app.js" as="script">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" as="style">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA & Mobile Optimization -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+    <meta name="theme-color" content="#1a365d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KAGAMI IR">
+    
+    <!-- Performance & Analytics -->
+    <script nonce="KAGAMInonce2024">
+        // Performance timing
+        window.KAGAMI_PERF_START = performance.now();
+        
+        // Session ID generation
+        if (!sessionStorage.getItem('kagami_session_id')) {
+            sessionStorage.setItem('kagami_session_id', 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
+        }
+    </script>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1 class="logo">🔮 KAGAMI</h1>
+                <span class="subtitle">IR管理センター</span>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-btn active" data-section="dashboard">
+                    📋 ダッシュボード
+                </button>
+                <button class="nav-btn" data-section="data-input">
+                    📥 データ取込
+                </button>
+                <button class="nav-btn" data-section="ai-faq">
+                    🤖 AI-FAQ管理
+                </button>
+                <button class="nav-btn" data-section="dialogue">
+                    💬 対話管理
+                </button>
+                <button class="nav-btn" data-section="analytics">
+                    📊 分析レポート
+                </button>
+                <button class="nav-btn" data-section="settings">
+                    ⚙️ システム設定
+                </button>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">田中 IR担当者</span>
+                <button class="logout-btn">ログアウト</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <!-- サイドバー -->
+        <aside class="sidebar">
+            <div class="quick-actions">
+                <h3>🚀 クイックアクション</h3>
+                <button class="quick-btn" onclick="quickAction('new-faq')">
+                    <span class="icon">📝</span>
+                    新規FAQ作成
+                </button>
+                <button class="quick-btn" onclick="quickAction('upload-audio')">
+                    <span class="icon">🎤</span>
+                    音声アップロード
+                </button>
+                <button class="quick-btn" onclick="quickAction('schedule-meeting')">
+                    <span class="icon">📅</span>
+                    面談スケジュール
+                </button>
+                <button class="quick-btn" onclick="quickAction('generate-report')">
+                    <span class="icon">📊</span>
+                    レポート生成
+                </button>
+            </div>
+
+            <div class="notification-center">
+                <h3>🔔 通知センター</h3>
+                <div class="notification-item urgent">
+                    <span class="notification-icon">🚨</span>
+                    <div class="notification-content">
+                        <div class="notification-title">緊急対応必要</div>
+                        <div class="notification-desc">大型機関投資家からの重要質問</div>
+                        <div class="notification-time">5分前</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <span class="notification-icon">✅</span>
+                    <div class="notification-content">
+                        <div class="notification-title">FAQ承認完了</div>
+                        <div class="notification-desc">「Q1業績について」が公開されました</div>
+                        <div class="notification-time">1時間前</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <span class="notification-icon">📈</span>
+                    <div class="notification-content">
+                        <div class="notification-title">エンゲージメント向上</div>
+                        <div class="notification-desc">今週の投資家満足度が95%に向上</div>
+                        <div class="notification-time">2時間前</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ダッシュボードコンテンツ -->
+        <section class="dashboard-content">
+            <!-- ヘルスチェック -->
+            <div class="health-check">
+                <h2>📊 システムヘルスチェック</h2>
+                <div class="health-grid">
+                    <div class="health-item">
+                        <div class="health-icon">🤖</div>
+                        <div class="health-info">
+                            <div class="health-label">AI システム</div>
+                            <div class="health-status online">稼働中</div>
+                            <div class="health-detail">精度: 96.8%</div>
+                        </div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-icon">📡</div>
+                        <div class="health-info">
+                            <div class="health-label">API連携</div>
+                            <div class="health-status online">正常</div>
+                            <div class="health-detail">レスポンス: 1.2s</div>
+                        </div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-icon">🔒</div>
+                        <div class="health-info">
+                            <div class="health-label">セキュリティ</div>
+                            <div class="health-status online">安全</div>
+                            <div class="health-detail">脅威: 0件</div>
+                        </div>
+                    </div>
+                    <div class="health-item">
+                        <div class="health-icon">💾</div>
+                        <div class="health-info">
+                            <div class="health-label">データベース</div>
+                            <div class="health-status warning">注意</div>
+                            <div class="health-detail">容量: 87%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 今日のタスク概要 -->
+            <div class="today-tasks">
+                <h2>📋 今日のタスク概要</h2>
+                <div class="task-summary">
+                    <div class="task-card">
+                        <div class="task-number">12</div>
+                        <div class="task-label">未処理問い合わせ</div>
+                        <div class="task-action">
+                            <button class="btn-primary" onclick="navigateTo('dialogue')">対応する</button>
+                        </div>
+                    </div>
+                    <div class="task-card">
+                        <div class="task-number">5</div>
+                        <div class="task-label">FAQ承認待ち</div>
+                        <div class="task-action">
+                            <button class="btn-primary" onclick="navigateTo('ai-faq')">確認する</button>
+                        </div>
+                    </div>
+                    <div class="task-card">
+                        <div class="task-number">3</div>
+                        <div class="task-label">本日の面談</div>
+                        <div class="task-action">
+                            <button class="btn-primary" onclick="navigateTo('meetings')">準備する</button>
+                        </div>
+                    </div>
+                    <div class="task-card">
+                        <div class="task-number">8</div>
+                        <div class="task-label">音声処理中</div>
+                        <div class="task-action">
+                            <button class="btn-secondary" onclick="navigateTo('data-input')">確認する</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPIサマリー -->
+            <div class="kpi-summary">
+                <h2>📈 KPIサマリー（今週）</h2>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon">👥</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value">1,247</div>
+                            <div class="kpi-label">投資家エンゲージメント</div>
+                            <div class="kpi-change positive">+12.3%</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">🎯</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value">96.8%</div>
+                            <div class="kpi-label">FAQ満足度</div>
+                            <div class="kpi-change positive">+2.1%</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">⏱️</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value">2.3h</div>
+                            <div class="kpi-label">平均回答時間</div>
+                            <div class="kpi-change negative">-0.5h</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon">🎤</div>
+                        <div class="kpi-content">
+                            <div class="kpi-value">89</div>
+                            <div class="kpi-label">音声質問処理</div>
+                            <div class="kpi-change positive">+15.2%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Insights -->
+            <div class="ai-insights">
+                <h2>🔮 AI Insights</h2>
+                <div class="insights-grid">
+                    <div class="insight-card trend">
+                        <div class="insight-icon">📊</div>
+                        <div class="insight-content">
+                            <h3>トレンド分析</h3>
+                            <p>「ESG戦略」に関する質問が過去30日間で<strong>+45%</strong>増加しています。関連FAQ の充実を推奨します。</p>
+                            <button class="insight-action" onclick="createESGFAQ()">ESG FAQ作成</button>
+                        </div>
+                    </div>
+                    <div class="insight-card alert">
+                        <div class="insight-icon">⚠️</div>
+                        <div class="insight-content">
+                            <h3>注意喚起</h3>
+                            <p>「収益性改善」について<strong>ネガティブセンチメント</strong>が検出されました。説明資料の見直しをお勧めします。</p>
+                            <button class="insight-action" onclick="reviewContent()">内容確認</button>
+                        </div>
+                    </div>
+                    <div class="insight-card opportunity">
+                        <div class="insight-icon">💡</div>
+                        <div class="insight-content">
+                            <h3>改善提案</h3>
+                            <p>音声質問の処理時間を<strong>23%短縮</strong>できるAI最適化案があります。実装を検討してください。</p>
+                            <button class="insight-action" onclick="optimizeAI()">最適化実行</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 緊急アラート -->
+            <div class="emergency-alerts">
+                <h2>🚨 緊急アラート</h2>
+                <div class="alert-list">
+                    <div class="alert-item critical">
+                        <div class="alert-priority">🔴 Critical</div>
+                        <div class="alert-content">
+                            <div class="alert-title">大型機関投資家からの緊急質問</div>
+                            <div class="alert-description">
+                                BlackRock社から「中期経営計画の半導体事業戦略」について詳細説明を求められています。
+                                24時間以内の回答が必要です。
+                            </div>
+                            <div class="alert-actions">
+                                <button class="btn-danger" onclick="handleCriticalAlert('blackrock')">
+                                    即座に対応
+                                </button>
+                                <button class="btn-secondary" onclick="escalateAlert('blackrock')">
+                                    エスカレーション
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert-item warning">
+                        <div class="alert-priority">🟡 Warning</div>
+                        <div class="alert-content">
+                            <div class="alert-title">FAQ承認の遅延</div>
+                            <div class="alert-description">
+                                5件のFAQが2日以上承認待ち状態です。投資家満足度に影響する可能性があります。
+                            </div>
+                            <div class="alert-actions">
+                                <button class="btn-warning" onclick="reviewPendingFAQs()">
+                                    FAQを確認
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html> 

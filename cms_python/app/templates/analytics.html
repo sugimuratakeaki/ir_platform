@@ -1,0 +1,609 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+<aside class="sidebar">
+    <div class="card">
+        <header class="card__header">
+            <h3 class="card__title">
+                <span class="card__icon">📊</span>
+                分析レポート
+            </h3>
+        </header>
+        
+        <div class="card__content">
+            <nav class="section-nav">
+                <button class="section-btn active" data-section="overview">
+                    📈 概要
+                </button>
+                <button class="section-btn" data-section="engagement">
+                    👥 エンゲージメント
+                </button>
+                <button class="section-btn" data-section="sentiment">
+                    😊 センチメント
+                </button>
+                <button class="section-btn" data-section="trends">
+                    📈 トレンド
+                </button>
+                <button class="section-btn" data-section="reports">
+                    📄 レポート
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <div class="card">
+        <header class="card__header">
+            <h3 class="card__title">
+                <span class="card__icon">⚡</span>
+                リアルタイム
+            </h3>
+        </header>
+        
+        <div class="card__content">
+            <div class="realtime-stats">
+                <div class="stat-item">
+                    <span class="stat-icon">👥</span>
+                    <div class="stat-info">
+                        <div class="stat-label">アクティブユーザー</div>
+                        <div class="stat-value">247</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">📊</span>
+                    <div class="stat-info">
+                        <div class="stat-label">今日の閲覧数</div>
+                        <div class="stat-value">1,847</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🎯</span>
+                    <div class="stat-info">
+                        <div class="stat-label">平均滞在時間</div>
+                        <div class="stat-value">4.2分</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <header class="card__header">
+            <h3 class="card__title">
+                <span class="card__icon">🔔</span>
+                アラート
+            </h3>
+        </header>
+        
+        <div class="card__content">
+            <div class="alert-list">
+                <div class="alert-item warning">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-content">
+                        <div class="alert-title">ESG関連質問増加</div>
+                        <div class="alert-time">10分前</div>
+                    </div>
+                </div>
+                <div class="alert-item info">
+                    <span class="alert-icon">📈</span>
+                    <div class="alert-content">
+                        <div class="alert-title">満足度向上</div>
+                        <div class="alert-time">1時間前</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-content">
+    <!-- 概要 -->
+    <div class="analytics-section" id="overview-section">
+        <div class="section-header">
+            <h2>📈 分析概要</h2>
+            <p>IR活動の全体的な効果とパフォーマンス</p>
+        </div>
+
+        <div class="overview-grid">
+            <div class="overview-card">
+                <h3>👥 投資家エンゲージメント</h3>
+                <div class="metric-value">1,247</div>
+                <div class="metric-change positive">+12.3%</div>
+                <div class="metric-description">前月比での増加率</div>
+            </div>
+            <div class="overview-card">
+                <h3>🎯 FAQ満足度</h3>
+                <div class="metric-value">96.8%</div>
+                <div class="metric-change positive">+2.1%</div>
+                <div class="metric-description">投資家からの評価</div>
+            </div>
+            <div class="overview-card">
+                <h3>⏱️ 平均応答時間</h3>
+                <div class="metric-value">2.3h</div>
+                <div class="metric-change positive">-0.5h</div>
+                <div class="metric-description">問い合わせ対応時間</div>
+            </div>
+            <div class="overview-card">
+                <h3>🔄 解決率</h3>
+                <div class="metric-value">98.5%</div>
+                <div class="metric-change positive">+1.2%</div>
+                <div class="metric-description">問い合わせ解決率</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>📊 月次トレンド</h3>
+            <div class="chart-placeholder">
+                <div class="chart-info">
+                    <div class="chart-description">エンゲージメント・満足度・応答時間の推移</div>
+                    <div class="chart-legend">
+                        <span class="legend-item">👥 エンゲージメント</span>
+                        <span class="legend-item">🎯 満足度</span>
+                        <span class="legend-item">⏱️ 応答時間</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- エンゲージメント -->
+    <div class="analytics-section" id="engagement-section" style="display: none;">
+        <div class="section-header">
+            <h2>👥 投資家エンゲージメント</h2>
+            <p>投資家との対話品質と参加度の分析</p>
+        </div>
+
+        <div class="engagement-analysis">
+            <div class="engagement-metrics">
+                <div class="metric-card">
+                    <h4>📱 アクティブユーザー</h4>
+                    <div class="metric-value">1,247</div>
+                    <div class="metric-breakdown">
+                        <div class="breakdown-item">
+                            <span class="label">機関投資家</span>
+                            <span class="value">847</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="label">個人投資家</span>
+                            <span class="value">400</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <h4>⏱️ 平均滞在時間</h4>
+                    <div class="metric-value">4.2分</div>
+                    <div class="metric-breakdown">
+                        <div class="breakdown-item">
+                            <span class="label">FAQ閲覧</span>
+                            <span class="value">2.1分</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="label">資料ダウンロード</span>
+                            <span class="value">1.8分</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <h4>🔄 リピート率</h4>
+                    <div class="metric-value">78.5%</div>
+                    <div class="metric-breakdown">
+                        <div class="breakdown-item">
+                            <span class="label">月1回以上</span>
+                            <span class="value">65.2%</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="label">週1回以上</span>
+                            <span class="value">23.3%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="engagement-insights">
+                <h3>💡 インサイト</h3>
+                <div class="insight-items">
+                    <div class="insight-item">
+                        <span class="insight-icon">📈</span>
+                        <div class="insight-content">
+                            <h4>機関投資家の関心向上</h4>
+                            <p>機関投資家のアクティブユーザー数が前月比15%増加。特にESG関連コンテンツへの関心が高い。</p>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">⏰</span>
+                        <div class="insight-content">
+                            <h4>滞在時間の最適化</h4>
+                            <p>平均滞在時間が4.2分に改善。FAQの品質向上とナビゲーション改善が効果的。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- センチメント -->
+    <div class="analytics-section" id="sentiment-section" style="display: none;">
+        <div class="section-header">
+            <h2>😊 センチメント分析</h2>
+            <p>投資家の感情と満足度の分析</p>
+        </div>
+
+        <div class="sentiment-analysis">
+            <div class="sentiment-overview">
+                <div class="sentiment-card positive">
+                    <h4>😊 ポジティブ</h4>
+                    <div class="sentiment-value">76.8%</div>
+                    <div class="sentiment-change positive">+5.2%</div>
+                </div>
+                <div class="sentiment-card neutral">
+                    <h4>😐 中立</h4>
+                    <div class="sentiment-value">18.5%</div>
+                    <div class="sentiment-change neutral">-2.1%</div>
+                </div>
+                <div class="sentiment-card negative">
+                    <h4>😞 ネガティブ</h4>
+                    <div class="sentiment-value">4.7%</div>
+                    <div class="sentiment-change negative">-3.1%</div>
+                </div>
+            </div>
+
+            <div class="sentiment-trends">
+                <h3>📈 センチメント推移</h3>
+                <div class="trend-chart">
+                    <div class="chart-placeholder">
+                        <div class="chart-info">
+                            <div class="chart-description">過去30日間のセンチメント変化</div>
+                            <div class="trend-indicators">
+                                <span class="indicator positive">ポジティブ上昇</span>
+                                <span class="indicator negative">ネガティブ減少</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sentiment-factors">
+                <h3>🔍 影響因子分析</h3>
+                <div class="factor-list">
+                    <div class="factor-item positive">
+                        <span class="factor-icon">📈</span>
+                        <div class="factor-content">
+                            <h4>業績改善</h4>
+                            <p>決算発表後の業績改善により、ポジティブセンチメントが15%向上</p>
+                        </div>
+                    </div>
+                    <div class="factor-item positive">
+                        <span class="factor-icon">🌱</span>
+                        <div class="factor-content">
+                            <h4>ESG戦略</h4>
+                            <p>ESG戦略の明確化により、投資家の信頼度が向上</p>
+                        </div>
+                    </div>
+                    <div class="factor-item negative">
+                        <span class="factor-icon">⚠️</span>
+                        <div class="factor-content">
+                            <h4>技術競争</h4>
+                            <p>技術競争の激化により、一部投資家に懸念が生じている</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- トレンド -->
+    <div class="analytics-section" id="trends-section" style="display: none;">
+        <div class="section-header">
+            <h2>📈 トレンド分析</h2>
+            <p>質問・関心事項の変化と傾向</p>
+        </div>
+
+        <div class="trends-analysis">
+            <div class="trend-categories">
+                <h3>🏷️ カテゴリ別トレンド</h3>
+                <div class="category-trends">
+                    <div class="trend-category">
+                        <h4>📊 財務・IR</h4>
+                        <div class="trend-bar">
+                            <div class="trend-fill" style="width: 85%"></div>
+                            <span class="trend-label">+25%</span>
+                        </div>
+                    </div>
+                    <div class="trend-category">
+                        <h4>🌱 ESG</h4>
+                        <div class="trend-bar">
+                            <div class="trend-fill" style="width: 95%"></div>
+                            <span class="trend-label">+45%</span>
+                        </div>
+                    </div>
+                    <div class="trend-category">
+                        <h4>🔬 技術・開発</h4>
+                        <div class="trend-bar">
+                            <div class="trend-fill" style="width: 70%"></div>
+                            <span class="trend-label">+15%</span>
+                        </div>
+                    </div>
+                    <div class="trend-category">
+                        <h4>📈 事業戦略</h4>
+                        <div class="trend-bar">
+                            <div class="trend-fill" style="width: 60%"></div>
+                            <span class="trend-label">+8%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="trend-insights">
+                <h3>💡 トレンドインサイト</h3>
+                <div class="insight-items">
+                    <div class="insight-item">
+                        <span class="insight-icon">🌱</span>
+                        <div class="insight-content">
+                            <h4>ESG関心の急激な増加</h4>
+                            <p>ESG関連の質問が前月比45%増加。特に環境への取り組みに関する質問が顕著。</p>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">📊</span>
+                        <div class="insight-content">
+                            <h4>財務情報の詳細化</h4>
+                            <p>財務・IR関連の質問が25%増加。より詳細な財務情報を求める傾向。</p>
+                        </div>
+                    </div>
+                    <div class="insight-item">
+                        <span class="insight-icon">🔬</span>
+                        <div class="insight-content">
+                            <h4>技術競争への関心</h4>
+                            <p>技術・開発関連の質問が15%増加。競合他社との技術差に関する質問が増加。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- レポート -->
+    <div class="analytics-section" id="reports-section" style="display: none;">
+        <div class="section-header">
+            <h2>📄 レポート生成</h2>
+            <p>定期的なレポートの生成と管理</p>
+        </div>
+
+        <div class="reports-management">
+            <div class="report-templates">
+                <h3>📋 レポートテンプレート</h3>
+                <div class="template-grid">
+                    <div class="template-card">
+                        <h4>📊 月次IRレポート</h4>
+                        <p>投資家エンゲージメント、満足度、トレンド分析を含む月次レポート</p>
+                        <button class="btn btn--primary" onclick="generateReport('monthly')">生成</button>
+                    </div>
+                    <div class="template-card">
+                        <h4>📈 四半期分析</h4>
+                        <p>四半期ごとの詳細分析と投資家行動の変化</p>
+                        <button class="btn btn--primary" onclick="generateReport('quarterly')">生成</button>
+                    </div>
+                    <div class="template-card">
+                        <h4>🎯 経営陣向けサマリー</h4>
+                        <p>経営判断に直結する重要なインサイトの要約</p>
+                        <button class="btn btn--primary" onclick="generateReport('executive')">生成</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-history">
+                <h3>📚 レポート履歴</h3>
+                <div class="history-list">
+                    <div class="history-item">
+                        <div class="history-info">
+                            <h4>2024年12月 IRレポート</h4>
+                            <span class="history-date">2024-12-19</span>
+                        </div>
+                        <div class="history-actions">
+                            <button class="btn btn--secondary" onclick="downloadReport('dec-2024')">ダウンロード</button>
+                            <button class="btn btn--secondary" onclick="shareReport('dec-2024')">共有</button>
+                        </div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-info">
+                            <h4>2024年Q3 分析レポート</h4>
+                            <span class="history-date">2024-10-15</span>
+                        </div>
+                        <div class="history-actions">
+                            <button class="btn btn--secondary" onclick="downloadReport('q3-2024')">ダウンロード</button>
+                            <button class="btn btn--secondary" onclick="shareReport('q3-2024')">共有</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 分析レポートページ初期化
+document.addEventListener('DOMContentLoaded', function() {
+    // セクション切り替え
+    document.querySelectorAll('.section-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const sectionId = this.dataset.section;
+            
+            // アクティブ状態を更新
+            document.querySelectorAll('.section-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // セクション表示を切り替え
+            document.querySelectorAll('.analytics-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId + '-section').style.display = 'block';
+            
+            // セクション切り替え時にデータを更新
+            if (window.KAGAMI) {
+                KAGAMI.events.emit('analytics:section-changed', { section: sectionId });
+            }
+        });
+    });
+    
+    // 初期データ読み込み
+    if (window.KAGAMI) {
+        KAGAMI.api.loadAnalyticsData().then(() => {
+            console.log('分析レポートデータ読み込み完了');
+        }).catch(error => {
+            console.error('分析レポートデータ読み込みエラー:', error);
+        });
+    }
+});
+
+// レポート生成
+async function generateReport(type) {
+    try {
+        if (window.KAGAMI) {
+            const result = await KAGAMI.api.generateReport(type);
+            KAGAMI.notify.toast('レポート生成を開始しました', 'success');
+            
+            // 生成完了後にダウンロードリンクを表示
+            setTimeout(() => {
+                showDownloadLink(result.reportId);
+            }, 5000);
+        } else {
+            // フォールバック
+            const response = await fetch('/api/analytics/generate-report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: type })
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                if (window.KAGAMI) {
+                    KAGAMI.notify.toast('レポート生成を開始しました', 'success');
+                }
+                setTimeout(() => {
+                    showDownloadLink(result.reportId);
+                }, 5000);
+            }
+        }
+    } catch (error) {
+        console.error('レポート生成エラー:', error);
+        if (window.KAGAMI) {
+            KAGAMI.notify.toast('レポート生成に失敗しました', 'error');
+        }
+    }
+}
+
+function showDownloadLink(reportId) {
+    KAGAMI.notify.toast('レポート生成が完了しました', 'success');
+    // ダウンロードリンクを表示するロジック
+}
+
+async function downloadReport(reportId) {
+    try {
+        if (window.KAGAMI) {
+            await KAGAMI.api.downloadReport(reportId);
+            KAGAMI.notify.toast('レポートのダウンロードを開始しました', 'success');
+        } else {
+            // フォールバック
+            const response = await fetch(`/api/analytics/download/${reportId}`);
+            const blob = await response.blob();
+            
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kagami_report_${reportId}.pdf`;
+            a.click();
+            
+            window.URL.revokeObjectURL(url);
+        }
+    } catch (error) {
+        console.error('レポートダウンロードエラー:', error);
+        if (window.KAGAMI) {
+            KAGAMI.notify.toast('レポートのダウンロードに失敗しました', 'error');
+        }
+    }
+}
+
+async function shareReport(reportId) {
+    try {
+        if (window.KAGAMI) {
+            const result = await KAGAMI.api.shareReport(reportId);
+            KAGAMI.notify.toast('レポートを共有しました', 'success');
+        } else {
+            // フォールバック
+            const response = await fetch(`/api/analytics/share/${reportId}`, {
+                method: 'POST'
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('レポート共有完了:', result.shareUrl);
+            }
+        }
+    } catch (error) {
+        console.error('レポート共有エラー:', error);
+        if (window.KAGAMI) {
+            KAGAMI.notify.toast('レポートの共有に失敗しました', 'error');
+        }
+    }
+}
+
+// リアルタイムデータ更新
+setInterval(async () => {
+    try {
+        if (window.KAGAMI) {
+            const response = await fetch('/api/analytics/realtime');
+            const data = await response.json();
+            
+            if (data.success) {
+                updateRealtimeStats(data.data);
+            }
+        }
+    } catch (error) {
+        console.error('リアルタイム更新エラー:', error);
+    }
+}, 30000); // 30秒間隔
+
+function updateRealtimeStats(data) {
+    // リアルタイム統計の更新ロジック
+    const activeUsersEl = document.querySelector('.stat-item:first-child .stat-value');
+    const todayViewsEl = document.querySelector('.stat-item:nth-child(2) .stat-value');
+    const avgTimeEl = document.querySelector('.stat-item:nth-child(3) .stat-value');
+    
+    if (activeUsersEl && data.active_users) {
+        activeUsersEl.textContent = data.active_users;
+    }
+    if (todayViewsEl && data.today_views) {
+        todayViewsEl.textContent = data.today_views.toLocaleString();
+    }
+    if (avgTimeEl && data.avg_session_time) {
+        avgTimeEl.textContent = data.avg_session_time;
+    }
+    
+    // アラート更新
+    updateAlerts(data.alerts);
+}
+
+function updateAlerts(alerts) {
+    const alertList = document.querySelector('.alert-list');
+    if (!alertList || !alerts) return;
+    
+    alertList.innerHTML = '';
+    
+    alerts.forEach(alert => {
+        const alertItem = document.createElement('div');
+        alertItem.className = `alert-item ${alert.type}`;
+        alertItem.innerHTML = `
+            <span class="alert-icon">${alert.type === 'warning' ? '⚠️' : '📈'}</span>
+            <div class="alert-content">
+                <div class="alert-title">${alert.title}</div>
+                <div class="alert-time">${alert.time}</div>
+            </div>
+        `;
+        alertList.appendChild(alertItem);
+    });
+}
+</script>
+{% endblock %} 

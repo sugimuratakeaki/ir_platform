@@ -515,6 +515,119 @@
         </ul>
     </div>
 
+    <!-- ########## ドキュメント一覧 ########## -->
+    <div class="section-break">
+        <div class="part-header">
+            <h2>📚 プロジェクトドキュメント一覧</h2>
+        </div>
+
+        <div class="chapter">
+            <h3>技術仕様・システム設計書</h3>
+            
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <h4><a href="docs/readme.md" target="_blank">📋 システム概要</a></h4>
+                    <div class="metric-value">README</div>
+                    <p>KAGAMI IRプラットフォームの全体概要、技術スタック、HTMLリファクタリング情報を含む基本仕様書</p>
+                </div>
+                <div class="metric-card">
+                    <h4><a href="docs/要件定義.md" target="_blank">⚙️ 要件定義書</a></h4>
+                    <div class="metric-value">SPEC</div>
+                    <p>システムの機能要件、非機能要件、IR活動の構造的課題解決に向けた詳細仕様</p>
+                </div>
+                <div class="metric-card">
+                    <h4><a href="docs/stakeholder_analysis.md" target="_blank">👥 ステークホルダー分析</a></h4>
+                    <div class="metric-value">ANALYSIS</div>
+                    <p>プロジェクトに関わる内部・外部ステークホルダーの詳細分析と関係性マッピング</p>
+                </div>
+                <div class="metric-card">
+                    <h4><a href="docs/uml_usecase.md" target="_blank">🎭 ユースケース設計</a></h4>
+                    <div class="metric-value">UML</div>
+                    <p>6つの主要アクター（経営者、IR担当者、投資家等）に対する54の専門ユースケース定義</p>
+                </div>
+            </div>
+
+            <h3>詳細技術ドキュメント</h3>
+            
+            <table class="data-table">
+                <tr>
+                    <th>ドキュメント名</th>
+                    <th>種類</th>
+                    <th>概要</th>
+                    <th>ページ数</th>
+                    <th>リンク</th>
+                </tr>
+                <tr>
+                    <td>技術仕様書（詳細版）</td>
+                    <td>HTML</td>
+                    <td>AI技術スタック、アーキテクチャ、機能群の詳細設計</td>
+                    <td>2,717行</td>
+                    <td><a href="docs/kagami_part2_tech.html" target="_blank">📘 技術仕様書</a></td>
+                </tr>
+                <tr>
+                    <td>技術仕様書（リファクタリング版）</td>
+                    <td>HTML</td>
+                    <td>保守性・アクセシビリティを向上させた最適化版技術仕様</td>
+                    <td>779行</td>
+                    <td><a href="docs/kagami_part2_tech_refactored.html" target="_blank">📗 技術仕様書（最適化版）</a></td>
+                </tr>
+                <tr>
+                    <td>ビジネス戦略書</td>
+                    <td>HTML</td>
+                    <td>市場戦略、競合優位性、収益モデルの詳細分析</td>
+                    <td>1,209行</td>
+                    <td><a href="docs/kagami_part3_business.html" target="_blank">📊 ビジネス戦略書</a></td>
+                </tr>
+                <tr>
+                    <td>統合ドキュメント</td>
+                    <td>HTML</td>
+                    <td>プロジェクト全体の包括的なドキュメント</td>
+                    <td>5,600行</td>
+                    <td><a href="docs/doc.html" target="_blank">📚 統合ドキュメント</a></td>
+                </tr>
+                <tr>
+                    <td>ユースケース詳細</td>
+                    <td>HTML</td>
+                    <td>54のユースケースの詳細仕様とワークフロー</td>
+                    <td>11,843行</td>
+                    <td><a href="docs/usecase.html" target="_blank">🎯 ユースケース詳細</a></td>
+                </tr>
+            </table>
+
+            <h3>プロジェクト管理ドキュメント</h3>
+            
+            <div class="highlight-box">
+                <h4>📋 実装ガイド・管理資料</h4>
+                <ul>
+                    <li><strong><a href="docs/KAGAMI_IMPLEMENTATION_GUIDE.md" target="_blank">🛠️ 実装ガイド</a></strong> - システム実装の詳細手順とベストプラクティス (322行)</li>
+                    <li><strong><a href="docs/viewlist.md" target="_blank">📋 ビューリスト</a></strong> - システムのビュー構成と画面設計概要 (56行)</li>
+                </ul>
+            </div>
+
+            <div class="breakthrough-element">
+                <h4>💡 ドキュメント活用ガイド</h4>
+                <p><strong>推奨閲覧順序：</strong></p>
+                <ol>
+                    <li><strong>概要把握</strong>：README → 要件定義書</li>
+                    <li><strong>関係者理解</strong>：ステークホルダー分析 → ユースケース設計</li>
+                    <li><strong>技術詳細</strong>：技術仕様書（リファクタリング版推奨）</li>
+                    <li><strong>ビジネス詳細</strong>：ビジネス戦略書</li>
+                    <li><strong>実装準備</strong>：実装ガイド → ビューリスト</li>
+                </ol>
+            </div>
+
+            <div class="visual-element">
+                <strong>【図表D-1】ドキュメント関係図</strong><br>
+                要件定義書 ← → ステークホルダー分析<br>
+                　　　↓　　　　　　　　　↓<br>
+                技術仕様書 ← → ユースケース設計<br>
+                　　　↓　　　　　　　　　↓<br>
+                実装ガイド ← → ビューリスト<br>
+                すべてのドキュメントが有機的に連携
+            </div>
+        </div>
+    </div>
+
     <!-- ########## 第1部 ########## -->
     <div id="part1" class="section-break">
         <div class="part-header">

@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+<aside class="sidebar">
+    <div class="card">
+        <header class="card__header">
+            <h3 class="card__title">
+                <span class="card__icon">📥</span>
+                データ取込メニュー
+            </h3>
+        </header>
+        
+        <div class="card__content">
+            <nav class="section-nav">
+                {% for section in sections %}
+                <button class="section-btn {{ 'active' if section.active else '' }}" data-section="{{ section.id }}">
+                    {{ section.label }}
+                </button>
+                {% endfor %}
+            </nav>
+        </div>
+    </div>
+
+    <div class="card">
+        <header class="card__header">
+            <h3 class="card__title">
+                <span class="card__icon">⚡</span>
+                処理状況
+            </h3>
+        </header>
+        
+        <div class="card__content">
+            <div class="process-stats">
+                {% for stat in processing_stats %}
+                <div class="stat-item">
+                    <span class="stat-icon">{{ stat.icon }}</span>
+                    <div class="stat-info">
+                        <div class="stat-label">{{ stat.label }}</div>
+                        <div class="stat-value">{{ stat.value }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <header class="card__header">
+            <h3 class="card__title">
+                <span class="card__icon">📋</span>
+                最近の処理履歴
+            </h3>
+        </header>
+        
+        <div class="card__content">
+            <div class="activity-list">
+                <div class="activity-item">
+                    <span class="activity-icon">✅</span>
+                    <div class="activity-content">
+                        <div class="activity-title">面談音声処理完了</div>
+                        <div class="activity-time">5分前</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <span class="activity-icon">🔄</span>
+                    <div class="activity-content">
+                        <div class="activity-title">決算資料解析中</div>
+                        <div class="activity-time">10分前</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <span class="activity-icon">📧</span>
+                    <div class="activity-content">
+                        <div class="activity-title">メール自動分類</div>
+                        <div class="activity-time">15分前</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<div class="data-input-content">
+    <!-- 音声・動画アップロード -->
+    <div class="input-section" id="audio-video-section">
+        <div class="section-header">
+            <h2>🎤 音声・動画アップロード</h2>
+            <p>面談記録、説明会音声、Web会議の録画ファイルをアップロードして自動処理します</p>
+        </div>
+
+        <!-- ドラッグ&ドロップエリア -->
+        <div class="upload-area" id="audioVideoUploadArea">
+            <div class="upload-placeholder">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">
+                    <h3>ファイルをドラッグ&ドロップ</h3>
+                    <p>またはクリックしてファイルを選択</p>
+                    <small>対応形式: MP3, MP4, WAV, M4A, MOV, AVI (最大500MB)</small>
+                </div>
+                <input type="file" id="audioVideoInput" multiple accept="audio/*,video/*" style="display: none;">
+                <button class="btn btn--primary" onclick="document.getElementById('audioVideoInput').click()">
+                    ファイル選択
+                </button>
+            </div>
+        </div>
+
+        <!-- アップロード済みファイル一覧 -->
+        <div class="uploaded-files">
+            <h3>📋 アップロード済みファイル</h3>
+            <div class="files-list" id="audioVideoFilesList">
+                <div class="file-item processing">
+                    <div class="file-icon">🎤</div>
+                    <div class="file-info">
+                        <div class="file-name">IR面談_2024-12-19_BlackRock.mp3</div>
+                        <div class="file-details">
+                            <span class="file-size">45.2 MB</span>
+                            <span class="file-duration">1:23:45</span>
+                            <span class="file-status processing">音声認識中... 67%</span>
+                        </div>
+                        <div class="processing-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 67%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn--secondary" onclick="pauseProcessing('blackrock-audio')">
+                            ⏸️ 一時停止
+                        </button>
+                    </div>
+                </div>
+
+                <div class="file-item completed">
+                    <div class="file-icon">🎥</div>
+                    <div class="file-info">
+                        <div class="file-name">決算説明会_Q3_2024.mp4</div>
+                        <div class="file-details">
+                            <span class="file-size">189.5 MB</span>
+                            <span class="file-duration">0:45:30</span>
+                            <span class="file-status completed">処理完了</span>
+                        </div>
+                        <div class="processing-results">
+                            <span class="result-item">📝 文字起こし完了</span>
+                            <span class="result-item">🏷️ 15個のトピック抽出</span>
+                            <span class="result-item">❓ 23個の質問検出</span>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn--primary" onclick="viewResults('q3-video')">
+                            📊 結果を表示
+                        </button>
+                        <button class="btn btn--secondary" onclick="downloadTranscript('q3-video')">
+                            📄 文字起こし
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Web会議連携 -->
+    <div class="input-section" id="web-meeting-section" style="display: none;">
+        <div class="section-header">
+            <h2>💻 Web会議連携</h2>
+            <p>Zoom、Teams、WebexなどのWeb会議システムと連携して自動録画・処理を行います</p>
+        </div>
+
+        <div class="meeting-integration">
+            <div class="integration-card">
+                <div class="integration-icon">🔗</div>
+                <div class="integration-info">
+                    <h3>Zoom連携</h3>
+                    <p>自動録画・文字起こし・質問抽出</p>
+                    <button class="btn btn--primary">連携設定</button>
+                </div>
+            </div>
+            <div class="integration-card">
+                <div class="integration-icon">🔗</div>
+                <div class="integration-info">
+                    <h3>Teams連携</h3>
+                    <p>会議録画・自動処理・分析</p>
+                    <button class="btn btn--primary">連携設定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- メール管理 -->
+    <div class="input-section" id="email-section" style="display: none;">
+        <div class="section-header">
+            <h2>📧 メール管理</h2>
+            <p>投資家からのメールを自動分類・分析・FAQ生成します</p>
+        </div>
+
+        <div class="email-management">
+            <div class="email-stats">
+                <div class="stat-card">
+                    <div class="stat-number">127</div>
+                    <div class="stat-label">今月の受信メール</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">23</div>
+                    <div class="stat-label">自動分類済み</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">FAQ候補</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 決算資料 -->
+    <div class="input-section" id="documents-section" style="display: none;">
+        <div class="section-header">
+            <h2>📄 決算資料</h2>
+            <p>決算資料、適時開示資料をアップロードして自動分析・FAQ生成を行います</p>
+        </div>
+
+        <div class="document-upload">
+            <div class="upload-area">
+                <div class="upload-placeholder">
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">
+                        <h3>決算資料をアップロード</h3>
+                        <p>PDF、Word、Excelファイルに対応</p>
+                        <small>対応形式: PDF, DOCX, XLSX (最大100MB)</small>
+                    </div>
+                    <input type="file" id="documentInput" multiple accept=".pdf,.docx,.xlsx" style="display: none;">
+                    <button class="btn btn--primary" onclick="document.getElementById('documentInput').click()">
+                        資料選択
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// セクション切り替え
+document.querySelectorAll('.section-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const sectionId = this.dataset.section;
+        
+        // アクティブ状態を更新
+        document.querySelectorAll('.section-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // セクション表示を切り替え
+        document.querySelectorAll('.input-section').forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById(sectionId + '-section').style.display = 'block';
+    });
+});
+
+// ファイルアップロード処理
+document.getElementById('audioVideoInput').addEventListener('change', async function(e) {
+    const files = e.target.files;
+    if (files.length > 0) {
+        try {
+            const formData = new FormData();
+            for (let file of files) {
+                formData.append('files', file);
+            }
+            
+            const response = await fetch('/api/data-input/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                KAGAMI.notify.toast('ファイルアップロードを開始しました', 'success');
+                updateFileList();
+            }
+        } catch (error) {
+            KAGAMI.notify.toast('アップロードに失敗しました', 'error');
+        }
+    }
+});
+
+// ドラッグ&ドロップ機能
+const uploadArea = document.getElementById('audioVideoUploadArea');
+
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFileUpload(files);
+    }
+});
+
+async function handleFileUpload(files) {
+    try {
+        const formData = new FormData();
+        for (let file of files) {
+            formData.append('files', file);
+        }
+        
+        const response = await fetch('/api/data-input/upload', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            KAGAMI.notify.toast('ファイルアップロードを開始しました', 'success');
+            updateFileList();
+        }
+    } catch (error) {
+        KAGAMI.notify.toast('アップロードに失敗しました', 'error');
+    }
+}
+
+async function updateFileList() {
+    try {
+        const response = await fetch('/api/data-input/files');
+        const files = await response.json();
+        
+        const fileList = document.getElementById('audioVideoFilesList');
+        fileList.innerHTML = '';
+        
+        files.forEach(file => {
+            const fileItem = createFileItem(file);
+            fileList.appendChild(fileItem);
+        });
+    } catch (error) {
+        console.error('ファイルリスト更新エラー:', error);
+    }
+}
+
+function createFileItem(file) {
+    const div = document.createElement('div');
+    div.className = `file-item ${file.status}`;
+    div.innerHTML = `
+        <div class="file-icon">${file.type === 'audio' ? '🎤' : '🎥'}</div>
+        <div class="file-info">
+            <div class="file-name">${file.name}</div>
+            <div class="file-details">
+                <span class="file-size">${file.size}</span>
+                <span class="file-duration">${file.duration}</span>
+                <span class="file-status ${file.status}">${file.statusText}</span>
+            </div>
+            ${file.status === 'processing' ? `
+                <div class="processing-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${file.progress}%"></div>
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+        <div class="file-actions">
+            ${file.status === 'processing' ? 
+                `<button class="btn btn--secondary" onclick="pauseProcessing('${file.id}')">⏸️ 一時停止</button>` :
+                `<button class="btn btn--primary" onclick="viewResults('${file.id}')">📊 結果を表示</button>`
+            }
+        </div>
+    `;
+    return div;
+}
+
+async function pauseProcessing(fileId) {
+    try {
+        const response = await fetch(`/api/data-input/pause/${fileId}`, {
+            method: 'POST'
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            KAGAMI.notify.toast('処理を一時停止しました', 'info');
+            updateFileList();
+        }
+    } catch (error) {
+        KAGAMI.notify.toast('一時停止に失敗しました', 'error');
+    }
+}
+
+async function viewResults(fileId) {
+    try {
+        const response = await fetch(`/api/data-input/results/${fileId}`);
+        const results = await response.json();
+        
+        // 結果表示モーダルを開く
+        showResultsModal(results);
+    } catch (error) {
+        KAGAMI.notify.toast('結果の取得に失敗しました', 'error');
+    }
+}
+
+function showResultsModal(results) {
+    // モーダル表示ロジック
+    console.log('処理結果:', results);
+}
+
+async function downloadTranscript(fileId) {
+    try {
+        const response = await fetch(`/api/data-input/transcript/${fileId}`);
+        const blob = await response.blob();
+        
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `transcript_${fileId}.txt`;
+        a.click();
+        
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        KAGAMI.notify.toast('文字起こしのダウンロードに失敗しました', 'error');
+    }
+}
+
+// リアルタイム更新
+setInterval(updateFileList, 10000); // 10秒間隔
+</script>
+{% endblock %} 

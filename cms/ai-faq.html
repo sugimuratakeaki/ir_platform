@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI-FAQ管理 - KAGAMI IR管理センター</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="ai-faq.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1 class="logo">🔮 KAGAMI</h1>
+                <span class="subtitle">IR管理センター</span>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-btn" onclick="navigateTo('index.html')">
+                    📋 ダッシュボード
+                </button>
+                <button class="nav-btn" onclick="navigateTo('data-input.html')">
+                    📥 データ取込
+                </button>
+                <button class="nav-btn active">
+                    🤖 AI-FAQ管理
+                </button>
+                <button class="nav-btn" onclick="navigateTo('dialogue.html')">
+                    💬 対話管理
+                </button>
+                <button class="nav-btn" onclick="navigateTo('analytics.html')">
+                    📊 分析レポート
+                </button>
+                <button class="nav-btn" onclick="navigateTo('settings.html')">
+                    ⚙️ システム設定
+                </button>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">田中 IR担当者</span>
+                <button class="logout-btn" onclick="logout()">ログアウト</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <!-- サイドナビゲーション -->
+        <aside class="sidebar">
+            <div class="ai-faq-nav">
+                <h3>🤖 AI-FAQ機能</h3>
+                <nav class="section-nav">
+                    <button class="section-btn active" data-section="generation">
+                        📝 FAQ生成・編集
+                    </button>
+                    <button class="section-btn" data-section="approval">
+                        ✅ 承認キュー
+                    </button>
+                    <button class="section-btn" data-section="management">
+                        📚 FAQ管理
+                    </button>
+                    <button class="section-btn" data-section="analytics">
+                        📊 FAQ分析
+                    </button>
+                    <button class="section-btn" data-section="learning">
+                        🧠 学習データ
+                    </button>
+                </nav>
+            </div>
+
+            <!-- AI状況サマリー -->
+            <div class="ai-status-summary">
+                <h4>🤖 AI状況</h4>
+                <div class="ai-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">⚡</span>
+                        <div class="stat-info">
+                            <div class="stat-label">AI精度</div>
+                            <div class="stat-value">96.8%</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">🔄</span>
+                        <div class="stat-info">
+                            <div class="stat-label">生成中</div>
+                            <div class="stat-value">3</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">✅</span>
+                        <div class="stat-info">
+                            <div class="stat-label">承認待ち</div>
+                            <div class="stat-value">5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 今日のAI活動 -->
+            <div class="ai-activities">
+                <h4>📋 今日のAI活動</h4>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <span class="activity-icon">🤖</span>
+                        <div class="activity-content">
+                            <div class="activity-title">FAQ自動生成完了</div>
+                            <div class="activity-detail">「ESG戦略について」</div>
+                            <div class="activity-time">10分前</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-icon">📈</span>
+                        <div class="activity-content">
+                            <div class="activity-title">精度改善完了</div>
+                            <div class="activity-detail">96.5% → 96.8%</div>
+                            <div class="activity-time">1時間前</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-icon">🔄</span>
+                        <div class="activity-content">
+                            <div class="activity-title">学習データ更新</div>
+                            <div class="activity-detail">新規データ: 15件</div>
+                            <div class="activity-time">2時間前</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- AI-FAQ管理コンテンツ -->
+        <section class="ai-faq-content">
+            <!-- FAQ生成・編集 -->
+            <div class="faq-section" id="generation-section">
+                <div class="section-header">
+                    <h2>📝 FAQ生成・編集</h2>
+                    <p>AIによる自動FAQ生成と手動編集機能</p>
+                </div>
+
+                <!-- AI自動生成 -->
+                <div class="ai-generation">
+                    <h3>🤖 AI自動FAQ生成</h3>
+                    <div class="generation-controls">
+                        <div class="input-group">
+                            <label for="questionInput">質問入力</label>
+                            <textarea 
+                                id="questionInput" 
+                                placeholder="投資家からの質問を入力してください。AIが最適な回答を生成します。&#10;例：来期の半導体事業の成長戦略について教えてください。"
+                                rows="3"></textarea>
+                        </div>
+                        <div class="generation-settings">
+                            <div class="setting-group">
+                                <label for="generationMode">生成モード</label>
+                                <select id="generationMode">
+                                    <option value="comprehensive">包括的回答</option>
+                                    <option value="concise" selected>簡潔回答</option>
+                                    <option value="technical">技術詳細</option>
+                                    <option value="friendly">親しみやすい</option>
+                                </select>
+                            </div>
+                            <div class="setting-group">
+                                <label for="confidenceLevel">信頼度しきい値</label>
+                                <select id="confidenceLevel">
+                                    <option value="80">80%以上</option>
+                                    <option value="85" selected>85%以上</option>
+                                    <option value="90">90%以上</option>
+                                    <option value="95">95%以上</option>
+                                </select>
+                            </div>
+                            <div class="setting-group">
+                                <label for="sourceData">参照データ</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" checked> 決算資料</label>
+                                    <label><input type="checkbox" checked> 過去FAQ</label>
+                                    <label><input type="checkbox" checked> 面談記録</label>
+                                    <label><input type="checkbox"> 業界データ</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary generate-btn" onclick="generateFAQ()">
+                            🤖 FAQ生成
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 生成結果表示 -->
+                <div class="generation-results" id="generationResults" style="display: none;">
+                    <h3>🎯 生成結果</h3>
+                    <div class="generated-faq">
+                        <div class="faq-preview">
+                            <div class="faq-header">
+                                <h4 class="generated-question">Q. 来期の半導体事業の成長戦略について教えてください。</h4>
+                                <div class="confidence-score">
+                                    <span class="confidence-label">信頼度:</span>
+                                    <span class="confidence-value high">92.5%</span>
+                                </div>
+                            </div>
+                            <div class="faq-answer">
+                                <div class="answer-content" id="generatedAnswer">
+                                    A. 来期の半導体事業においては、以下の成長戦略を推進してまいります：
+                                    
+                                    <br><br><strong>1. 次世代製品開発の加速</strong><br>
+                                    AI・IoT向け高性能チップの開発を重点的に進め、2025年度中に3製品の市場投入を計画しています。
+                                    
+                                    <br><br><strong>2. 製造能力の拡充</strong><br>
+                                    福岡工場の設備増強により、生産能力を現在の1.5倍に拡大します。
+                                    
+                                    <br><br><strong>3. 戦略的パートナーシップ</strong><br>
+                                    グローバル大手企業との協業により、新市場開拓を進めています。
+                                    
+                                    <br><br>これらの施策により、半導体事業の売上高を今期比25%増を目指します。
+                                </div>
+                            </div>
+                            <div class="faq-metadata">
+                                <div class="source-references">
+                                    <h5>参照データ:</h5>
+                                    <ul>
+                                        <li>📊 2024年Q3決算説明資料 (p.15-18)</li>
+                                        <li>📋 中期経営計画 (半導体戦略部分)</li>
+                                        <li>🎤 IR面談記録 (BlackRock社、2024/12/15)</li>
+                                    </ul>
+                                </div>
+                                <div class="quality-metrics">
+                                    <span class="metric">📝 文字数: 284文字</span>
+                                    <span class="metric">🎯 専門度: 中</span>
+                                    <span class="metric">⏱️ 読了時間: 45秒</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="faq-actions">
+                            <button class="btn-primary" onclick="editGeneratedFAQ()">
+                                ✏️ 編集
+                            </button>
+                            <button class="btn-success" onclick="approveFAQ()">
+                                ✅ 承認
+                            </button>
+                            <button class="btn-warning" onclick="regenerateFAQ()">
+                                🔄 再生成
+                            </button>
+                            <button class="btn-secondary" onclick="saveDraft()">
+                                💾 下書き保存
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ編集エディタ -->
+                <div class="faq-editor" id="faqEditor" style="display: none;">
+                    <h3>✏️ FAQ編集</h3>
+                    <div class="editor-container">
+                        <div class="editor-tabs">
+                            <button class="tab-btn active" data-tab="edit">編集</button>
+                            <button class="tab-btn" data-tab="preview">プレビュー</button>
+                            <button class="tab-btn" data-tab="versions">バージョン</button>
+                        </div>
+                        
+                        <div class="tab-content active" id="edit-tab">
+                            <div class="form-group">
+                                <label for="editQuestion">質問</label>
+                                <input type="text" id="editQuestion" value="Q. 来期の半導体事業の成長戦略について教えてください。">
+                            </div>
+                            <div class="form-group">
+                                <label for="editAnswer">回答</label>
+                                <textarea id="editAnswer" rows="10" class="answer-editor">A. 来期の半導体事業においては、以下の成長戦略を推進してまいります：
+
+1. 次世代製品開発の加速
+AI・IoT向け高性能チップの開発を重点的に進め、2025年度中に3製品の市場投入を計画しています。
+
+2. 製造能力の拡充
+福岡工場の設備増強により、生産能力を現在の1.5倍に拡大します。
+
+3. 戦略的パートナーシップ
+グローバル大手企業との協業により、新市場開拓を進めています。
+
+これらの施策により、半導体事業の売上高を今期比25%増を目指します。</textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="editCategory">カテゴリ</label>
+                                    <select id="editCategory">
+                                        <option value="business-strategy">事業戦略</option>
+                                        <option value="financial">財務</option>
+                                        <option value="esg">ESG</option>
+                                        <option value="governance">ガバナンス</option>
+                                        <option value="technology">技術</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editPriority">優先度</label>
+                                    <select id="editPriority">
+                                        <option value="high">高</option>
+                                        <option value="medium" selected>中</option>
+                                        <option value="low">低</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editTags">タグ</label>
+                                    <input type="text" id="editTags" placeholder="タグをカンマ区切りで入力" value="半導体, 事業戦略, 成長計画">
+                                </div>
+                            </div>
+                            <div class="editor-toolbar">
+                                <button class="toolbar-btn" onclick="insertFormatting('bold')">
+                                    <strong>B</strong>
+                                </button>
+                                <button class="toolbar-btn" onclick="insertFormatting('italic')">
+                                    <em>I</em>
+                                </button>
+                                <button class="toolbar-btn" onclick="insertFormatting('link')">
+                                    🔗
+                                </button>
+                                <button class="toolbar-btn" onclick="insertFormatting('list')">
+                                    📋
+                                </button>
+                                <button class="toolbar-btn" onclick="checkGrammar()">
+                                    📝 文法チェック
+                                </button>
+                                <button class="toolbar-btn" onclick="checkCompliance()">
+                                    ⚖️ コンプライアンス
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="preview-tab">
+                            <div class="faq-preview-container">
+                                <div class="preview-faq">
+                                    <h4 id="previewQuestion">Q. 来期の半導体事業の成長戦略について教えてください。</h4>
+                                    <div id="previewAnswer" class="preview-answer">
+                                        <!-- プレビュー内容がここに表示される -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="versions-tab">
+                            <div class="version-history">
+                                <div class="version-item current">
+                                    <div class="version-info">
+                                        <h5>バージョン 3.0 (現在)</h5>
+                                        <p>AI生成後手動調整、文体を統一</p>
+                                        <span class="version-meta">2024/12/19 15:30 - 田中IR担当者</span>
+                                    </div>
+                                    <div class="version-actions">
+                                        <button class="btn-small">現在</button>
+                                    </div>
+                                </div>
+                                <div class="version-item">
+                                    <div class="version-info">
+                                        <h5>バージョン 2.0</h5>
+                                        <p>数値データを最新版に更新</p>
+                                        <span class="version-meta">2024/12/19 14:15 - AI自動更新</span>
+                                    </div>
+                                    <div class="version-actions">
+                                        <button class="btn-small" onclick="revertVersion('2.0')">復元</button>
+                                        <button class="btn-small" onclick="compareVersions('2.0', '3.0')">比較</button>
+                                    </div>
+                                </div>
+                                <div class="version-item">
+                                    <div class="version-info">
+                                        <h5>バージョン 1.0</h5>
+                                        <p>初回AI生成版</p>
+                                        <span class="version-meta">2024/12/18 16:45 - AI生成</span>
+                                    </div>
+                                    <div class="version-actions">
+                                        <button class="btn-small" onclick="revertVersion('1.0')">復元</button>
+                                        <button class="btn-small" onclick="compareVersions('1.0', '3.0')">比較</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="editor-actions">
+                            <button class="btn-primary" onclick="saveEditedFAQ()">
+                                💾 保存
+                            </button>
+                            <button class="btn-success" onclick="publishFAQ()">
+                                🚀 公開
+                            </button>
+                            <button class="btn-secondary" onclick="cancelEdit()">
+                                ❌ キャンセル
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- バッチ生成 -->
+                <div class="batch-generation">
+                    <h3>⚡ 一括FAQ生成</h3>
+                    <div class="batch-controls">
+                        <div class="batch-source">
+                            <h4>生成ソース選択</h4>
+                            <div class="source-options">
+                                <label class="source-option">
+                                    <input type="checkbox" checked>
+                                    <span class="option-info">
+                                        <span class="option-title">新規音声データ</span>
+                                        <span class="option-detail">未処理: 3件</span>
+                                    </span>
+                                </label>
+                                <label class="source-option">
+                                    <input type="checkbox" checked>
+                                    <span class="option-info">
+                                        <span class="option-title">更新された決算資料</span>
+                                        <span class="option-detail">新規: 2件</span>
+                                    </span>
+                                </label>
+                                <label class="source-option">
+                                    <input type="checkbox">
+                                    <span class="option-info">
+                                        <span class="option-title">頻出質問の更新</span>
+                                        <span class="option-detail">候補: 8件</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="batch-settings">
+                            <div class="setting-group">
+                                <label>生成品質</label>
+                                <select>
+                                    <option value="standard" selected>標準 (速い)</option>
+                                    <option value="high">高品質 (時間要)</option>
+                                    <option value="premium">最高品質 (長時間)</option>
+                                </select>
+                            </div>
+                            <div class="setting-group">
+                                <label>自動承認</label>
+                                <select>
+                                    <option value="none" selected>なし</option>
+                                    <option value="high-confidence">高信頼度のみ</option>
+                                    <option value="all">すべて</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn-primary batch-generate-btn" onclick="startBatchGeneration()">
+                            ⚡ 一括生成開始
+                        </button>
+                    </div>
+                    
+                    <div class="batch-progress" id="batchProgress" style="display: none;">
+                        <h4>生成進行状況</h4>
+                        <div class="progress-overview">
+                            <div class="progress-bar-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="batchProgressFill" style="width: 0%"></div>
+                                </div>
+                                <span class="progress-text" id="batchProgressText">0 / 13 FAQ</span>
+                            </div>
+                        </div>
+                        <div class="generation-log" id="generationLog">
+                            <!-- 生成ログがここに表示される -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 承認キュー -->
+            <div class="faq-section" id="approval-section" style="display: none;">
+                <div class="section-header">
+                    <h2>✅ FAQ承認キュー</h2>
+                    <p>AI生成FAQの品質確認と承認管理</p>
+                </div>
+
+                <!-- 承認待ちFAQ一覧 -->
+                <div class="approval-queue">
+                    <div class="queue-header">
+                        <h3>📋 承認待ちFAQ (5件)</h3>
+                        <div class="queue-filters">
+                            <select id="confidenceFilter">
+                                <option value="all">すべて</option>
+                                <option value="high">高信頼度 (90%+)</option>
+                                <option value="medium">中信頼度 (80-90%)</option>
+                                <option value="low">低信頼度 (-80%)</option>
+                            </select>
+                            <select id="categoryFilter">
+                                <option value="all">すべてのカテゴリ</option>
+                                <option value="financial">財務</option>
+                                <option value="business">事業戦略</option>
+                                <option value="esg">ESG</option>
+                                <option value="governance">ガバナンス</option>
+                            </select>
+                            <button class="btn-secondary" onclick="applyQueueFilters()">フィルター</button>
+                        </div>
+                    </div>
+
+                    <div class="approval-list">
+                        <div class="approval-item high-confidence">
+                            <div class="approval-header">
+                                <div class="faq-summary">
+                                    <h4>Q. ESG経営における具体的な取り組みについて</h4>
+                                    <div class="faq-meta">
+                                        <span class="confidence-badge high">信頼度: 94.2%</span>
+                                        <span class="category-badge esg">ESG</span>
+                                        <span class="generated-time">30分前に生成</span>
+                                    </div>
+                                </div>
+                                <div class="quick-actions">
+                                    <button class="btn-success btn-small" onclick="quickApprove('esg-001')">
+                                        ✅ 承認
+                                    </button>
+                                    <button class="btn-warning btn-small" onclick="requestRevision('esg-001')">
+                                        📝 修正依頼
+                                    </button>
+                                    <button class="btn-danger btn-small" onclick="rejectFAQ('esg-001')">
+                                        ❌ 却下
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="faq-preview-snippet">
+                                <p><strong>A.</strong> 当社では環境・社会・ガバナンスの3つの軸で包括的なESG経営を推進しています。環境面では2030年カーボンニュートラル達成に向けた...</p>
+                                <button class="btn-text" onclick="expandFAQPreview('esg-001')">詳細を表示</button>
+                            </div>
+                            <div class="quality-indicators">
+                                <div class="quality-item">
+                                    <span class="quality-icon">📝</span>
+                                    <span class="quality-label">文体チェック:</span>
+                                    <span class="quality-status pass">適切</span>
+                                </div>
+                                <div class="quality-item">
+                                    <span class="quality-icon">⚖️</span>
+                                    <span class="quality-label">コンプライアンス:</span>
+                                    <span class="quality-status pass">問題なし</span>
+                                </div>
+                                <div class="quality-item">
+                                    <span class="quality-icon">🎯</span>
+                                    <span class="quality-label">正確性:</span>
+                                    <span class="quality-status warning">要確認</span>
+                                </div>
+                                <div class="quality-item">
+                                    <span class="quality-icon">🔗</span>
+                                    <span class="quality-label">参照データ:</span>
+                                    <span class="quality-status pass">3件</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="approval-item medium-confidence">
+                            <div class="approval-header">
+                                <div class="faq-summary">
+                                    <h4>Q. DX推進の進捗状況と今後の計画は？</h4>
+                                    <div class="faq-meta">
+                                        <span class="confidence-badge medium">信頼度: 87.6%</span>
+                                        <span class="category-badge business">事業戦略</span>
+                                        <span class="generated-time">1時間前に生成</span>
+                                    </div>
+                                </div>
+                                <div class="quick-actions">
+                                    <button class="btn-success btn-small" onclick="quickApprove('dx-001')">
+                                        ✅ 承認
+                                    </button>
+                                    <button class="btn-warning btn-small" onclick="requestRevision('dx-001')">
+                                        📝 修正依頼
+                                    </button>
+                                    <button class="btn-danger btn-small" onclick="rejectFAQ('dx-001')">
+                                        ❌ 却下
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="faq-preview-snippet">
+                                <p><strong>A.</strong> DX推進については、デジタル基盤の整備を第一段階として、現在85%の完了率を達成しています。第二段階では...</p>
+                                <button class="btn-text" onclick="expandFAQPreview('dx-001')">詳細を表示</button>
+                            </div>
+                            <div class="quality-indicators">
+                                <div class="quality-item">
+                                    <span class="quality-icon">📝</span>
+                                    <span class="quality-label">文体チェック:</span>
+                                    <span class="quality-status pass">適切</span>
+                                </div>
+                                <div class="quality-item">
+                                    <span class="quality-icon">⚖️</span>
+                                    <span class="quality-label">コンプライアンス:</span>
+                                    <span class="quality-status pass">問題なし</span>
+                                </div>
+                                <div class="quality-item">
+                                    <span class="quality-icon">🎯</span>
+                                    <span class="quality-label">正確性:</span>
+                                    <span class="quality-status pass">適切</span>
+                                </div>
+                                <div class="quality-item">
+                                    <span class="quality-icon">🔗</span>
+                                    <span class="quality-label">参照データ:</span>
+                                    <span class="quality-status warning">1件のみ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="approval-item low-confidence">
+                            <div class="approval-header">
+                                <div class="faq-summary">
+                                    <h4>Q. 競合他社との市場シェア比較について</h4>
+                                    <div class="faq-meta">
+                                        <span class="confidence-badge low">信頼度: 73.4%</span>
+                                        <span class="category-badge business">事業戦略</span>
+                                        <span class="generated-time">2時間前に生成</span>
+                                    </div>
+                                </div>
+                                <div class="quick-actions">
+                                    <button class="btn-success btn-small" onclick="quickApprove('market-001')">
+                                        ✅ 承認
+                                    </button>
+                                    <button class="btn-warning btn-small" onclick="requestRevision('market-001')">
+                                        📝 修正依頼
+                                    </button>
+                                    <button class="btn-danger btn-small" onclick="rejectFAQ('market-001')">
+                                        ❌ 却下
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="faq-preview-snippet">
+                                <p><strong>A.</strong> 当社の市場シェアについてですが、セグメント別に詳細をご説明いたします。半導体分野では...</p>
+                                <button class="btn-text" onclick="expandFAQPreview('market-001')">詳細を表示</button>
+                            </div>
+                            <div class="quality-indicators">
+                                <div class="quality-item">
+                                    <span class="quality-icon">📝</span>
+                                    <span class="quality-label">文体チェック:</span>
+                                    <span class="quality-status pass">適切</span>
+                                </div>
+                                <div class="quality-item">
+                                    <span class="quality-icon">⚖️</span>
+                                    <span class="quality-label">コンプライアンス:</span>
+                                    <span class="quality-status warning">注意事項あり</span>
+                                </div>
+                                <div class="quality-item">
+                                    <span class="quality-icon">🎯</span>
+                                    <span class="quality-label">正確性:</span>
+                                    <span class="quality-status error">要修正</span>
+                                </div>
+                                <div class="quality-item">
+                                    <span class="quality-icon">🔗</span>
+                                    <span class="quality-label">参照データ:</span>
+                                    <span class="quality-status error">不足</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 一括承認 -->
+                <div class="bulk-approval">
+                    <h3>⚡ 一括操作</h3>
+                    <div class="bulk-controls">
+                        <div class="selection-info">
+                            <span id="selectedCount">0</span> 件選択中
+                        </div>
+                        <div class="bulk-actions">
+                            <button class="btn-success" onclick="bulkApprove()" disabled>
+                                ✅ 一括承認
+                            </button>
+                            <button class="btn-warning" onclick="bulkRequestRevision()" disabled>
+                                📝 一括修正依頼
+                            </button>
+                            <button class="btn-danger" onclick="bulkReject()" disabled>
+                                ❌ 一括却下
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ管理 -->
+            <div class="faq-section" id="management-section" style="display: none;">
+                <div class="section-header">
+                    <h2>📚 FAQ管理</h2>
+                    <p>公開済みFAQの検索・編集・管理</p>
+                </div>
+
+                <!-- FAQ検索・フィルター -->
+                <div class="faq-search">
+                    <div class="search-controls">
+                        <div class="search-input-group">
+                            <input type="text" id="faqSearchInput" placeholder="FAQを検索..." class="search-input">
+                            <button class="search-btn" onclick="searchFAQs()">🔍 検索</button>
+                        </div>
+                        <div class="search-filters">
+                            <select id="statusFilter">
+                                <option value="all">すべて</option>
+                                <option value="published">公開中</option>
+                                <option value="draft">下書き</option>
+                                <option value="archived">アーカイブ</option>
+                            </select>
+                            <select id="categoryFilterManagement">
+                                <option value="all">すべてのカテゴリ</option>
+                                <option value="financial">財務</option>
+                                <option value="business">事業戦略</option>
+                                <option value="esg">ESG</option>
+                                <option value="governance">ガバナンス</option>
+                                <option value="technology">技術</option>
+                            </select>
+                            <select id="sortOrder">
+                                <option value="recent">最新順</option>
+                                <option value="popular">人気順</option>
+                                <option value="alphabetical">五十音順</option>
+                                <option value="confidence">信頼度順</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ一覧表示 -->
+                <div class="faq-list">
+                    <div class="faq-list-header">
+                        <h3>📋 FAQ一覧 (248件)</h3>
+                        <div class="list-actions">
+                            <button class="btn-primary" onclick="createNewFAQ()">
+                                ➕ 新規FAQ作成
+                            </button>
+                            <button class="btn-secondary" onclick="exportFAQs()">
+                                📤 エクスポート
+                            </button>
+                            <button class="btn-secondary" onclick="importFAQs()">
+                                📥 インポート
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="faq-table">
+                        <div class="table-header">
+                            <div class="table-col checkbox-col">
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            </div>
+                            <div class="table-col">質問</div>
+                            <div class="table-col">カテゴリ</div>
+                            <div class="table-col">ステータス</div>
+                            <div class="table-col">更新日</div>
+                            <div class="table-col">閲覧数</div>
+                            <div class="table-col">アクション</div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="table-col checkbox-col">
+                                <input type="checkbox" class="row-checkbox">
+                            </div>
+                            <div class="table-col">
+                                <div class="faq-title">
+                                    <h5>来期の半導体事業の成長戦略について</h5>
+                                    <div class="faq-metrics">
+                                        <span class="metric">📊 信頼度: 96.8%</span>
+                                        <span class="metric">⭐ 評価: 4.7/5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-col">
+                                <span class="category-badge business">事業戦略</span>
+                            </div>
+                            <div class="table-col">
+                                <span class="status-badge published">公開中</span>
+                            </div>
+                            <div class="table-col">2024/12/19</div>
+                            <div class="table-col">1,247</div>
+                            <div class="table-col">
+                                <div class="action-buttons">
+                                    <button class="btn-small" onclick="editFAQ('faq-001')">編集</button>
+                                    <button class="btn-small" onclick="viewFAQStats('faq-001')">統計</button>
+                                    <button class="btn-small" onclick="duplicateFAQ('faq-001')">複製</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="table-col checkbox-col">
+                                <input type="checkbox" class="row-checkbox">
+                            </div>
+                            <div class="table-col">
+                                <div class="faq-title">
+                                    <h5>ESG経営における具体的な取り組み</h5>
+                                    <div class="faq-metrics">
+                                        <span class="metric">📊 信頼度: 94.2%</span>
+                                        <span class="metric">⭐ 評価: 4.5/5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-col">
+                                <span class="category-badge esg">ESG</span>
+                            </div>
+                            <div class="table-col">
+                                <span class="status-badge published">公開中</span>
+                            </div>
+                            <div class="table-col">2024/12/18</div>
+                            <div class="table-col">983</div>
+                            <div class="table-col">
+                                <div class="action-buttons">
+                                    <button class="btn-small" onclick="editFAQ('faq-002')">編集</button>
+                                    <button class="btn-small" onclick="viewFAQStats('faq-002')">統計</button>
+                                    <button class="btn-small" onclick="duplicateFAQ('faq-002')">複製</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="table-col checkbox-col">
+                                <input type="checkbox" class="row-checkbox">
+                            </div>
+                            <div class="table-col">
+                                <div class="faq-title">
+                                    <h5>今期の配当政策について</h5>
+                                    <div class="faq-metrics">
+                                        <span class="metric">📊 信頼度: 91.5%</span>
+                                        <span class="metric">⭐ 評価: 4.3/5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-col">
+                                <span class="category-badge financial">財務</span>
+                            </div>
+                            <div class="table-col">
+                                <span class="status-badge draft">下書き</span>
+                            </div>
+                            <div class="table-col">2024/12/17</div>
+                            <div class="table-col">-</div>
+                            <div class="table-col">
+                                <div class="action-buttons">
+                                    <button class="btn-small" onclick="editFAQ('faq-003')">編集</button>
+                                    <button class="btn-small" onclick="publishDraftFAQ('faq-003')">公開</button>
+                                    <button class="btn-small" onclick="deleteFAQ('faq-003')">削除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ページネーション -->
+                    <div class="pagination">
+                        <button class="page-btn" onclick="previousPage()" disabled>‹ 前</button>
+                        <span class="page-info">1 / 25 ページ</span>
+                        <button class="page-btn" onclick="nextPage()">次 ›</button>
+                        <select class="page-size" onchange="changePageSize()">
+                            <option value="10" selected>10件表示</option>
+                            <option value="25">25件表示</option>
+                            <option value="50">50件表示</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 一括管理操作 -->
+                <div class="bulk-management">
+                    <h3>⚡ 一括管理</h3>
+                    <div class="bulk-management-controls">
+                        <div class="selection-info">
+                            <span id="selectedFAQCount">0</span> 件選択中
+                        </div>
+                        <div class="bulk-management-actions">
+                            <button class="btn-primary" onclick="bulkPublish()" disabled>
+                                🚀 一括公開
+                            </button>
+                            <button class="btn-secondary" onclick="bulkArchive()" disabled>
+                                📦 一括アーカイブ
+                            </button>
+                            <button class="btn-warning" onclick="bulkUpdateCategory()" disabled>
+                                🏷️ カテゴリ変更
+                            </button>
+                            <button class="btn-danger" onclick="bulkDelete()" disabled>
+                                🗑️ 一括削除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="ai-faq.js"></script>
+</body>
+</html> 

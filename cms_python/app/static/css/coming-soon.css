@@ -1,0 +1,70 @@
+/* 🔮 KAGAMI - 開発中ページスタイル */
+
+.coming-soon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3xl) var(--space-lg);
+    text-align: center;
+    min-height: 60vh;
+}
+
+.coming-soon .icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-lg);
+    opacity: 0.8;
+}
+
+.coming-soon h3 {
+    font-size: 1.5rem;
+    color: var(--kagami-blue);
+    margin-bottom: var(--space-md);
+}
+
+.coming-soon p {
+    color: var(--gray-600);
+    margin-bottom: var(--space-sm);
+    max-width: 400px;
+    line-height: 1.6;
+}
+
+/* フッタースタイル */
+.footer {
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+    padding: var(--space-lg) 0;
+    margin-top: auto;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-info {
+    display: flex;
+    gap: var(--space-lg);
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.footer-links {
+    display: flex;
+    gap: var(--space-lg);
+}
+
+.footer-links a {
+    color: var(--kagami-blue);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: var(--transition-normal);
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+} 

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KAGAMI IR管理センター - AI技術を活用したIR業務支援システム v1.0">
+    <meta name="keywords" content="IR, 投資家向け広報, AI, FAQ管理, データ分析, ダッシュボード">
+    <meta name="author" content="KAGAMI Development Team">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- セキュリティヘッダー -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <title>{% block title %}{{ title }}{% endblock %} - 🔮 KAGAMI IR管理センター</title>
+    
+    <!-- Critical Resource Preloading -->
+    <link rel="preload" href="{{ url_for('static', path='css/styles.css') }}?v=1.0.3" as="style">
+    <link rel="preload" href="{{ url_for('static', path='js/app.js') }}?v=1.0.3" as="script">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" as="style">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}?v=1.0.3" type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/coming-soon.css') }}?v=1.0.3" type="text/css">
+    {% block extra_css %}{% endblock %}
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- フォールバックスタイル -->
+    <style>
+        /* 基本的なスタイルフォールバック */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            padding: 1rem 2rem;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .nav-btn.active {
+            background: #ffffff;
+            color: #1a365d;
+            font-weight: 600;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .content-area {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        
+        .dashboard-content {
+            display: grid;
+            gap: 2rem;
+        }
+        
+        .dashboard-content h2 {
+            color: #1a365d;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .health-grid, .kpi-grid, .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .health-item, .kpi-card, .insight-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .health-item:hover, .kpi-card:hover, .insight-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-primary {
+            background: #1a365d;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #0f1b2c;
+            transform: translateY(-1px);
+        }
+        
+        /* データ取込ページ用フォールバックスタイル */
+        .data-input-content {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .data-input-content h2 {
+            color: #1a365d;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .data-input-nav {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .data-input-nav h3 {
+            color: #1a365d;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .section-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .section-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            width: 100%;
+        }
+        
+        .section-btn:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+            transform: translateY(-1px);
+        }
+        
+        .section-btn.active {
+            background: #1a365d;
+            color: #ffffff;
+            border-color: #1a365d;
+        }
+        
+        .processing-summary {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        
+        .processing-summary h4 {
+            color: #1a365d;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .process-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: #f7fafc;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .stat-icon {
+            font-size: 1.25rem;
+            color: #1a365d;
+        }
+        
+        .stat-info {
+            flex: 1;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #718096;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .upload-area {
+            margin-bottom: 2rem;
+        }
+        
+        .upload-zone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 0.75rem;
+            padding: 3rem;
+            text-align: center;
+            background: #f7fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover {
+            border-color: #1a365d;
+            background: #edf2f7;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #a0aec0;
+        }
+        
+        .upload-zone:hover .upload-icon {
+            color: #1a365d;
+        }
+        
+        .upload-zone h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-zone p {
+            color: #718096;
+            font-size: 0.875rem;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: #1a365d;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.875rem;
+            padding: 0;
+        }
+        
+        .btn-link:hover {
+            color: #0f1b2c;
+        }
+        
+        .processing-queue {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        
+        .processing-queue h3 {
+            color: #1a365d;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-icon {
+            font-size: 1.25rem;
+            color: #1a365d;
+        }
+        
+        .file-name {
+            flex: 1;
+            font-weight: 500;
+            color: #2d3748;
+        }
+        
+        .status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .status.processing {
+            background: #ed8936;
+            color: #ffffff;
+        }
+        
+        .status.completed {
+            background: #48bb78;
+            color: #ffffff;
+        }
+        
+        .status.error {
+            background: #f56565;
+            color: #ffffff;
+        }
+        
+        .progress-bar {
+            width: 100px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-left: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #1a365d;
+            border-radius: 9999px;
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+            
+            .data-input-content {
+                padding: 1.5rem;
+            }
+            
+            .upload-zone {
+                padding: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .header-nav {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .data-input-content {
+                padding: 1rem;
+            }
+            
+            .upload-zone {
+                padding: 1.5rem;
+            }
+            
+            .queue-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .progress-bar {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+    
+    <!-- PWA & Mobile Optimization -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+    <meta name="theme-color" content="#1a365d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KAGAMI IR">
+</head>
+<body>
+    {% include 'components/header.html' %}
+
+    <main class="main-content">
+        {% block sidebar %}{% endblock %}
+        
+        <section class="content-area">
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+
+    {% include 'components/footer.html' %}
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', path='js/app.js') }}?v=1.0.3"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+        // CSSファイルの読み込み確認とフォールバック
+        function ensureCSSLoaded() {
+            const stylesheets = document.querySelectorAll('link[rel="stylesheet"]');
+            let cssLoaded = false;
+            
+            stylesheets.forEach(link => {
+                if (link.href.includes('styles.css') || link.href.includes('coming-soon.css')) {
+                    cssLoaded = true;
+                }
+            });
+            
+            if (!cssLoaded) {
+                console.warn('CSSファイルが読み込まれていません。フォールバックスタイルを使用します。');
+                // フォールバックスタイルは既にインラインで定義済み
+            } else {
+                console.log('✅ CSSファイルが正常に読み込まれました');
+            }
+        }
+        
+        // ページ読み込み完了時にCSS確認
+        document.addEventListener('DOMContentLoaded', ensureCSSLoaded);
+        
+        // 初期化時にPythonバックエンドとの連携設定
+        if (window.KAGAMI) {
+            KAGAMI.config.apiBaseUrl = '/api';
+            KAGAMI.config.pythonBackend = true;
+            KAGAMI.init().then(() => {
+                console.log('🐍 Python バックエンド連携完了');
+            });
+        }
+    </script>
+</body>
+</html> 

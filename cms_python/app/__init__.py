@@ -1,0 +1,1 @@
+# 🔮 KAGAMI IR管理センター - Python プロトタイプ 

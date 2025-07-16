@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📥 データ取込・処理 - KAGAMI IR管理センター</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="data-input.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1 class="logo">🔮 KAGAMI</h1>
+                <span class="subtitle">IR管理センター</span>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-btn" onclick="navigateTo('index.html')">
+                    📋 ダッシュボード
+                </button>
+                <button class="nav-btn active">
+                    📥 データ取込
+                </button>
+                <button class="nav-btn" onclick="navigateTo('ai-faq.html')">
+                    🤖 AI-FAQ管理
+                </button>
+                <button class="nav-btn" onclick="navigateTo('dialogue.html')">
+                    💬 対話管理
+                </button>
+                <button class="nav-btn" onclick="navigateTo('analytics.html')">
+                    📊 分析レポート
+                </button>
+                <button class="nav-btn" onclick="navigateTo('settings.html')">
+                    ⚙️ システム設定
+                </button>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">田中 IR担当者</span>
+                <button class="logout-btn" onclick="logout()">ログアウト</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <!-- サイドナビゲーション -->
+        <aside class="sidebar">
+            <div class="data-input-nav">
+                <h3>📥 データ取込メニュー</h3>
+                <nav class="section-nav">
+                    <button class="section-btn active" data-section="audio-video">
+                        🎤 音声・動画
+                    </button>
+                    <button class="section-btn" data-section="web-meeting">
+                        💻 Web会議連携
+                    </button>
+                    <button class="section-btn" data-section="email">
+                        📧 メール管理
+                    </button>
+                    <button class="section-btn" data-section="documents">
+                        📄 決算資料
+                    </button>
+                </nav>
+            </div>
+
+            <!-- 処理状況サマリー -->
+            <div class="processing-summary">
+                <h4>⚡ 処理状況</h4>
+                <div class="process-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon">🎤</span>
+                        <div class="stat-info">
+                            <div class="stat-label">音声処理中</div>
+                            <div class="stat-value">3</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📧</span>
+                        <div class="stat-info">
+                            <div class="stat-label">メール解析中</div>
+                            <div class="stat-value">7</div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📄</span>
+                        <div class="stat-info">
+                            <div class="stat-label">文書処理中</div>
+                            <div class="stat-value">2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近の処理履歴 -->
+            <div class="recent-activities">
+                <h4>📋 最近の処理履歴</h4>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <span class="activity-icon">✅</span>
+                        <div class="activity-content">
+                            <div class="activity-title">面談音声処理完了</div>
+                            <div class="activity-time">5分前</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-icon">🔄</span>
+                        <div class="activity-content">
+                            <div class="activity-title">決算資料解析中</div>
+                            <div class="activity-time">10分前</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-icon">📧</span>
+                        <div class="activity-content">
+                            <div class="activity-title">メール自動分類</div>
+                            <div class="activity-time">15分前</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- データ取込コンテンツ -->
+        <section class="data-input-content">
+            <!-- 音声・動画アップロード -->
+            <div class="input-section" id="audio-video-section">
+                <div class="section-header">
+                    <h2>🎤 音声・動画アップロード</h2>
+                    <p>面談記録、説明会音声、Web会議の録画ファイルをアップロードして自動処理します</p>
+                </div>
+
+                <!-- ドラッグ&ドロップエリア -->
+                <div class="upload-area" id="audioVideoUploadArea">
+                    <div class="upload-placeholder">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">
+                            <h3>ファイルをドラッグ&ドロップ</h3>
+                            <p>またはクリックしてファイルを選択</p>
+                            <small>対応形式: MP3, MP4, WAV, M4A, MOV, AVI (最大500MB)</small>
+                        </div>
+                        <input type="file" id="audioVideoInput" multiple accept="audio/*,video/*" style="display: none;">
+                        <button class="btn-primary" onclick="document.getElementById('audioVideoInput').click()">
+                            ファイル選択
+                        </button>
+                    </div>
+                </div>
+
+                <!-- アップロード済みファイル一覧 -->
+                <div class="uploaded-files">
+                    <h3>📋 アップロード済みファイル</h3>
+                    <div class="files-list" id="audioVideoFilesList">
+                        <div class="file-item processing">
+                            <div class="file-icon">🎤</div>
+                            <div class="file-info">
+                                <div class="file-name">IR面談_2024-12-19_BlackRock.mp3</div>
+                                <div class="file-details">
+                                    <span class="file-size">45.2 MB</span>
+                                    <span class="file-duration">1:23:45</span>
+                                    <span class="file-status processing">音声認識中... 67%</span>
+                                </div>
+                                <div class="processing-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 67%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn-secondary" onclick="pauseProcessing('blackrock-audio')">
+                                    ⏸️ 一時停止
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="file-item completed">
+                            <div class="file-icon">🎥</div>
+                            <div class="file-info">
+                                <div class="file-name">決算説明会_Q3_2024.mp4</div>
+                                <div class="file-details">
+                                    <span class="file-size">189.5 MB</span>
+                                    <span class="file-duration">0:45:30</span>
+                                    <span class="file-status completed">処理完了</span>
+                                </div>
+                                <div class="processing-results">
+                                    <span class="result-item">📝 文字起こし完了</span>
+                                    <span class="result-item">🏷️ 15個のトピック抽出</span>
+                                    <span class="result-item">❓ 23個の質問検出</span>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn-primary" onclick="viewResults('q3-video')">
+                                    📊 結果を表示
+                                </button>
+                                <button class="btn-secondary" onclick="downloadTranscript('q3-video')">
+                                    📄 文字起こし
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 音声設定 -->
+                <div class="audio-settings">
+                    <h3>⚙️ 音声処理設定</h3>
+                    <div class="settings-grid">
+                        <div class="setting-group">
+                            <label for="audioQuality">音声認識精度</label>
+                            <select id="audioQuality">
+                                <option value="high">高精度（処理時間: 長い）</option>
+                                <option value="medium" selected>標準（推奨）</option>
+                                <option value="fast">高速（処理時間: 短い）</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="speakerIdentification">話者識別</label>
+                            <select id="speakerIdentification">
+                                <option value="auto">自動検出</option>
+                                <option value="manual">手動設定</option>
+                                <option value="off">無効</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="languageDetection">言語検出</label>
+                            <select id="languageDetection">
+                                <option value="auto">自動検出</option>
+                                <option value="ja">日本語のみ</option>
+                                <option value="en">英語のみ</option>
+                                <option value="multi">多言語対応</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Web会議連携 -->
+            <div class="input-section" id="web-meeting-section" style="display: none;">
+                <div class="section-header">
+                    <h2>💻 Web会議連携設定</h2>
+                    <p>Zoom、Teams等のWeb会議サービスと連携して、面談の自動録画・処理を行います</p>
+                </div>
+
+                <!-- 連携サービス設定 -->
+                <div class="integration-services">
+                    <h3>🔗 連携サービス</h3>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <img src="https://logos-world.net/wp-content/uploads/2020/12/Zoom-Logo.png" alt="Zoom" style="width: 40px; height: 40px; object-fit: contain;">
+                            </div>
+                            <div class="service-info">
+                                <h4>Zoom</h4>
+                                <p class="service-status connected">✅ 接続済み</p>
+                                <div class="service-details">
+                                    <div>アカウント: ir@company.co.jp</div>
+                                    <div>最終同期: 2024/12/19 14:30</div>
+                                </div>
+                            </div>
+                            <div class="service-actions">
+                                <button class="btn-secondary" onclick="configureZoom()">設定</button>
+                                <button class="btn-warning" onclick="disconnectZoom()">切断</button>
+                            </div>
+                        </div>
+
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <img src="https://logos-world.net/wp-content/uploads/2021/01/Microsoft-Teams-Logo.png" alt="Teams" style="width: 40px; height: 40px; object-fit: contain;">
+                            </div>
+                            <div class="service-info">
+                                <h4>Microsoft Teams</h4>
+                                <p class="service-status disconnected">❌ 未接続</p>
+                                <div class="service-details">
+                                    <div>接続を行うとWeb会議の</div>
+                                    <div>自動録画・処理が可能になります</div>
+                                </div>
+                            </div>
+                            <div class="service-actions">
+                                <button class="btn-primary" onclick="connectTeams()">接続</button>
+                            </div>
+                        </div>
+
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <img src="https://logos-world.net/wp-content/uploads/2020/06/Google-Meet-Logo.png" alt="Google Meet" style="width: 40px; height: 40px; object-fit: contain;">
+                            </div>
+                            <div class="service-info">
+                                <h4>Google Meet</h4>
+                                <p class="service-status disconnected">❌ 未接続</p>
+                                <div class="service-details">
+                                    <div>Google Workspace連携により</div>
+                                    <div>自動録画・文字起こしが可能</div>
+                                </div>
+                            </div>
+                            <div class="service-actions">
+                                <button class="btn-primary" onclick="connectGoogleMeet()">接続</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自動取込設定 -->
+                <div class="auto-import-settings">
+                    <h3>🔄 自動取込設定</h3>
+                    <div class="settings-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="autoImportEnabled">自動取込</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="autoImportEnabled" checked>
+                                    <label for="autoImportEnabled" class="toggle-label"></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="importDelay">取込開始遅延</label>
+                                <select id="importDelay">
+                                    <option value="0">即座に</option>
+                                    <option value="5" selected>5分後</option>
+                                    <option value="15">15分後</option>
+                                    <option value="30">30分後</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="meetingFilter">対象会議フィルター</label>
+                                <input type="text" id="meetingFilter" placeholder="例：IR、面談、investor" value="IR,面談,investor">
+                                <small>会議名に含まれるキーワード（カンマ区切り）</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="processSettings">処理設定</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" checked> 文字起こし</label>
+                                    <label><input type="checkbox" checked> 話者識別</label>
+                                    <label><input type="checkbox" checked> トピック抽出</label>
+                                    <label><input type="checkbox"> 感情分析</label>
+                                    <label><input type="checkbox" checked> FAQ候補生成</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 取込履歴 -->
+                <div class="import-history">
+                    <h3>📋 取込履歴</h3>
+                    <div class="history-table">
+                        <div class="table-header">
+                            <div class="table-col">会議名</div>
+                            <div class="table-col">日時</div>
+                            <div class="table-col">参加者</div>
+                            <div class="table-col">ステータス</div>
+                            <div class="table-col">アクション</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-col">
+                                <div class="meeting-info">
+                                    <div class="meeting-title">IR個別面談 - BlackRock社</div>
+                                    <div class="meeting-duration">1時間23分</div>
+                                </div>
+                            </div>
+                            <div class="table-col">2024/12/19 13:00</div>
+                            <div class="table-col">田中IR担当、BlackRock投資部</div>
+                            <div class="table-col">
+                                <span class="status-badge processing">処理中</span>
+                            </div>
+                            <div class="table-col">
+                                <button class="btn-small" onclick="viewMeetingDetails('blackrock-meeting')">詳細</button>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-col">
+                                <div class="meeting-info">
+                                    <div class="meeting-title">決算説明会準備会議</div>
+                                    <div class="meeting-duration">45分</div>
+                                </div>
+                            </div>
+                            <div class="table-col">2024/12/18 15:30</div>
+                            <div class="table-col">IR部メンバー 5名</div>
+                            <div class="table-col">
+                                <span class="status-badge completed">完了</span>
+                            </div>
+                            <div class="table-col">
+                                <button class="btn-small" onclick="viewMeetingDetails('prep-meeting')">詳細</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- メール統合管理 -->
+            <div class="input-section" id="email-section" style="display: none;">
+                <div class="section-header">
+                    <h2>📧 メール統合管理</h2>
+                    <p>IR関連メールの自動取込・分類・分析を行います</p>
+                </div>
+
+                <!-- メール接続設定 -->
+                <div class="email-connections">
+                    <h3>📮 メールアカウント設定</h3>
+                    <div class="email-accounts">
+                        <div class="account-card">
+                            <div class="account-info">
+                                <div class="account-icon">📧</div>
+                                <div class="account-details">
+                                    <h4>ir@company.co.jp</h4>
+                                    <p>メインIRアカウント</p>
+                                    <div class="account-stats">
+                                        <span>今日の受信: 23件</span>
+                                        <span>未分類: 5件</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="account-status">
+                                <span class="status-indicator online"></span>
+                                <span class="status-text">同期中</span>
+                            </div>
+                            <div class="account-actions">
+                                <button class="btn-secondary" onclick="configureEmail('main')">設定</button>
+                            </div>
+                        </div>
+
+                        <div class="account-card">
+                            <div class="account-info">
+                                <div class="account-icon">📧</div>
+                                <div class="account-details">
+                                    <h4>support@company.co.jp</h4>
+                                    <p>投資家サポート</p>
+                                    <div class="account-stats">
+                                        <span>今日の受信: 12件</span>
+                                        <span>未分類: 2件</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="account-status">
+                                <span class="status-indicator online"></span>
+                                <span class="status-text">同期中</span>
+                            </div>
+                            <div class="account-actions">
+                                <button class="btn-secondary" onclick="configureEmail('support')">設定</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary add-account-btn" onclick="addEmailAccount()">
+                        ➕ アカウント追加
+                    </button>
+                </div>
+
+                <!-- 自動分類設定 -->
+                <div class="email-classification">
+                    <h3>🏷️ 自動分類設定</h3>
+                    <div class="classification-rules">
+                        <div class="rule-item">
+                            <div class="rule-info">
+                                <h4>緊急対応</h4>
+                                <p>キーワード: 緊急, urgent, 至急, ASAP</p>
+                                <div class="rule-stats">今月適用: 8件</div>
+                            </div>
+                            <div class="rule-actions">
+                                <button class="btn-secondary" onclick="editRule('urgent')">編集</button>
+                                <button class="btn-warning" onclick="disableRule('urgent')">無効化</button>
+                            </div>
+                        </div>
+
+                        <div class="rule-item">
+                            <div class="rule-info">
+                                <h4>決算関連</h4>
+                                <p>キーワード: 決算, earnings, 業績, 財務</p>
+                                <div class="rule-stats">今月適用: 34件</div>
+                            </div>
+                            <div class="rule-actions">
+                                <button class="btn-secondary" onclick="editRule('earnings')">編集</button>
+                                <button class="btn-warning" onclick="disableRule('earnings')">無効化</button>
+                            </div>
+                        </div>
+
+                        <div class="rule-item">
+                            <div class="rule-info">
+                                <h4>ESG・サステナビリティ</h4>
+                                <p>キーワード: ESG, 環境, sustainability, 社会貢献</p>
+                                <div class="rule-stats">今月適用: 16件</div>
+                            </div>
+                            <div class="rule-actions">
+                                <button class="btn-secondary" onclick="editRule('esg')">編集</button>
+                                <button class="btn-warning" onclick="disableRule('esg')">無効化</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="createNewRule()">
+                        ➕ 新規ルール作成
+                    </button>
+                </div>
+
+                <!-- 最近のメール分析 -->
+                <div class="recent-emails">
+                    <h3>📊 最近のメール分析</h3>
+                    <div class="email-analytics">
+                        <div class="analytics-summary">
+                            <div class="summary-card">
+                                <div class="summary-icon">📈</div>
+                                <div class="summary-info">
+                                    <div class="summary-value">+23%</div>
+                                    <div class="summary-label">今週の受信量</div>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-icon">🎯</div>
+                                <div class="summary-info">
+                                    <div class="summary-value">94%</div>
+                                    <div class="summary-label">自動分類精度</div>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-icon">⏱️</div>
+                                <div class="summary-info">
+                                    <div class="summary-value">2.3h</div>
+                                    <div class="summary-label">平均回答時間</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="email-list">
+                        <div class="email-item priority-high">
+                            <div class="email-priority">🔴</div>
+                            <div class="email-info">
+                                <div class="email-from">BlackRock Investment Team</div>
+                                <div class="email-subject">Q4業績ガイダンスについて追加質問</div>
+                                <div class="email-preview">半導体事業の設備投資計画について詳細な説明を...</div>
+                                <div class="email-meta">
+                                    <span class="email-time">5分前</span>
+                                    <span class="email-category">決算関連</span>
+                                </div>
+                            </div>
+                            <div class="email-actions">
+                                <button class="btn-primary" onclick="respondToEmail('blackrock-q4')">回答</button>
+                                <button class="btn-secondary" onclick="viewEmailDetails('blackrock-q4')">詳細</button>
+                            </div>
+                        </div>
+
+                        <div class="email-item">
+                            <div class="email-priority">🟡</div>
+                            <div class="email-info">
+                                <div class="email-from">個人投資家 山田様</div>
+                                <div class="email-subject">配当政策について</div>
+                                <div class="email-preview">今後の配当政策の方向性について教えてください...</div>
+                                <div class="email-meta">
+                                    <span class="email-time">1時間前</span>
+                                    <span class="email-category">配当政策</span>
+                                </div>
+                            </div>
+                            <div class="email-actions">
+                                <button class="btn-primary" onclick="respondToEmail('yamada-dividend')">回答</button>
+                                <button class="btn-secondary" onclick="viewEmailDetails('yamada-dividend')">詳細</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 決算資料管理 -->
+            <div class="input-section" id="documents-section" style="display: none;">
+                <div class="section-header">
+                    <h2>📄 決算資料管理</h2>
+                    <p>決算資料・適時開示の取込・解析・管理を行います</p>
+                </div>
+
+                <!-- TDnet自動取得 -->
+                <div class="tdnet-integration">
+                    <h3>📡 TDnet自動取得</h3>
+                    <div class="tdnet-status">
+                        <div class="status-card">
+                            <div class="status-icon">🟢</div>
+                            <div class="status-info">
+                                <h4>接続状態: 正常</h4>
+                                <p>最終取得: 2024/12/19 15:45</p>
+                                <div class="status-details">
+                                    <span>今日の取得件数: 3件</span>
+                                    <span>待機中: 0件</span>
+                                </div>
+                            </div>
+                            <div class="status-actions">
+                                <button class="btn-primary" onclick="manualTdnetSync()">手動同期</button>
+                                <button class="btn-secondary" onclick="configureTdnet()">設定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文書アップロード -->
+                <div class="document-upload">
+                    <h3>📤 文書アップロード</h3>
+                    <div class="upload-area document-upload-area" id="documentUploadArea">
+                        <div class="upload-placeholder">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-text">
+                                <h3>決算資料をドラッグ&ドロップ</h3>
+                                <p>PDF、Excel、PowerPointファイルに対応</p>
+                                <small>対応形式: PDF, XLSX, PPTX, DOCX (最大100MB)</small>
+                            </div>
+                            <input type="file" id="documentInput" multiple accept=".pdf,.xlsx,.pptx,.docx" style="display: none;">
+                            <button class="btn-primary" onclick="document.getElementById('documentInput').click()">
+                                ファイル選択
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文書一覧 -->
+                <div class="document-list">
+                    <h3>📋 登録済み文書</h3>
+                    <div class="document-filters">
+                        <select id="documentType">
+                            <option value="all">すべて</option>
+                            <option value="earnings">決算短信</option>
+                            <option value="disclosure">適時開示</option>
+                            <option value="annual">有価証券報告書</option>
+                            <option value="presentation">説明会資料</option>
+                        </select>
+                        <select id="documentPeriod">
+                            <option value="all">すべての期間</option>
+                            <option value="current">当期</option>
+                            <option value="last">前期</option>
+                            <option value="2years">過去2年</option>
+                        </select>
+                        <button class="btn-secondary" onclick="filterDocuments()">フィルター適用</button>
+                    </div>
+
+                    <div class="documents-table">
+                        <div class="table-header">
+                            <div class="table-col">文書名</div>
+                            <div class="table-col">種別</div>
+                            <div class="table-col">日付</div>
+                            <div class="table-col">解析状況</div>
+                            <div class="table-col">アクション</div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="table-col">
+                                <div class="document-info">
+                                    <div class="document-icon">📊</div>
+                                    <div class="document-details">
+                                        <div class="document-title">2024年第3四半期決算短信</div>
+                                        <div class="document-size">2.3 MB</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-col">決算短信</div>
+                            <div class="table-col">2024/12/18</div>
+                            <div class="table-col">
+                                <span class="status-badge completed">解析完了</span>
+                                <div class="analysis-results">
+                                    <span class="result-tag">📈 数値抽出: 45項目</span>
+                                    <span class="result-tag">📝 FAQ候補: 12件</span>
+                                </div>
+                            </div>
+                            <div class="table-col">
+                                <button class="btn-small" onclick="viewAnalysis('q3-earnings')">解析結果</button>
+                                <button class="btn-small" onclick="generateFAQ('q3-earnings')">FAQ生成</button>
+                            </div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="table-col">
+                                <div class="document-info">
+                                    <div class="document-icon">📋</div>
+                                    <div class="document-details">
+                                        <div class="document-title">中期経営計画説明会資料</div>
+                                        <div class="document-size">8.7 MB</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-col">説明会資料</div>
+                            <div class="table-col">2024/12/15</div>
+                            <div class="table-col">
+                                <span class="status-badge processing">解析中... 78%</span>
+                                <div class="processing-progress">
+                                    <div class="progress-bar small">
+                                        <div class="progress-fill" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-col">
+                                <button class="btn-small" disabled>解析中</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- バージョン管理 -->
+                <div class="version-control">
+                    <h3>🔄 バージョン管理</h3>
+                    <div class="version-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon">📄</div>
+                            <div class="timeline-content">
+                                <h4>決算短信 v3.0</h4>
+                                <p>最終修正版をアップロード</p>
+                                <div class="timeline-meta">
+                                    <span>2024/12/18 16:30</span>
+                                    <span>田中IR担当者</span>
+                                </div>
+                            </div>
+                            <div class="timeline-actions">
+                                <button class="btn-small">詳細</button>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-icon">📝</div>
+                            <div class="timeline-content">
+                                <h4>決算短信 v2.1</h4>
+                                <p>数値修正（売上高の訂正）</p>
+                                <div class="timeline-meta">
+                                    <span>2024/12/18 14:15</span>
+                                    <span>財務部 佐藤</span>
+                                </div>
+                            </div>
+                            <div class="timeline-actions">
+                                <button class="btn-small">詳細</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="data-input.js"></script>
+</body>
+</html> 
