@@ -357,15 +357,20 @@ const KAGAMI = (function() {
         },
         
         setupNavigation() {
-            const navButtons = document.querySelectorAll('.nav-btn');
-            
-            navButtons.forEach(button => {
-                button.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    const section = button.getAttribute('data-section');
-                    this.navigateToSection(section);
-                });
-            });
+            const navContainer = document.querySelector('.header-nav');
+            if (!navContainer) {
+                logger.warn('ナビゲーションコンテナが見つかりません');
+                return;
+            }
+
+            // navContainer.addEventListener('click', (event) => {
+            //     const navBtn = event.target.closest('.nav-btn');
+            //     if (navBtn && !navBtn.classList.contains('active')) {
+            //         // event.preventDefault(); // 標準のリンク動作を妨げないようにコメントアウト
+            //         const section = navBtn.getAttribute('href'); // href属性から直接URLを取得
+            //         // this.navigateToSection(section); // ページ遷移はaタグのhrefに任せる
+            //     }
+            // });
         },
         
         navigateToSection(section) {

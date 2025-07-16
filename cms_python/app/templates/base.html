@@ -482,21 +482,21 @@
     <meta name="apple-mobile-web-app-title" content="KAGAMI IR">
 </head>
 <body>
-    {% include 'components/header.html' %}
+    <div id="app-container">
+        {% include 'components/header.html' %}
 
-    <main class="main-content">
-        {% block sidebar %}{% endblock %}
-        
-        <section class="content-area">
+        <main class="main-content">
+            {% block sidebar %}{% endblock %}
             {% block content %}{% endblock %}
-        </section>
-    </main>
+        </main>
 
-    {% include 'components/footer.html' %}
-    
-    <!-- Scripts -->
-    <script src="{{ url_for('static', path='js/app.js') }}?v=1.0.3"></script>
-    <script src="{{ url_for('static', path='js/components.js') }}?v=1.0.0"></script>
+        {% include 'components/footer.html' %}
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="{{ url_for('static', path='js/app.js') }}?v=1.0.4"></script>
+    <script src="{{ url_for('static', path='js/components.js') }}?v=1.0.1"></script>
     {% block extra_js %}{% endblock %}
     
     <script>

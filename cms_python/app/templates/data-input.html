@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% from 'components/sidebar_card.html' import card with context %}
+
+{% block title %}データ取込ページ{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', path='css/data-input.css') }}?v=1.0.1" type="text/css">
+{% endblock %}
+
+{% block sidebar %}
+<aside class="layout-sidebar">
+    {% call card('取込状況', icon='📊') %}
+        <p>ここに取込状況のサマリーが入ります。</p>
+    {% endcall %}
+
+    {% call card('新規取込', icon='🚀') %}
+        <button class="button">ファイル選択</button>
+    {% endcall %}
+</aside>
+{% endblock %}
+
+{% block content %}
+<main class="layout-content">
+    <h1 class="page-title">データ取込</h1>
+
+    <!-- 処理状況サマリー -->
+    <section class="card-grid">
+        <div class="summary-card">
+            <h3><i class="fas fa-tasks"></i>処理中のタスク</h3>
+            <p class="summary-value">3</p>
+            <div class="summary-detail">音声認識: 2, Web連携: 1</div>
+        </div>
+        <div class="summary-card">
+            <h3><i class="fas fa-check-circle"></i>今週の完了件数</h3>
+            <p class="summary-value">28</p>
+            <div class="summary-detail">成功: 27, エラー: 1</div>
+        </div>
+        <div class="summary-card">
+            <h3><i class="fas fa-hdd"></i>ストレージ使用率</h3>
+            <p class="summary-value">65%</p>
+            <div class="summary-detail">520GB / 800GB</div>
+        </div>
+    </section>
+
+    <!-- 最近の処理履歴 -->
+    <section class="history-section card">
+        <header class="card__header">
+            <h2 class="card__title"><i class="fas fa-history"></i> 最近の処理履歴</h2>
+        </header>
+        <div class="card__content">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>ファイル名</th>
+                        <th>種類</th>
+                        <th>ステータス</th>
+                        <th>日時</th>
+                        <th>アクション</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Q2_Earnings_Call.mp3</td>
+                        <td>音声</td>
+                        <td><span class="status--completed">完了</span></td>
+                        <td>2024-07-16 10:30</td>
+                        <td><button class="button button--small">詳細</button></td>
+                    </tr>
+                    <tr>
+                        <td>Project_Alpha_Meeting.m4a</td>
+                        <td>音声</td>
+                        <td><span class="status--processing">処理中</span></td>
+                        <td>2024-07-16 09:15</td>
+                        <td><button class="button button--small" disabled>詳細</button></td>
+                    </tr>
+                    <tr>
+                        <td><a href="https://example.com/meeting_log" target="_blank">Web会議ログ</a></td>
+                        <td>Web</td>
+                        <td><span class="status--completed">完了</span></td>
+                        <td>2024-07-15 17:00</td>
+                        <td><button class="button button--small">詳細</button></td>
+                    </tr>
+                    <tr>
+                        <td>Invalid_Data.zip</td>
+                        <td>その他</td>
+                        <td><span class="status--error">エラー</span></td>
+                        <td>2024-07-15 14:20</td>
+                        <td><button class="button button--small">詳細</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- データソース選択 -->
+    <section class="datasource-section card-grid">
+        <div class="card datasource-card">
+            <header class="card__header">
+                <h3 class="card__title"><i class="fas fa-microphone-alt"></i> 音声ファイルアップロード</h3>
+            </header>
+            <div class="card__content">
+                <p>MP3, M4A, WAVなどの音声ファイルをアップロードして、自動で文字起こし・解析を行います。</p>
+                <div class="drop-zone">
+                    <p>ここにファイルをドラッグ＆ドロップ</p>
+                    <p>または</p>
+                    <button class="button">ファイルを選択</button>
+                </div>
+                <div class="upload-settings">
+                    <h4><i class="fas fa-cog"></i> 音声処理設定</h4>
+                    <div class="form-group">
+                        <label for="language">言語選択:</label>
+                        <select id="language" name="language">
+                            <option value="ja-JP">日本語</option>
+                            <option value="en-US">英語 (米国)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="speaker-diarization" name="speaker-diarization" checked>
+                        <label for="speaker-diarization">話者分離を有効にする</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card datasource-card">
+            <header class="card__header">
+                <h3 class="card__title"><i class="fas fa-video"></i> Web会議連携</h3>
+            </header>
+            <div class="card__content">
+                <p>Zoom, Google Meet, Teamsなどの録画データを連携して、議事録を自動生成します。</p>
+                <div class="integration-buttons">
+                    <button class="button button--integration zoom"><i class="fab fa-zoom"></i> Zoomからインポート</button>
+                    <button class="button button--integration gmeet"><i class="fab fa-google"></i> Google Meetからインポート</button>
+                    <button class="button button--integration teams"><i class="fab fa-microsoft"></i> Teamsからインポート</button>
+                </div>
+                <div class="form-group">
+                    <label for="meeting-url">または、共有URLを入力:</label>
+                    <input type="url" id="meeting-url" name="meeting-url" placeholder="https://...">
+                    <button class="button">取得</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %} 

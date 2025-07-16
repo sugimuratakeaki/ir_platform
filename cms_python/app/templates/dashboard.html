@@ -1,47 +1,33 @@
 {% extends "base.html" %}
+{% from 'components/sidebar_card.html' import card with context %}
+
+{% block title %}ダッシュボード{% endblock %}
 
 {% block sidebar %}
-<!-- サイドバー -->
-<aside class="sidebar">
-    <div class="quick-actions">
-        <h3>🚀 クイックアクション</h3>
-        <button class="quick-btn" onclick="quickAction('new-faq')">
-            <span class="icon">📝</span>
-            新規FAQ作成
-        </button>
-        <button class="quick-btn" onclick="quickAction('upload-audio')">
-            <span class="icon">🎤</span>
-            音声アップロード
-        </button>
-        <button class="quick-btn" onclick="quickAction('schedule-meeting')">
-            <span class="icon">📅</span>
-            面談スケジュール
-        </button>
-        <button class="quick-btn" onclick="quickAction('generate-report')">
-            <span class="icon">📊</span>
-            レポート生成
-        </button>
-    </div>
+<aside class="layout-sidebar">
+    {% call card('サマリー', icon='📊', class='summary-card') %}
+        <ul class="summary-list">
+            <li><span class="summary-label">総記事数:</span><span class="summary-value">1,234件</span></li>
+            <li><span class="summary-label">下書き:</span><span class="summary-value">56件</span></li>
+            <li><span class="summary-label">公開済み:</span><span class="summary-value">1,178件</span></li>
+        </ul>
+    {% endcall %}
 
-    <div class="notification-center">
-        <h3>🔔 通知センター</h3>
-        <div class="notification-item urgent">
-            <span class="notification-icon">🚨</span>
-            <div class="notification-content">
-                <div class="notification-title">緊急対応必要</div>
-                <div class="notification-desc">大型機関投資家からの重要質問</div>
-                <div class="notification-time">5分前</div>
-            </div>
-        </div>
-        <div class="notification-item">
-            <span class="notification-icon">✅</span>
-            <div class="notification-content">
-                <div class="notification-title">FAQ承認完了</div>
-                <div class="notification-desc">「Q1業績について」が公開されました</div>
-                <div class="notification-time">1時間前</div>
-            </div>
-        </div>
-    </div>
+    {% call card('最近の更新', icon='📝', class='recent-updates-card') %}
+        <ul class="update-list">
+            <li><a href="#">新しい決算説明会資料が追加されました。</a><span class="update-date">2024-07-16</span></li>
+            <li><a href="#">AIによるFAQが3件生成されました。</a><span class="update-date">2024-07-15</span></li>
+            <li><a href="#">音声認識の処理が完了しました。</a><span class="update-date">2024-07-14</span></li>
+        </ul>
+    {% endcall %}
+
+    {% call card('クイックリンク', icon='🔗', class='quick-links-card') %}
+        <ul class="quick-link-list">
+            <li><a href="/data-input">データ取込</a></li>
+            <li><a href="/ai-faq">AI-FAQ</a></li>
+            <li><a href="#">設定</a></li>
+        </ul>
+    {% endcall %}
 </aside>
 {% endblock %}
 

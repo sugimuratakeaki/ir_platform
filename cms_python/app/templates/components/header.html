@@ -6,34 +6,28 @@
             <span class="subtitle">IR管理センター</span>
         </div>
         <nav class="header-nav">
-            <a href="{{ url_for('dashboard') }}" 
-               class="nav-btn {{ 'active' if current_section == 'dashboard' else '' }}">
+            <a href="{{ url_for('dashboard') }}" class="nav-btn {{ 'active' if current_section == 'dashboard' else '' }}">
                 📋 ダッシュボード
             </a>
-            <a href="{{ url_for('data_input') }}" 
-               class="nav-btn {{ 'active' if current_section == 'data-input' else '' }}">
+            <a href="{{ url_for('data_input') }}" class="nav-btn {{ 'active' if current_section == 'data-input' else '' }}">
                 📥 データ取込
             </a>
-            <a href="{{ url_for('ai_faq') }}" 
-               class="nav-btn {{ 'active' if current_section == 'ai-faq' else '' }}">
+            <a href="{{ url_for('ai_faq') }}" class="nav-btn {{ 'active' if current_section == 'ai-faq' else '' }}">
                 🤖 AI-FAQ管理
             </a>
-            <a href="{{ url_for('dialogue') }}" 
-               class="nav-btn {{ 'active' if current_section == 'dialogue' else '' }}">
+            <a href="{{ url_for('dialogue') }}" class="nav-btn {{ 'active' if current_section == 'dialogue' else '' }}">
                 💬 対話管理
             </a>
-            <a href="{{ url_for('analytics') }}" 
-               class="nav-btn {{ 'active' if current_section == 'analytics' else '' }}">
+            <a href="{{ url_for('analytics') }}" class="nav-btn {{ 'active' if current_section == 'analytics' else '' }}">
                 📊 分析レポート
             </a>
-            <a href="{{ url_for('settings') }}" 
-               class="nav-btn {{ 'active' if current_section == 'settings' else '' }}">
+            <a href="{{ url_for('settings') }}" class="nav-btn {{ 'active' if current_section == 'settings' else '' }}">
                 ⚙️ システム設定
             </a>
         </nav>
         <div class="user-info">
             <span class="user-name">{{ user.name }}</span>
-            <button class="logout-btn" onclick="logout()">ログアウト</button>
+            <button class="logout-btn">ログアウト</button>
         </div>
     </div>
 </header> 

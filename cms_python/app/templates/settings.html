@@ -1,14 +1,24 @@
 {% extends "base.html" %}
+{% from 'components/sidebar_card.html' import card with context %}
+
+{% block title %}システム設定{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', path='css/settings.css') }}" type="text/css">
+{% endblock %}
+
+{% block sidebar %}
+<aside class="layout-sidebar">
+    {% call card('設定項目', icon='⚙️') %}
+        <p>ここに設定項目が入ります。</p>
+    {% endcall %}
+</aside>
+{% endblock %}
 
 {% block content %}
-<div class="settings-content">
-    <h2>⚙️ システム設定</h2>
-    
-    <div class="coming-soon">
-        <div class="icon">⚙️</div>
-        <h3>開発中</h3>
-        <p>システム設定機能は現在開発中です。</p>
-        <p>設定変更は環境変数またはconfig.pyファイルで行ってください。</p>
-    </div>
-</div>
+<main class="layout-content">
+    <h1 class="page-title">システム設定</h1>
+    <!-- メインコンテンツ -->
+</main>
 {% endblock %} 

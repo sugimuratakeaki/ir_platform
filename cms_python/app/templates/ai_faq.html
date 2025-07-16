@@ -1,342 +1,309 @@
 {% extends "base.html" %}
+{% from 'components/sidebar_card.html' import card with context %}
+
+{% block title %}AI-FAQページ{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', path='css/ai-faq.css') }}?v=1.0.1" type="text/css">
+{% endblock %}
 
 {% block sidebar %}
-<aside class="sidebar">
-    <div class="card">
-        <header class="card__header">
-            <h3 class="card__title">
-                <span class="card__icon">🤖</span>
-                AI-FAQ機能
-            </h3>
-        </header>
-        
-        <div class="card__content">
-            <nav class="section-nav">
-                {% for section in sections %}
-                <button class="section-btn {{ 'active' if section.active else '' }}" data-section="{{ section.id }}">
-                    {{ section.label }}
-                </button>
-                {% endfor %}
-            </nav>
-        </div>
-    </div>
+<aside class="layout-sidebar">
+    {% call card('FAQの状態', icon='📊') %}
+        <p>ここにFAQの状態サマリーが入ります。</p>
+    {% endcall %}
 
-    <div class="card">
-        <header class="card__header">
-            <h3 class="card__title">
-                <span class="card__icon">🤖</span>
-                AI状況
-            </h3>
-        </header>
-        
-        <div class="card__content">
-            <div class="ai-stats">
-                {% for stat in ai_stats %}
-                <div class="stat-item">
-                    <span class="stat-icon">{{ stat.icon }}</span>
-                    <div class="stat-info">
-                        <div class="stat-label">{{ stat.label }}</div>
-                        <div class="stat-value">{{ stat.value }}</div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <header class="card__header">
-            <h3 class="card__title">
-                <span class="card__icon">📋</span>
-                今日のAI活動
-            </h3>
-        </header>
-        
-        <div class="card__content">
-            <div class="activity-list">
-                <div class="activity-item">
-                    <span class="activity-icon">🤖</span>
-                    <div class="activity-content">
-                        <div class="activity-title">FAQ自動生成完了</div>
-                        <div class="activity-detail">「ESG戦略について」</div>
-                        <div class="activity-time">10分前</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <span class="activity-icon">📈</span>
-                    <div class="activity-content">
-                        <div class="activity-title">精度改善完了</div>
-                        <div class="activity-detail">96.5% → 96.8%</div>
-                        <div class="activity-time">1時間前</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <span class="activity-icon">🔄</span>
-                    <div class="activity-content">
-                        <div class="activity-title">学習データ更新</div>
-                        <div class="activity-detail">新規データ: 15件</div>
-                        <div class="activity-time">2時間前</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% call card('アクション', icon='🚀') %}
+        <button class="button">新規作成</button>
+    {% endcall %}
 </aside>
 {% endblock %}
 
 {% block content %}
-<div class="ai-faq-content">
-    <!-- FAQ生成・編集 -->
-    <div class="faq-section" id="generation-section">
-        <div class="section-header">
-            <h2>📝 FAQ生成・編集</h2>
-            <p>AIによる自動FAQ生成と手動編集機能</p>
-        </div>
-
-        <!-- AI自動生成 -->
-        <div class="ai-generation">
-            <h3>🤖 AI自動FAQ生成</h3>
-            <div class="generation-controls">
-                <div class="input-group">
-                    <label for="questionInput">質問入力</label>
-                    <textarea 
-                        id="questionInput" 
-                        placeholder="投資家からの質問を入力してください。AIが最適な回答を生成します。&#10;例：来期の半導体事業の成長戦略について教えてください。"
-                        rows="3"></textarea>
-                </div>
-                <div class="generation-settings">
-                    <div class="setting-group">
-                        <label for="generationMode">生成モード</label>
-                        <select id="generationMode">
-                            <option value="comprehensive">包括的回答</option>
-                            <option value="concise" selected>簡潔回答</option>
-                            <option value="technical">技術詳細</option>
-                            <option value="friendly">親しみやすい</option>
-                        </select>
-                    </div>
-                    <div class="setting-group">
-                        <label for="confidenceLevel">信頼度しきい値</label>
-                        <select id="confidenceLevel">
-                            <option value="80">80%以上</option>
-                            <option value="85" selected>85%以上</option>
-                            <option value="90">90%以上</option>
-                            <option value="95">95%以上</option>
-                        </select>
-                    </div>
-                    <div class="setting-group">
-                        <label for="sourceData">参照データ</label>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" checked> 決算資料</label>
-                            <label><input type="checkbox" checked> 過去FAQ</label>
-                            <label><input type="checkbox" checked> 面談記録</label>
-                            <label><input type="checkbox"> 業界データ</label>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn btn--primary generate-btn" onclick="generateFAQ()">
-                    🤖 FAQ生成
-                </button>
-            </div>
-        </div>
-
-        <!-- 生成結果表示 -->
-        <div class="generation-results" id="generationResults" style="display: none;">
-            <h3>🎯 生成結果</h3>
-            <div class="generated-faq">
-                <div class="faq-preview">
-                    <div class="faq-header">
-                        <h4 class="generated-question">Q. 来期の半導体事業の成長戦略について教えてください。</h4>
-                        <div class="confidence-score">
-                            <span class="confidence-label">信頼度:</span>
-                            <span class="confidence-value high">92.5%</span>
-                        </div>
-                    </div>
-                    <div class="faq-answer">
-                        <p>当社の半導体事業は、以下の戦略により成長を目指しています：</p>
-                        <ul>
-                            <li><strong>技術革新:</strong> 次世代プロセス技術の開発投資を継続</li>
-                            <li><strong>市場拡大:</strong> 自動車・IoT分野での新規顧客開拓</li>
-                            <li><strong>生産効率:</strong> 製造コストの20%削減を目標</li>
-                        </ul>
-                        <p>2024年度の売上目標は前年比15%増の1,200億円を設定しています。</p>
-                    </div>
-                    <div class="faq-sources">
-                        <h5>📚 参照資料</h5>
-                        <ul>
-                            <li>2024年3月期決算説明会資料</li>
-                            <li>2024年度事業計画書</li>
-                            <li>過去の類似質問回答履歴</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="faq-actions">
-                    <button class="btn btn--success" onclick="approveFAQ()">✅ 承認</button>
-                    <button class="btn btn--secondary" onclick="editFAQ()">✏️ 編集</button>
-                    <button class="btn btn--danger" onclick="rejectFAQ()">❌ 却下</button>
-                    <button class="btn btn--secondary" onclick="regenerateFAQ()">🔄 再生成</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 承認キュー -->
-    <div class="faq-section" id="approval-section" style="display: none;">
-        <div class="section-header">
-            <h2>✅ 承認キュー</h2>
-            <p>AI生成FAQの承認・編集・却下</p>
-        </div>
-
-        <div class="approval-queue">
-            <div class="queue-filters">
-                <button class="filter-btn active" data-filter="all">すべて</button>
-                <button class="filter-btn" data-filter="pending">承認待ち</button>
-                <button class="filter-btn" data-filter="edited">編集済み</button>
-                <button class="filter-btn" data-filter="rejected">却下済み</button>
+<div class="content-area">
+    <section class="ai-faq-content">
+        <!-- FAQ生成・編集 -->
+        <div class="faq-section" id="generation-section">
+            <div class="section-header">
+                <h2>📝 FAQ生成・編集</h2>
+                <p>AIによる自動FAQ生成と手動編集機能</p>
             </div>
 
-            <div class="queue-items">
-                <div class="queue-item pending">
-                    <div class="item-header">
-                        <h4>Q. ESG戦略について教えてください</h4>
-                        <div class="item-meta">
-                            <span class="confidence high">信頼度: 94.2%</span>
-                            <span class="created-time">2時間前</span>
+            <!-- AI自動生成 -->
+            <div class="ai-generation">
+                <h3>🤖 AI自動FAQ生成</h3>
+                <div class="generation-controls">
+                    <div class="input-group">
+                        <label for="questionInput">質問入力</label>
+                        <textarea id="questionInput" placeholder="投資家からの質問を入力してください。AIが最適な回答を生成します。&#10;例：来期の半導体事業の成長戦略について教えてください。" rows="3"></textarea>
+                    </div>
+                    <div class="generation-settings">
+                        <div class="setting-group">
+                            <label for="generationMode">生成モード</label>
+                            <select id="generationMode">
+                                <option value="comprehensive">包括的回答</option>
+                                <option value="concise" selected>簡潔回答</option>
+                                <option value="technical">技術詳細</option>
+                                <option value="friendly">親しみやすい</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="confidenceLevel">信頼度しきい値</label>
+                            <select id="confidenceLevel">
+                                <option value="80">80%以上</option>
+                                <option value="85" selected>85%以上</option>
+                                <option value="90">90%以上</option>
+                                <option value="95">95%以上</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="sourceData">参照データ</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" checked> 決算資料</label>
+                                <label><input type="checkbox" checked> 過去FAQ</label>
+                                <label><input type="checkbox" checked> 面談記録</label>
+                                <label><input type="checkbox"> 業界データ</label>
+                            </div>
                         </div>
                     </div>
-                    <div class="item-content">
-                        <p>当社のESG戦略は、環境（Environment）、社会（Social）、ガバナンス（Governance）の3つの要素を統合的に推進しています...</p>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn btn--success" onclick="approveQueueItem('esg-faq')">承認</button>
-                        <button class="btn btn--secondary" onclick="editQueueItem('esg-faq')">編集</button>
-                        <button class="btn btn--danger" onclick="rejectQueueItem('esg-faq')">却下</button>
-                    </div>
-                </div>
-
-                <div class="queue-item pending">
-                    <div class="item-header">
-                        <h4>Q. 株主還元政策について</h4>
-                        <div class="item-meta">
-                            <span class="confidence medium">信頼度: 87.1%</span>
-                            <span class="created-time">4時間前</span>
-                        </div>
-                    </div>
-                    <div class="item-content">
-                        <p>当社は、株主の皆様への適切な還元を重視し、以下の方針で運営しています...</p>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn btn--success" onclick="approveQueueItem('dividend-faq')">承認</button>
-                        <button class="btn btn--secondary" onclick="editQueueItem('dividend-faq')">編集</button>
-                        <button class="btn btn--danger" onclick="rejectQueueItem('dividend-faq')">却下</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FAQ管理 -->
-    <div class="faq-section" id="management-section" style="display: none;">
-        <div class="section-header">
-            <h2>📚 FAQ管理</h2>
-            <p>公開済みFAQの管理・編集・分析</p>
-        </div>
-
-        <div class="faq-management">
-            <div class="management-controls">
-                <div class="search-box">
-                    <input type="text" placeholder="FAQを検索..." id="faqSearch">
-                    <button class="btn btn--secondary">🔍 検索</button>
-                </div>
-                <div class="category-filter">
-                    <select id="categoryFilter">
-                        <option value="">すべてのカテゴリ</option>
-                        <option value="business">事業戦略</option>
-                        <option value="financial">財務・IR</option>
-                        <option value="esg">ESG</option>
-                        <option value="technology">技術・開発</option>
-                    </select>
+                    <button class="btn btn--primary generate-btn" onclick="generateFAQ()">
+                        🤖 FAQ生成
+                    </button>
                 </div>
             </div>
 
-            <div class="faq-list">
-                <div class="faq-item">
-                    <div class="faq-header">
-                        <h4>Q. 2024年度の業績見通しについて</h4>
-                        <div class="faq-stats">
-                            <span class="view-count">閲覧: 1,247回</span>
-                            <span class="helpful-count">役立った: 89%</span>
+            <!-- 生成結果表示 -->
+            <div class="generation-results" id="generationResults" style="display: none;">
+                <h3>🎯 生成結果</h3>
+                <div class="generated-faq">
+                    <div class="faq-preview">
+                        <div class="faq-header">
+                            <h4 class="generated-question">Q. 来期の半導体事業の成長戦略について教えてください。</h4>
+                            <div class="confidence-score">
+                                <span class="confidence-label">信頼度:</span>
+                                <span class="confidence-value high">92.5%</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="faq-content">
-                        <p>2024年度は、主力事業の成長と新規事業の拡大により...</p>
+                        <div class="faq-answer">
+                            <div class="answer-content" id="generatedAnswer">
+                                A. 来期の半導体事業においては、以下の成長戦略を推進してまいります：
+                                <br><br><strong>1. 次世代製品開発の加速</strong><br>
+                                AI・IoT向け高性能チップの開発を重点的に進め、2025年度中に3製品の市場投入を計画しています。
+                                <br><br><strong>2. 製造能力の拡充</strong><br>
+                                福岡工場の設備増強により、生産能力を現在の1.5倍に拡大します。
+                                <br><br><strong>3. 戦略的パートナーシップ</strong><br>
+                                グローバル大手企業との協業により、新市場開拓を進めています。
+                                <br><br>これらの施策により、半導体事業の売上高を今期比25%増を目指します。
+                            </div>
+                        </div>
+                        <div class="faq-metadata">
+                            <div class="source-references">
+                                <h5>参照データ:</h5>
+                                <ul>
+                                    <li>📊 2024年Q3決算説明資料 (p.15-18)</li>
+                                    <li>📋 中期経営計画 (半導体戦略部分)</li>
+                                    <li>🎤 IR面談記録 (BlackRock社、2024/12/15)</li>
+                                </ul>
+                            </div>
+                            <div class="quality-metrics">
+                                <span class="metric">📝 文字数: 284文字</span>
+                                <span class="metric">🎯 専門度: 中</span>
+                                <span class="metric">⏱️ 読了時間: 45秒</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="faq-actions">
-                        <button class="btn btn--secondary" onclick="editPublishedFAQ('2024-forecast')">編集</button>
-                        <button class="btn btn--danger" onclick="archiveFAQ('2024-forecast')">アーカイブ</button>
-                        <button class="btn btn--secondary" onclick="viewFAQAnalytics('2024-forecast')">分析</button>
+                        <button class="btn btn--secondary" onclick="editGeneratedFAQ()">
+                            ✏️ 編集
+                        </button>
+                        <button class="btn btn--success" onclick="approveFAQ()">
+                            ✅ 承認
+                        </button>
+                        <button class="btn btn--primary" onclick="regenerateFAQ()">
+                            🔄 再生成
+                        </button>
+                        <button class="btn" onclick="saveDraft()">
+                            💾 下書き保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ編集エディタ -->
+            <div class="faq-editor" id="faqEditor" style="display: none;">
+                <h3>✏️ FAQ編集</h3>
+                <div class="editor-toolbar">
+                    <!-- Rich text editor controls here -->
+                </div>
+                <div id="editorContent" class="editable-content" contenteditable="true">
+                    <!-- Content from generatedAnswer will be loaded here -->
+                </div>
+                <div class="editor-actions">
+                    <button class="btn btn--primary" onclick="saveEditedFAQ()">保存</button>
+                    <button class="btn btn--secondary" onclick="cancelEdit()">キャンセル</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 承認キュー (コンテンツはモックに合わせて更新) -->
+        <div class="faq-section" id="approval-section" style="display: none;">
+            <div class="section-header">
+                <h2>✅ 承認キュー</h2>
+                <p>AI生成FAQの承認・編集・却下</p>
+            </div>
+
+            <div class="approval-queue">
+                <div class="queue-filters">
+                    <button class="filter-btn active" data-filter="all">すべて</button>
+                    <button class="filter-btn" data-filter="pending">承認待ち</button>
+                    <button class="filter-btn" data-filter="edited">編集済み</button>
+                    <button class="filter-btn" data-filter="rejected">却下済み</button>
+                </div>
+
+                <div class="queue-items">
+                    <div class="queue-item pending">
+                        <div class="item-header">
+                            <h4>Q. ESG戦略について教えてください</h4>
+                            <div class="item-meta">
+                                <span class="confidence high">信頼度: 94.2%</span>
+                                <span class="created-time">2時間前</span>
+                            </div>
+                        </div>
+                        <div class="item-content">
+                            <p>当社のESG戦略は、環境（Environment）、社会（Social）、ガバナンス（Governance）の3つの要素を統合的に推進しています...</p>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn--success" onclick="approveQueueItem('esg-faq')">承認</button>
+                            <button class="btn btn--secondary" onclick="editQueueItem('esg-faq')">編集</button>
+                            <button class="btn btn--danger" onclick="rejectQueueItem('esg-faq')">却下</button>
+                        </div>
+                    </div>
+
+                    <div class="queue-item pending">
+                        <div class="item-header">
+                            <h4>Q. 株主還元政策について</h4>
+                            <div class="item-meta">
+                                <span class="confidence medium">信頼度: 87.1%</span>
+                                <span class="created-time">4時間前</span>
+                            </div>
+                        </div>
+                        <div class="item-content">
+                            <p>当社は、株主の皆様への適切な還元を重視し、以下の方針で運営しています...</p>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn--success" onclick="approveQueueItem('dividend-faq')">承認</button>
+                            <button class="btn btn--secondary" onclick="editQueueItem('dividend-faq')">編集</button>
+                            <button class="btn btn--danger" onclick="rejectQueueItem('dividend-faq')">却下</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- FAQ分析 -->
-    <div class="faq-section" id="analytics-section" style="display: none;">
-        <div class="section-header">
-            <h2>📊 FAQ分析</h2>
-            <p>FAQの効果測定と改善提案</p>
-        </div>
+        <!-- FAQ管理 (コンテンツはモックに合わせて更新) -->
+        <div class="faq-section" id="management-section" style="display: none;">
+            <div class="section-header">
+                <h2>📚 FAQ管理</h2>
+                <p>公開済みFAQの管理・編集・分析</p>
+            </div>
 
-        <div class="faq-analytics">
-            <div class="analytics-grid">
-                <div class="analytics-card">
-                    <h4>📈 総閲覧数</h4>
-                    <div class="analytics-value">12,847</div>
-                    <div class="analytics-change positive">+15.3%</div>
+            <div class="faq-management">
+                <div class="management-controls">
+                    <div class="search-box">
+                        <input type="text" placeholder="FAQを検索..." id="faqSearch">
+                        <button class="btn btn--secondary">🔍 検索</button>
+                    </div>
+                    <div class="category-filter">
+                        <select id="categoryFilter">
+                            <option value="">すべてのカテゴリ</option>
+                            <option value="business">事業戦略</option>
+                            <option value="financial">財務・IR</option>
+                            <option value="esg">ESG</option>
+                            <option value="technology">技術・開発</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="analytics-card">
-                    <h4>🎯 平均満足度</h4>
-                    <div class="analytics-value">94.2%</div>
-                    <div class="analytics-change positive">+2.1%</div>
-                </div>
-                <div class="analytics-card">
-                    <h4>⏱️ 平均解決時間</h4>
-                    <div class="analytics-value">2.3分</div>
-                    <div class="analytics-change negative">+0.5分</div>
-                </div>
-                <div class="analytics-card">
-                    <h4>🔄 更新頻度</h4>
-                    <div class="analytics-value">週2.1回</div>
-                    <div class="analytics-change positive">+0.3回</div>
+
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-header">
+                            <h4>Q. 2024年度の業績見通しについて</h4>
+                            <div class="faq-stats">
+                                <span class="view-count">閲覧: 1,247回</span>
+                                <span class="helpful-count">役立った: 89%</span>
+                            </div>
+                        </div>
+                        <div class="faq-content">
+                            <p>2024年度は、主力事業の成長と新規事業の拡大により...</p>
+                        </div>
+                        <div class="faq-actions">
+                            <button class="btn btn--secondary" onclick="editPublishedFAQ('2024-forecast')">編集</button>
+                            <button class="btn btn--danger" onclick="archiveFAQ('2024-forecast')">アーカイブ</button>
+                            <button class="btn btn--secondary" onclick="viewFAQAnalytics('2024-forecast')">分析</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 学習データ -->
-    <div class="faq-section" id="learning-section" style="display: none;">
-        <div class="section-header">
-            <h2>🧠 学習データ</h2>
-            <p>AI学習データの管理と品質向上</p>
-        </div>
+        <!-- FAQ分析 (コンテンツはモックに合わせて更新) -->
+        <div class="faq-section" id="analytics-section" style="display: none;">
+            <div class="section-header">
+                <h2>📊 FAQ分析</h2>
+                <p>FAQの効果測定と改善提案</p>
+            </div>
 
-        <div class="learning-data">
-            <div class="data-overview">
-                <div class="data-card">
-                    <h4>📚 学習データ総数</h4>
-                    <div class="data-value">15,847件</div>
-                </div>
-                <div class="data-card">
-                    <h4>🔄 今月の追加</h4>
-                    <div class="data-value">234件</div>
-                </div>
-                <div class="data-card">
-                    <h4>📈 精度向上</h4>
-                    <div class="data-value">+2.3%</div>
+            <div class="faq-analytics">
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>📈 総閲覧数</h4>
+                        <div class="analytics-value">12,847</div>
+                        <div class="analytics-change positive">+15.3%</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>🎯 平均満足度</h4>
+                        <div class="analytics-value">94.2%</div>
+                        <div class="analytics-change positive">+2.1%</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>⏱️ 平均解決時間</h4>
+                        <div class="analytics-value">2.3分</div>
+                        <div class="analytics-change negative">+0.5分</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>🔄 更新頻度</h4>
+                        <div class="analytics-value">週2.1回</div>
+                        <div class="analytics-change positive">+0.3回</div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- 学習データ (コンテンツはモックに合わせて更新) -->
+        <div class="faq-section" id="learning-section" style="display: none;">
+            <div class="section-header">
+                <h2>🧠 学習データ</h2>
+                <p>AI学習データの管理と品質向上</p>
+            </div>
+
+            <div class="learning-data">
+                <div class="data-overview">
+                    <div class="data-card">
+                        <h4>📚 学習データ総数</h4>
+                        <div class="data-value">15,847件</div>
+                    </div>
+                    <div class="data-card">
+                        <h4>🔄 今月の追加</h4>
+                        <div class="data-value">234件</div>
+                    </div>
+                    <div class="data-card">
+                        <h4>📈 精度向上</h4>
+                        <div class="data-value">+2.3%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock %}
 
@@ -397,7 +364,7 @@ function showGenerationResults(data) {
     
     // 生成結果を表示
     document.querySelector('.generated-question').textContent = 'Q. ' + data.question;
-    document.querySelector('.faq-answer').innerHTML = data.answer;
+    document.getElementById('generatedAnswer').innerHTML = data.answer; // Use generatedAnswer ID
     document.querySelector('.confidence-value').textContent = data.confidence + '%';
     
     // 信頼度に応じてクラスを設定
@@ -424,33 +391,55 @@ async function approveFAQ() {
     }
 }
 
-async function editFAQ() {
-    // 編集モーダルを開く
-    KAGAMI.notify.toast('編集機能は開発中です', 'info');
+async function editGeneratedFAQ() {
+    document.getElementById('generationResults').style.display = 'none';
+    document.getElementById('faqEditor').style.display = 'block';
+    document.getElementById('editorContent').innerHTML = document.getElementById('generatedAnswer').innerHTML; // Load generated content
 }
 
-async function rejectFAQ() {
+async function saveEditedFAQ() {
+    const newAnswer = document.getElementById('editorContent').innerHTML;
     try {
-        const response = await fetch('/api/ai-faq/reject', {
+        const response = await fetch('/api/ai-faq/edit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ faqId: 'generated-faq' })
+            body: JSON.stringify({ faqId: 'generated-faq', answer: newAnswer })
         });
         const result = await response.json();
         
         if (result.success) {
-            KAGAMI.notify.toast('FAQを却下しました', 'info');
-            document.getElementById('generationResults').style.display = 'none';
-            document.getElementById('questionInput').value = '';
+            KAGAMI.notify.toast('FAQを編集しました', 'success');
+            document.getElementById('faqEditor').style.display = 'none';
+            document.getElementById('generationResults').style.display = 'block';
+            document.getElementById('generatedAnswer').innerHTML = newAnswer; // Update generated content
         }
     } catch (error) {
-        KAGAMI.notify.toast('却下に失敗しました', 'error');
+        KAGAMI.notify.toast('編集に失敗しました', 'error');
     }
 }
 
-async function regenerateFAQ() {
-    // 再生成
-    await generateFAQ();
+async function cancelEdit() {
+    document.getElementById('faqEditor').style.display = 'none';
+    document.getElementById('generationResults').style.display = 'block';
+    document.getElementById('generatedAnswer').innerHTML = document.getElementById('editorContent').innerHTML; // Revert to generated content
+}
+
+async function saveDraft() {
+    const draftAnswer = document.getElementById('editorContent').innerHTML;
+    try {
+        const response = await fetch('/api/ai-faq/draft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ answer: draftAnswer })
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            KAGAMI.notify.toast('下書きを保存しました', 'success');
+        }
+    } catch (error) {
+        KAGAMI.notify.toast('下書き保存に失敗しました', 'error');
+    }
 }
 
 // 承認キュー関連
