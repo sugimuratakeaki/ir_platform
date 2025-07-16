@@ -140,6 +140,16 @@ async def dialogue(request: Request):
 async def analytics(request: Request):
     """分析レポートページ"""
     context = get_base_context(request, "analytics", "分析レポート")
+
+    # 分析ページ用のKPIデータを生成
+    context.update({
+        "kpi_data": {
+            "total_engagement": {"icon": "👥", "label": "総エンゲージメント", "value": "3,456", "change": "+5.2%", "positive": True},
+            "faq_resolution_rate": {"icon": "🎯", "label": "FAQ解決率", "value": "92.1%", "change": "-1.5%", "positive": False},
+            "avg_response_time": {"icon": "⏱️", "label": "平均応答時間", "value": "1.8h", "change": "+0.2h", "positive": False},
+            "new_dialogues": {"icon": "💬", "label": "新規対話数", "value": "213", "change": "+15%", "positive": True}
+        }
+    })
     
     kagami_logger.info("📊 分析レポートページ表示", user=context["user"]["name"])
     return templates.TemplateResponse("analytics.html", context)

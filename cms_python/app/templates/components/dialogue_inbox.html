@@ -1,0 +1,64 @@
+<div class="inbox-list">
+    <!-- 1つ目の対話アイテム: 緊急・未担当 -->
+    <div class="inbox-item urgent unassigned" onclick="openDialogue(101)">
+        <div class="item-header">
+            <span class="investor-type">機関投資家</span>
+            <span class="received-time">15分前</span>
+        </div>
+        <div class="item-body">
+            <h4 class="investor-name">BlackRock Japan</h4>
+            <p class="query-snippet">
+                先日の決算説明会について2点質問があります。まず、新規事業の進捗についてですが...
+            </p>
+        </div>
+        <div class="item-footer">
+            <span class="priority urgent">緊急</span>
+            <span class="status unassigned">未担当</span>
+            <div class="item-actions">
+                <button class="btn-sm" onclick="event.stopPropagation(); assignTo(101);">担当にする</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2つ目の対話アイテム: 通常・担当者あり -->
+    <div class="inbox-item my-tasks" onclick="openDialogue(102)">
+        <div class="item-header">
+            <span class="investor-type">個人投資家</span>
+            <span class="received-time">2時間前</span>
+        </div>
+        <div class="item-body">
+            <h4 class="investor-name">田中 太郎</h4>
+            <p class="query-snippet">
+                配当金の方針について、今後の見通しを詳しく教えていただけますでしょうか。
+            </p>
+        </div>
+        <div class="item-footer">
+            <span class="priority normal">通常</span>
+            <span class="status assigned">担当: 杉村</span>
+            <div class="item-actions">
+                <button class="btn-sm" onclick="event.stopPropagation(); createFAQ(102);">FAQ作成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3つ目の対話アイテム: 低優先度 -->
+    <div class="inbox-item" onclick="openDialogue(103)">
+        <div class="item-header">
+            <span class="investor-type">アナリスト</span>
+            <span class="received-time">1日前</span>
+        </div>
+        <div class="item-body">
+            <h4 class="investor-name">J.P. Morgan Securities</h4>
+            <p class="query-snippet">
+                次回のIR Dayの開催予定はいつ頃になりますでしょうか。
+            </p>
+        </div>
+        <div class="item-footer">
+            <span class="priority low">低</span>
+            <span class="status unassigned">未担当</span>
+            <div class="item-actions">
+                <button class="btn-sm" onclick="event.stopPropagation(); assignTo(103);">担当にする</button>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -6,19 +6,120 @@
 {% block head %}
     {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', path='css/analytics.css') }}" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block sidebar %}
 <aside class="layout-sidebar">
     {% call card('レポート種別', icon='📊') %}
-        <p>ここにレポートの種別が入ります。</p>
+    <nav class="report-nav">
+        <a href="#" class="report-link active" data-report="engagement">投資家エンゲージメント</a>
+        <a href="#" class="report-link" data-report="faq">FAQ分析</a>
+        <a href="#" class="report-link" data-report="dialogue">対話トレンド</a>
+        <a href="#" class="report-link" data-report="performance">担当者パフォーマンス</a>
+    </nav>
+    {% endcall %}
+
+    {% call card('期間フィルター', icon='📅') %}
+    <div class="filter-group">
+        <select class="form-control">
+            <option>過去7日間</option>
+            <option selected>過去30日間</option>
+            <option>過去90日間</option>
+            <option>全期間</option>
+        </select>
+        <button class="btn-secondary" style="margin-top: 0.5rem;">カスタム期間</button>
+    </div>
     {% endcall %}
 </aside>
 {% endblock %}
 
 {% block content %}
 <main class="layout-content">
-    <h1 class="page-title">分析レポート</h1>
-    <!-- メインコンテンツ -->
+    <div class="page-header">
+        <h1 class="page-title">📊 分析レポート</h1>
+        <div class="header-actions">
+            <button class="btn-primary">レポートをエクスポート</button>
+        </div>
+    </div>
+
+    <!-- 主要KPI -->
+    <!--
+    <div class="kpi-grid">
+        {% for key, kpi in kpi_data.items() %}
+            {% include 'components/kpi_card.html' with {'icon': kpi.icon, 'label': kpi.label, 'value': kpi.value, 'change': kpi.change, 'positive': kpi.positive} %}
+        {% endfor %}
+    </div>
+    -->
+
+    <!-- エンゲージメント推移 -->
+    <div class="chart-container card">
+        <h3 class="card-header">📈 エンゲージメント推移</h3>
+        <div class="card-body">
+            <canvas id="engagementChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 質問カテゴリ分析 -->
+    <div class="grid-container">
+        <div class="chart-container card">
+            <h3 class="card-header">❓ 質問カテゴリ</h3>
+            <div class="card-body">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <h3 class="card-header">🏆 トップパフォーマー</h3>
+            <div class="card-body">
+                <ul class="performer-list">
+                    <li><strong>杉村:</strong> 解決数 58, 満足度 98%</li>
+                    <li><strong>田中:</strong> 解決数 45, 満足度 95%</li>
+                    <li><strong>鈴木:</strong> 解決数 32, 満足度 93%</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
 </main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // エンゲージメント推移チャート
+    const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+    new Chart(engagementCtx, {
+        type: 'line',
+        data: {
+            labels: ['1週前', '6日前', '5日前', '4日前', '3日前', '2日前', '昨日'],
+            datasets: [{
+                label: 'エンゲージメント数',
+                data: [120, 150, 130, 180, 160, 200, 210],
+                borderColor: 'var(--primary-color)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                tension: 0.3,
+                fill: true,
+            }]
+        }
+    });
+
+    // 質問カテゴリチャート
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['事業戦略', '財務状況', '製品・サービス', 'サステナビリティ', 'その他'],
+            datasets: [{
+                label: '質問カテゴリ',
+                data: [35, 25, 20, 15, 5],
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+</script>
 {% endblock %} 

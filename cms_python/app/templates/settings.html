@@ -10,15 +10,68 @@
 
 {% block sidebar %}
 <aside class="layout-sidebar">
-    {% call card('設定項目', icon='⚙️') %}
-        <p>ここに設定項目が入ります。</p>
+    {% call card('設定カテゴリ', icon='⚙️') %}
+    <nav class="settings-nav">
+        <a href="#general" class="settings-link active">一般設定</a>
+        <a href="#account" class="settings-link">アカウント</a>
+        <a href="#notifications" class="settings-link">通知設定</a>
+        <a href="#api" class="settings-link">API連携</a>
+        <a href="#security" class="settings-link">セキュリティ</a>
+    </nav>
     {% endcall %}
 </aside>
 {% endblock %}
 
 {% block content %}
 <main class="layout-content">
-    <h1 class="page-title">システム設定</h1>
-    <!-- メインコンテンツ -->
+    <div class="page-header">
+        <h1 class="page-title">⚙️ システム設定</h1>
+    </div>
+
+    <div class="settings-container">
+        <!-- 一般設定 -->
+        <section id="general" class="settings-section">
+            <h2 class="section-title">一般設定</h2>
+            <div class="card">
+                <div class="card-body">
+                    {% include 'components/settings_form_general.html' %}
+                </div>
+            </div>
+        </section>
+
+        <!-- アカウント設定 -->
+        <section id="account" class="settings-section" style="display: none;">
+            <h2 class="section-title">アカウント設定</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p>アカウント設定フォームがここに入ります。</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 他のセクションも同様に続く -->
+
+    </div>
 </main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.settings-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // アクティブなリンクを切り替え
+        document.querySelectorAll('.settings-link').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+
+        // 表示セクションを切り替え
+        const targetId = this.getAttribute('href').substring(1);
+        document.querySelectorAll('.settings-section').forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById(targetId).style.display = 'block';
+    });
+});
+</script>
 {% endblock %} 

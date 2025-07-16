@@ -1,0 +1,74 @@
+/* analytics.css */
+
+/* KPIグリッド */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.kpi-card {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-color-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    gap: 1.5rem;
+}
+
+.kpi-icon {
+    font-size: 2.5rem;
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.kpi-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.kpi-change {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.kpi-change.positive {
+    color: var(--success-color);
+}
+.kpi-change.negative {
+    color: var(--danger-color);
+}
+
+/* チャートコンテナ */
+.chart-container {
+    margin-bottom: 2rem;
+}
+.chart-container .card-body {
+    height: 350px;
+    padding: 1rem;
+}
+
+/* グリッドコンテナ */
+.grid-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+/* パフォーマーリスト */
+.performer-list {
+    list-style: none;
+    padding: 0;
+}
+.performer-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color-light);
+}
+.performer-list li:last-child {
+    border-bottom: none;
+} 

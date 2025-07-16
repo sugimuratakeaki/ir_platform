@@ -11,15 +11,51 @@
 {% block sidebar %}
 <aside class="layout-sidebar">
     {% call card('対話フィルター', icon='🔍') %}
-        <p>ここにフィルターが入ります。</p>
+    <div class="filter-controls">
+        <button class="filter-btn active" data-filter="all">すべて</button>
+        <button class="filter-btn" data-filter="unassigned">未担当</button>
+        <button class="filter-btn" data-filter="my-tasks">自分のタスク</button>
+        <button class="filter-btn" data-filter="urgent">要緊急対応</button>
+    </div>
+    {% endcall %}
+
+    {% call card('ソート順', icon='↕️') %}
+    <select id="sortSelect" class="form-control">
+        <option value="time">受信時間</option>
+        <option value="priority">優先度</option>
+        <option value="investor">投資家種別</option>
+    </select>
     {% endcall %}
 </aside>
 {% endblock %}
 
 {% block content %}
 <main class="layout-content">
-    <h1 class="page-title">対話管理</h1>
+    <div class="page-header">
+        <h1 class="page-title">💬 対話管理</h1>
+        <div class="header-actions">
+            <button class="btn-secondary">新規メッセージ</button>
+        </div>
+    </div>
+
+    <div class="section-tabs">
+        <button class="section-btn active" data-section="inbox">受信トレイ (3)</button>
+        <button class="section-btn" data-section="active">進行中 (5)</button>
+        <button class="section-btn" data-section="closed">完了 (128)</button>
+    </div>
+
     <!-- メインコンテンツ -->
+    <div id="inbox-section" class="dialogue-section">
+        {% include 'components/dialogue_inbox.html' %}
+    </div>
+
+    <div id="active-section" class="dialogue-section" style="display: none;">
+        <p>進行中の対話が表示されます。</p>
+    </div>
+
+    <div id="closed-section" class="dialogue-section" style="display: none;">
+        <p>完了した対話が表示されます。</p>
+    </div>
 </main>
 {% endblock %}
 
