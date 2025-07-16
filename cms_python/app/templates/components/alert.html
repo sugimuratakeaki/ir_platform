@@ -1,0 +1,19 @@
+<!-- アラートコンポーネント -->
+<div class="alert alert--{{ variant if variant else 'info' }}" role="alert">
+    <span class="alert__icon">
+        {% if variant == 'success' %}✅
+        {% elif variant == 'error' %}❌
+        {% elif variant == 'warning' %}⚠️
+        {% else %}ℹ️
+        {% endif %}
+    </span>
+    <div class="alert__content">
+        {% if title %}
+        <strong class="alert__title">{{ title }}</strong>
+        {% endif %}
+        <p class="alert__message">{{ message }}</p>
+    </div>
+    {% if dismissible %}
+    <button class="alert__close" aria-label="閉じる">×</button>
+    {% endif %}
+</div> 

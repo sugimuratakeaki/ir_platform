@@ -1,0 +1,47 @@
+<!-- カードコンポーネント -->
+<div class="card {% if variant %}card--{{ variant }}{% endif %} {% if hoverable %}card--hoverable{% endif %}">
+    {% if title or actions %}
+    <header class="card__header">
+        {% if title %}
+        <h3 class="card__title">
+            {% if icon %}
+            <span class="card__icon">{{ icon }}</span>
+            {% endif %}
+            {{ title }}
+        </h3>
+        {% endif %}
+        {% if actions %}
+        <div class="card__actions">
+            {{ actions | safe }}
+        </div>
+        {% endif %}
+    </header>
+    {% endif %}
+    
+    <div class="card__content">
+        {% if description %}
+        <p class="card__description">{{ description }}</p>
+        {% endif %}
+        
+        {% if stats %}
+        <div class="card__stats">
+            {% for stat in stats %}
+            <div class="stat">
+                <span class="stat__value">{{ stat.value }}</span>
+                <span class="stat__label">{{ stat.label }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if content %}
+        {{ content | safe }}
+        {% endif %}
+    </div>
+    
+    {% if footer %}
+    <footer class="card__footer">
+        {{ footer | safe }}
+    </footer>
+    {% endif %}
+</div> 

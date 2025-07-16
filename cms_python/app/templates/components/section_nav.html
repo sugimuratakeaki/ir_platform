@@ -1,0 +1,9 @@
+<!-- セクションナビゲーションコンポーネント -->
+<nav class="section-nav">
+    {% for section in sections %}
+    <button class="section-btn {% if section.active %}active{% endif %}" 
+            data-section="{{ section.id }}">
+        {{ section.label }}
+    </button>
+    {% endfor %}
+</nav> 

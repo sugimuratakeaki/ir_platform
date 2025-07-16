@@ -2,6 +2,7 @@
 
 {% block sidebar %}
 <aside class="sidebar">
+    <!-- データ取込メニューカード -->
     <div class="card">
         <header class="card__header">
             <h3 class="card__title">
@@ -11,16 +12,11 @@
         </header>
         
         <div class="card__content">
-            <nav class="section-nav">
-                {% for section in sections %}
-                <button class="section-btn {{ 'active' if section.active else '' }}" data-section="{{ section.id }}">
-                    {{ section.label }}
-                </button>
-                {% endfor %}
-            </nav>
+            {% include 'components/section_nav.html' %}
         </div>
     </div>
 
+    <!-- 処理状況カード -->
     <div class="card">
         <header class="card__header">
             <h3 class="card__title">
@@ -91,25 +87,41 @@
         </div>
 
         <!-- ドラッグ&ドロップエリア -->
-        <div class="upload-area" id="audioVideoUploadArea">
-            <div class="upload-placeholder">
-                <div class="upload-icon">📁</div>
-                <div class="upload-text">
-                    <h3>ファイルをドラッグ&ドロップ</h3>
-                    <p>またはクリックしてファイルを選択</p>
-                    <small>対応形式: MP3, MP4, WAV, M4A, MOV, AVI (最大500MB)</small>
-                </div>
-                <input type="file" id="audioVideoInput" multiple accept="audio/*,video/*" style="display: none;">
-                <button class="btn btn--primary" onclick="document.getElementById('audioVideoInput').click()">
+        {% set upload_config = {
+            'icon': '📁',
+            'title': 'ファイルをドラッグ&ドロップ',
+            'description': 'またはクリックしてファイルを選択<br><small>対応形式: MP3, MP4, WAV, M4A, MOV, AVI (最大500MB)</small>',
+            'accept': 'audio/*,video/*',
+            'multiple': true,
+            'show_file_list': true
+        } %}
+        
+        <div class="upload-area" data-upload-zone>
+            <div class="upload-area__content">
+                <div class="upload-area__icon">{{ upload_config.icon }}</div>
+                <h3 class="upload-area__title">{{ upload_config.title }}</h3>
+                <p class="upload-area__description">{{ upload_config.description | safe }}</p>
+                <input type="file" 
+                       class="upload-area__input" 
+                       {% if upload_config.multiple %}multiple{% endif %} 
+                       accept="{{ upload_config.accept }}">
+                <button class="btn btn--primary upload-area__button">
                     ファイル選択
                 </button>
+            </div>
+            
+            <div class="upload-area__progress" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-bar__fill" style="width: 0%"></div>
+                </div>
+                <span class="upload-area__status">アップロード中...</span>
             </div>
         </div>
 
         <!-- アップロード済みファイル一覧 -->
         <div class="uploaded-files">
             <h3>📋 アップロード済みファイル</h3>
-            <div class="files-list" id="audioVideoFilesList">
+            <div class="file-list" id="file-list">
                 <div class="file-item processing">
                     <div class="file-icon">🎤</div>
                     <div class="file-info">

@@ -1,0 +1,458 @@
+/* 🔮 KAGAMI IR管理センター - コンポーネント共通CSS v1.0 */
+
+/* ===== アラートコンポーネント ===== */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-md);
+    border: 1px solid;
+}
+
+.alert--success {
+    background: rgba(72, 187, 120, 0.1);
+    border-color: var(--trust-green);
+    color: var(--trust-green-dark);
+}
+
+.alert--error {
+    background: rgba(245, 101, 101, 0.1);
+    border-color: var(--alert-red);
+    color: var(--alert-red-dark);
+}
+
+.alert--warning {
+    background: rgba(237, 137, 54, 0.1);
+    border-color: var(--warning-orange);
+    color: var(--warning-orange-dark);
+}
+
+.alert--info {
+    background: rgba(66, 153, 225, 0.1);
+    border-color: var(--info-blue);
+    color: var(--info-blue-dark);
+}
+
+.alert__icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.alert__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.alert__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    display: block;
+}
+
+.alert__message {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.alert__close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+    padding: 0;
+    margin-left: var(--space-sm);
+}
+
+.alert__close:hover {
+    opacity: 1;
+}
+
+/* ===== ステータスバッジコンポーネント ===== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-badge--success {
+    background: var(--trust-green-light);
+    color: var(--trust-green-dark);
+}
+
+.status-badge--error {
+    background: var(--alert-red-light);
+    color: var(--alert-red-dark);
+}
+
+.status-badge--warning {
+    background: var(--warning-orange-light);
+    color: var(--warning-orange-dark);
+}
+
+.status-badge--info {
+    background: var(--info-blue-light);
+    color: var(--info-blue-dark);
+}
+
+.status-badge--neutral {
+    background: var(--gray-200);
+    color: var(--gray-700);
+}
+
+/* ===== モーダルコンポーネント ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-normal);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-2xl);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: var(--transition-normal);
+}
+
+.modal-overlay.active .modal {
+    transform: scale(1);
+}
+
+.modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.modal__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--kagami-blue);
+    margin: 0;
+}
+
+.modal__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+    padding: var(--space-xs);
+}
+
+.modal__close:hover {
+    opacity: 1;
+}
+
+.modal__content {
+    padding: var(--space-xl);
+    overflow-y: auto;
+}
+
+.modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    padding: var(--space-lg) var(--space-xl);
+    border-top: 1px solid var(--gray-200);
+    background: var(--gray-50);
+}
+
+/* ===== ファイルアップロードコンポーネント ===== */
+.upload-area {
+    border: 3px dashed var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3xl);
+    text-align: center;
+    background: var(--gray-50);
+    transition: all var(--transition-normal);
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: var(--kagami-blue);
+    background: var(--gray-100);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.upload-area.dragover {
+    border-color: var(--kagami-blue);
+    background: var(--kagami-blue-light);
+    color: var(--white);
+    transform: scale(1.02);
+    box-shadow: var(--shadow-xl);
+}
+
+.upload-area__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.upload-area__icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-md);
+}
+
+.upload-area__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin: 0;
+}
+
+.upload-area__description {
+    color: var(--gray-600);
+    margin: 0;
+}
+
+.upload-area__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.upload-area__button {
+    margin-top: var(--space-md);
+}
+
+.upload-area__progress {
+    margin-top: var(--space-lg);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--gray-200);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-sm);
+}
+
+.progress-bar__fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--info-blue) 0%, var(--kagami-blue) 100%);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-normal);
+}
+
+.upload-area__status {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+/* ===== ファイルリストコンポーネント ===== */
+.file-list {
+    margin-top: var(--space-lg);
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
+    margin-bottom: var(--space-sm);
+}
+
+.file-item:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.file-item__icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.file-item__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-item__name {
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--space-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-item__size {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.file-item__status {
+    flex-shrink: 0;
+}
+
+.file-item__remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+    padding: var(--space-xs);
+}
+
+.file-item__remove:hover {
+    opacity: 1;
+}
+
+/* ===== セクションナビゲーションコンポーネント ===== */
+.section-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.section-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    color: var(--gray-700);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    text-align: left;
+}
+
+.section-btn:hover {
+    background: var(--gray-100);
+    border-color: var(--gray-300);
+    transform: translateX(2px);
+}
+
+.section-btn.active {
+    background: var(--kagami-blue);
+    color: var(--white);
+    border-color: var(--kagami-blue);
+    box-shadow: var(--shadow-sm);
+}
+
+.section-btn.active:hover {
+    background: var(--kagami-blue-dark);
+    transform: translateX(2px);
+}
+
+/* ===== レスポンシブ対応 ===== */
+@media (max-width: 768px) {
+    .modal {
+        max-width: 95%;
+        margin: var(--space-lg);
+    }
+    
+    .modal__header,
+    .modal__content,
+    .modal__footer {
+        padding: var(--space-md);
+    }
+    
+    .upload-area {
+        padding: var(--space-xl);
+    }
+    
+    .upload-area__icon {
+        font-size: 2rem;
+    }
+    
+    .upload-area__title {
+        font-size: 1.25rem;
+    }
+    
+    .file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+    
+    .file-item__info {
+        width: 100%;
+    }
+}
+
+/* ===== アクセシビリティ対応 ===== */
+@media (prefers-reduced-motion: reduce) {
+    .modal {
+        transition: none;
+    }
+    
+    .upload-area {
+        transition: none;
+    }
+    
+    .file-item {
+        transition: none;
+    }
+}
+
+/* ===== フォーカス管理 ===== */
+.section-btn:focus-visible {
+    box-shadow: var(--focus-ring);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
+.modal__close:focus-visible {
+    box-shadow: var(--focus-ring);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
+.alert__close:focus-visible {
+    box-shadow: var(--focus-ring);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+} 

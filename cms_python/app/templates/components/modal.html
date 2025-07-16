@@ -1,0 +1,19 @@
+<!-- モーダルコンポーネント -->
+<div class="modal-overlay" id="{{ modal_id if modal_id else 'modal' }}">
+    <div class="modal">
+        <header class="modal__header">
+            <h2 class="modal__title">{{ title if title else 'モーダル' }}</h2>
+            <button class="modal__close" aria-label="閉じる">×</button>
+        </header>
+        
+        <div class="modal__content">
+            {{ content | safe }}
+        </div>
+        
+        {% if footer %}
+        <footer class="modal__footer">
+            {{ footer | safe }}
+        </footer>
+        {% endif %}
+    </div>
+</div> 

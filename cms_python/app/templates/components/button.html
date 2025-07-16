@@ -1,0 +1,13 @@
+<!-- ボタンコンポーネント -->
+<button class="btn {% if variant %}btn--{{ variant }}{% else %}btn--primary{% endif %} {% if size %}btn--{{ size }}{% endif %} {% if loading %}btn--loading{% endif %}" 
+        {% if disabled %}disabled{% endif %}
+        {% if onclick %}onclick="{{ onclick }}"{% endif %}
+        type="{% if type %}{{ type }}{% else %}button{% endif %}">
+    {% if loading %}
+        <span class="btn__spinner"></span>
+    {% endif %}
+    {% if icon %}
+        <span class="btn__icon">{{ icon }}</span>
+    {% endif %}
+    <span class="btn__text">{% if text %}{{ text }}{% endif %}</span>
+</button> 

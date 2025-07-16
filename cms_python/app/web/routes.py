@@ -8,6 +8,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
 from ..core.logger import kagami_logger
+from .component_helpers import (
+    create_button_config, create_card_config, create_alert_config,
+    create_status_badge_config, create_file_upload_config,
+    format_health_status, format_kpi_data, format_datetime
+)
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -63,18 +68,35 @@ async def data_input(request: Request):
     """データ取込ページ"""
     context = get_base_context(request, "data-input", "データ取込・処理")
     
+    # 処理統計
+    processing_stats = [
+        {"icon": "🎤", "label": "音声処理中", "value": 3},
+        {"icon": "📧", "label": "メール解析中", "value": 7},
+        {"icon": "📄", "label": "文書処理中", "value": 2}
+    ]
+    
+    # セクション設定
+    sections = [
+        {"id": "audio-video", "label": "🎤 音声・動画", "active": True},
+        {"id": "web-meeting", "label": "💻 Web会議連携", "active": False},
+        {"id": "email", "label": "📧 メール管理", "active": False},
+        {"id": "documents", "label": "📄 決算資料", "active": False}
+    ]
+    
+    # ファイルアップロード設定
+    audio_upload_config = create_file_upload_config(
+        title="音声・動画ファイルをアップロード",
+        description="ドラッグ&ドロップまたはクリックでファイルを選択<br><small>対応形式: MP3, MP4, WAV, M4A, MOV, AVI (最大500MB)</small>",
+        icon="🎤",
+        accept="audio/*,video/*",
+        multiple=True,
+        show_file_list=True
+    )
+    
     context.update({
-        "processing_stats": [
-            {"icon": "🎤", "label": "音声処理中", "value": 3},
-            {"icon": "📧", "label": "メール解析中", "value": 7},
-            {"icon": "📄", "label": "文書処理中", "value": 2}
-        ],
-        "sections": [
-            {"id": "audio-video", "label": "🎤 音声・動画", "active": True},
-            {"id": "web-meeting", "label": "💻 Web会議連携", "active": False},
-            {"id": "email", "label": "📧 メール管理", "active": False},
-            {"id": "documents", "label": "📄 決算資料", "active": False}
-        ]
+        "processing_stats": processing_stats,
+        "sections": sections,
+        "audio_upload_config": audio_upload_config
     })
     
     kagami_logger.info("📥 データ取込ページ表示", user=context["user"]["name"])
