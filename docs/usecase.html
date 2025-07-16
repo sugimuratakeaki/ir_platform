@@ -517,6 +517,33 @@
             </div>
         </div>
         
+        <div class="nav-category">
+            <div class="nav-category-header" onclick="toggleCategory('outside')" style="background: #2c3e50;">
+                <span class="toggle-icon">▶</span>
+                <span>🔍 社外取締役向け</span>
+            </div>
+            <div class="nav-category-content" id="outside">
+                <div style="font-size: 0.9em; font-weight: bold; color: #2c3e50; margin-bottom: 5px;">IR活動監督・評価</div>
+                <a href="#out1">OUT1: IR活動監督・評価ダッシュボード</a>
+                <a href="#out2">OUT2: 投資家反応・満足度分析</a>
+                <a href="#out9">OUT9: IR戦略客観性評価</a>
+                <a href="#out10">OUT10: 投資家エンゲージメント監督</a>
+                
+                <div style="font-size: 0.9em; font-weight: bold; color: #2c3e50; margin: 10px 0 5px 0;">コンプライアンス・品質管理</div>
+                <a href="#out3">OUT3: 情報開示適正性チェック</a>
+                <a href="#out4">OUT4: コンプライアンス状況監視</a>
+                <a href="#out11">OUT11: 危機対応適正性監視</a>
+                <a href="#out12">OUT12: ESG情報開示監督</a>
+                
+                <div style="font-size: 0.9em; font-weight: bold; color: #2c3e50; margin: 10px 0 5px 0;">市場評価・企業価値</div>
+                <a href="#out5">OUT5: 市場評価・株価影響分析</a>
+                
+                <div style="font-size: 0.9em; font-weight: bold; color: #2c3e50; margin: 10px 0 5px 0;">取締役会報告・提案</div>
+                <a href="#out6">OUT6: 取締役会向けIR監督報告</a>
+                <a href="#out7">OUT7: 独立評価・改善提案</a>
+                <a href="#out8">OUT8: ガバナンス改善勧告</a>
+            </div>
+        </div>
 
     </div>
 
@@ -10573,7 +10600,1181 @@ graph TD
         </div>
     </div>
 
-    <script>
+    <!-- 社外取締役 ユースケース 1: IR活動監督・評価ダッシュボード -->
+    <div class="usecase-container" id="out1">
+        <h2 class="usecase-title">
+            <span class="usecase-icon">🔍</span>
+            OUT1: IR活動監督・評価ダッシュボード
+        </h2>
+        <div class="usecase-description">
+            <strong>目的：</strong> 社外取締役が独立した立場からIR活動全体を監督・評価し、透明性向上と投資家信頼度向上を実現<br>
+            <strong>対象者：</strong> 社外取締役、監査委員会メンバー<br>
+            <strong>解決課題：</strong> IR活動の客観的監督、投資家利益保護、ガバナンス体制の実効性確保
+        </div>
+        
+        <div class="mermaid-container">
+            <div class="mermaid">
+graph TD
+    A[🔍 社外取締役ログイン] --> B[IR監督ダッシュボード]
+    
+    B --> C[📊 リアルタイム監視]
+    B --> D[📈 投資家反応分析]
+    B --> E[⚖️ 法的適正性確認]
+    B --> F[🎯 パフォーマンス評価]
+    
+    C --> G[投資家対応件数・品質]
+    C --> H[情報開示状況・適時性]
+    C --> I[市場反応・株価影響]
+    
+    D --> J[投資家満足度NPS]
+    D --> K[エンゲージメント深度]
+    D --> L[長期投資家比率]
+    
+    E --> M[開示要件準拠性]
+    E --> N[フェアディスクロージャー]
+    E --> O[コンプライアンス状況]
+    
+    F --> P[IR ROI測定]
+    F --> Q[同業他社比較]
+    F --> R[改善機会特定]
+    
+    G --> S[異常検知・アラート]
+    H --> S
+    I --> S
+    
+    S --> T[緊急報告・勧告]
+    
+    J --> U[客観的評価・分析]
+    K --> U
+    L --> U
+    M --> U
+    N --> U
+    O --> U
+    P --> U
+    Q --> U
+    R --> U
+    
+    U --> V[取締役会報告書作成]
+    V --> W[改善提案・勧告]
+    
+    W --> X[経営陣フィードバック]
+    X --> Y[改善実行監視]
+    
+    style A fill:#e1f5fe
+    style B fill:#f8f9fa
+    style S fill:#fff3e0
+    style V fill:#f3e5f5
+    style Y fill:#e8f5e8
+            </div>
+        </div>
+        
+        <div class="features-list">
+            <div class="feature-item">
+                <h4>📊 包括的監督機能</h4>
+                <ul>
+                    <li>IR活動全体の俯瞰視覚化</li>
+                    <li>投資家対応品質の客観評価</li>
+                    <li>情報開示の適時性・適正性監視</li>
+                    <li>市場反応・株価影響のリアルタイム追跡</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>🎯 独立性確保</h4>
+                <ul>
+                    <li>経営陣から独立した客観分析</li>
+                    <li>投資家目線での公正性評価</li>
+                    <li>第三者視点での改善提案</li>
+                    <li>利益相反のない監督機能</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>⚖️ ガバナンス強化</h4>
+                <ul>
+                    <li>法的要件・規制準拠の確認</li>
+                    <li>透明性・説明責任の向上</li>
+                    <li>投資家利益保護の実現</li>
+                    <li>企業価値向上への貢献</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 社外取締役 ユースケース 2: 投資家反応・満足度分析 -->
+    <div class="usecase-container" id="out2">
+        <h2 class="usecase-title">
+            <span class="usecase-icon">📊</span>
+            OUT2: 投資家反応・満足度分析
+        </h2>
+        <div class="usecase-description">
+            <strong>目的：</strong> 社外取締役が投資家視点で企業のIR活動を客観評価し、投資家満足度向上と長期関係構築を促進<br>
+            <strong>対象者：</strong> 社外取締役、投資家関係委員会<br>
+            <strong>解決課題：</strong> 投資家の真のニーズ把握、満足度向上策の客観的提案、長期投資家比率の改善
+        </div>
+        
+        <div class="mermaid-container">
+            <div class="mermaid">
+graph TD
+    A[📊 投資家データ収集] --> B[セグメント別分析]
+    
+    B --> C[🏦 機関投資家]
+    B --> D[👤 個人投資家]
+    B --> E[🌍 海外投資家]
+    
+    C --> F[投資行動分析]
+    D --> F
+    E --> F
+    
+    F --> G[満足度調査結果]
+    F --> H[エンゲージメント指標]
+    F --> I[継続保有率]
+    
+    G --> J[NPS スコア分析]
+    H --> K[対話頻度・深度]
+    I --> L[平均保有期間]
+    
+    J --> M[客観的評価]
+    K --> M
+    L --> M
+    
+    M --> N[課題特定]
+    N --> O[改善優先度]
+    
+    O --> P[情報開示改善]
+    O --> Q[コミュニケーション強化]
+    O --> R[透明性向上]
+    
+    P --> S[改善提案作成]
+    Q --> S
+    R --> S
+    
+    S --> T[取締役会報告]
+    T --> U[実行計画策定]
+    U --> V[効果測定・フォロー]
+    
+    style A fill:#e1f5fe
+    style M fill:#fff3e0
+    style S fill:#f3e5f5
+    style V fill:#e8f5e8
+            </div>
+        </div>
+        
+        <div class="features-list">
+            <div class="feature-item">
+                <h4>📈 多角的分析</h4>
+                <ul>
+                    <li>投資家カテゴリ別反応分析</li>
+                    <li>満足度・不満要因の詳細把握</li>
+                    <li>競合他社との比較評価</li>
+                    <li>時系列トレンド分析</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>🎯 客観性確保</h4>
+                <ul>
+                    <li>経営陣の主観を排した分析</li>
+                    <li>投資家の真のニーズ発見</li>
+                    <li>第三者視点での公正評価</li>
+                    <li>改善機会の優先順位付け</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>💡 改善提案</h4>
+                <ul>
+                    <li>具体的改善施策の提案</li>
+                    <li>実行可能性の評価</li>
+                    <li>期待効果の定量化</li>
+                    <li>継続的な効果測定</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 社外取締役 ユースケース 3: 情報開示適正性チェック -->
+    <div class="usecase-container" id="out3">
+        <h2 class="usecase-title">
+            <span class="usecase-icon">⚖️</span>
+            OUT3: 情報開示適正性チェック
+        </h2>
+        <div class="usecase-description">
+            <strong>目的：</strong> 社外取締役が独立した立場で情報開示の法的適正性・公平性を監視し、法的リスクゼロと市場信頼度向上を実現<br>
+            <strong>対象者：</strong> 社外取締役、監査委員会、法務担当者<br>
+            <strong>解決課題：</strong> 情報開示の客観的監査、法的リスクの事前回避、投資家間の情報格差解消
+        </div>
+        
+        <div class="mermaid-container">
+            <div class="mermaid">
+graph TD
+    A[📄 開示情報受信] --> B[適正性チェック開始]
+    
+    B --> C[🏛️ 法的要件確認]
+    B --> D[⏰ 適時性評価]
+    B --> E[🔍 完全性検証]
+    B --> F[⚖️ 公平性確保]
+    
+    C --> G[金商法準拠性]
+    C --> H[会社法要件]
+    C --> I[取引所規則]
+    
+    D --> J[開示期限遵守]
+    D --> K[重要情報の迅速性]
+    
+    E --> L[必要情報の網羅性]
+    E --> M[正確性・整合性]
+    
+    F --> N[フェアディスクロージャー]
+    F --> O[投資家間平等性]
+    
+    G --> P[適正性判定]
+    H --> P
+    I --> P
+    J --> P
+    K --> P
+    L --> P
+    M --> P
+    N --> P
+    O --> P
+    
+    P --> Q{適正性評価}
+    
+    Q -->|適正| R[承認・公開許可]
+    Q -->|要修正| S[修正指示・理由明示]
+    Q -->|重大問題| T[緊急停止・法的相談]
+    
+    R --> U[事後モニタリング]
+    S --> V[修正版再チェック]
+    T --> W[法的対応・リスク評価]
+    
+    U --> X[市場反応分析]
+    V --> P
+    W --> Y[根本的改善提案]
+    
+    X --> Z[継続改善提案]
+    Y --> Z
+    
+    style A fill:#e1f5fe
+    style P fill:#fff3e0
+    style Q fill:#f3e5f5
+    style Z fill:#e8f5e8
+            </div>
+        </div>
+        
+        <div class="features-list">
+            <div class="feature-item">
+                <h4>📋 包括的監査</h4>
+                <ul>
+                    <li>法的要件の完全チェック</li>
+                    <li>開示内容の正確性確認</li>
+                    <li>適時性・完全性の評価</li>
+                    <li>公平性・透明性の確保</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>🛡️ リスク回避</h4>
+                <ul>
+                    <li>法的違反の事前防止</li>
+                    <li>規制当局からの指摘回避</li>
+                    <li>風評リスクの最小化</li>
+                    <li>投資家信頼の維持</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>⭐ 品質向上</h4>
+                <ul>
+                    <li>開示品質の継続改善</li>
+                    <li>ベストプラクティスの導入</li>
+                    <li>国際基準への適合</li>
+                    <li>競争優位性の確保</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 社外取締役 ユースケース 4: コンプライアンス状況監視 -->
+    <div class="usecase-container" id="out4">
+        <h2 class="usecase-title">
+            <span class="usecase-icon">🛡️</span>
+            OUT4: コンプライアンス状況監視
+        </h2>
+        <div class="usecase-description">
+            <strong>目的：</strong> 社外取締役がIR活動における内部統制・法令遵守状況を継続監視し、コンプライアンス違反ゼロと企業信頼度向上を実現<br>
+            <strong>対象者：</strong> 社外取締役、監査委員会、内部統制担当者<br>
+            <strong>解決課題：</strong> 内部統制の実効性確保、法令違反の予防、コンプライアンス体制の強化
+        </div>
+        
+        <div class="mermaid-container">
+            <div class="mermaid">
+graph TD
+    A[🛡️ 統制環境監視] --> B[コンプライアンス状況確認]
+    
+    B --> C[📋 内部統制評価]
+    B --> D[⚖️ 法令遵守状況]
+    B --> E[🔐 情報管理体制]
+    B --> F[👥 教育・研修状況]
+    
+    C --> G[統制設計の妥当性]
+    C --> H[統制運用の有効性]
+    
+    D --> I[金商法等の準拠]
+    D --> J[業界規制の遵守]
+    
+    E --> K[機密情報保護]
+    E --> L[アクセス権限管理]
+    
+    F --> M[定期教育の実施]
+    F --> N[理解度・習熟度]
+    
+    G --> O[リスク評価]
+    H --> O
+    I --> O
+    J --> O
+    K --> O
+    L --> O
+    M --> O
+    N --> O
+    
+    O --> P{コンプライアンス状況判定}
+    
+    P -->|良好| Q[継続監視・維持]
+    P -->|要改善| R[改善計画策定]
+    P -->|重大欠陥| S[緊急対応・是正]
+    
+    Q --> T[定期報告作成]
+    R --> U[改善実行監視]
+    S --> V[根本原因分析]
+    
+    T --> W[取締役会報告]
+    U --> W
+    V --> X[抜本的改善提案]
+    
+    W --> Y[継続的改善]
+    X --> Y
+    
+    style A fill:#e1f5fe
+    style O fill:#fff3e0
+    style P fill:#f3e5f5
+    style Y fill:#e8f5e8
+            </div>
+        </div>
+        
+        <div class="features-list">
+            <div class="feature-item">
+                <h4>🔍 総合監視</h4>
+                <ul>
+                    <li>内部統制の設計・運用評価</li>
+                    <li>法令・規制の遵守状況確認</li>
+                    <li>情報管理体制の監査</li>
+                    <li>教育・研修の効果測定</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>⚡ 早期発見</h4>
+                <ul>
+                    <li>コンプライアンス違反の予兆検知</li>
+                    <li>リスクの早期特定・評価</li>
+                    <li>予防的対策の提案</li>
+                    <li>継続的な改善促進</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>📈 体制強化</h4>
+                <ul>
+                    <li>コンプライアンス体制の最適化</li>
+                    <li>業界ベストプラクティスの導入</li>
+                    <li>継続的な能力向上</li>
+                    <li>企業文化の醸成</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 社外取締役 ユースケース 5: 市場評価・株価影響分析 -->
+    <div class="usecase-container" id="out5">
+        <h2 class="usecase-title">
+            <span class="usecase-icon">📈</span>
+            OUT5: 市場評価・株価影響分析
+        </h2>
+        <div class="usecase-description">
+            <strong>目的：</strong> 社外取締役が客観的な市場評価と株価影響を分析し、IR戦略の効果測定と企業価値向上への貢献を実現<br>
+            <strong>対象者：</strong> 社外取締役、経営陣、IR担当者<br>
+            <strong>解決課題：</strong> 市場評価の客観的把握、株価要因の精密分析、IR活動の効果測定
+        </div>
+        
+        <div class="mermaid-container">
+            <div class="mermaid">
+graph TD
+    A[📊 市場データ収集] --> B[包括的分析開始]
+    
+    B --> C[📈 株価パフォーマンス]
+    B --> D[💼 バリュエーション]
+    B --> E[📰 市場センチメント]
+    B --> F[🏆 競合比較]
+    
+    C --> G[絶対収益率]
+    C --> H[相対収益率]
+    C --> I[ボラティリティ]
+    
+    D --> J[PER・PBR分析]
+    D --> K[EV/EBITDA評価]
+    D --> L[理論株価との乖離]
+    
+    E --> M[アナリスト評価]
+    E --> N[メディア報道分析]
+    E --> O[投資家センチメント]
+    
+    F --> P[同業他社比較]
+    F --> Q[業界平均との差]
+    
+    G --> R[要因分析]
+    H --> R
+    I --> R
+    J --> R
+    K --> R
+    L --> R
+    M --> R
+    N --> R
+    O --> R
+    P --> R
+    Q --> R
+    
+    R --> S[客観的評価]
+    S --> T[改善機会特定]
+    
+    T --> U[IR戦略提案]
+    U --> V[効果予測・ROI算出]
+    
+    V --> W[取締役会報告]
+    W --> X[戦略実行・監視]
+    X --> Y[継続的評価・改善]
+    
+    style A fill:#e1f5fe
+    style R fill:#fff3e0
+    style U fill:#f3e5f5
+    style Y fill:#e8f5e8
+            </div>
+        </div>
+        
+        <div class="features-list">
+            <div class="feature-item">
+                <h4>📊 総合分析</h4>
+                <ul>
+                    <li>株価パフォーマンスの多角的評価</li>
+                    <li>バリュエーション指標の分析</li>
+                    <li>市場センチメントの定量化</li>
+                    <li>競合他社との詳細比較</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>🔍 要因特定</h4>
+                <ul>
+                    <li>株価変動要因の精密分析</li>
+                    <li>IR活動の効果測定</li>
+                    <li>市場評価ギャップの特定</li>
+                    <li>改善機会の優先順位付け</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>💡 戦略提案</h4>
+                <ul>
+                    <li>客観的なIR戦略提案</li>
+                    <li>投資家価値向上策の立案</li>
+                    <li>効果予測・ROI算出</li>
+                    <li>継続的な効果検証</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 社外取締役 ユースケース 6: 取締役会向けIR監督報告 -->
+    <div class="usecase-container" id="out6">
+        <h2 class="usecase-title">
+            <span class="usecase-icon">📋</span>
+            OUT6: 取締役会向けIR監督報告
+        </h2>
+        <div class="usecase-description">
+            <strong>目的：</strong> 社外取締役が取締役会に対してIR活動の監督結果を定期・緊急報告し、ガバナンス機能の実効性と透明性を確保<br>
+            <strong>対象者：</strong> 社外取締役、取締役会メンバー、監査委員会<br>
+            <strong>解決課題：</strong> IR監督機能の可視化、取締役会への適時報告、意思決定支援の強化
+        </div>
+        
+        <div class="mermaid-container">
+            <div class="mermaid">
+graph TD
+    A[📊 監督活動データ収集] --> B[報告書作成開始]
+    
+    B --> C[📅 定期報告]
+    B --> D[🚨 緊急報告]
+    
+    C --> E[月次監督サマリー]
+    C --> F[四半期詳細報告]
+    C --> G[年次包括評価]
+    
+    D --> H[重大問題発見時]
+    D --> I[法的リスク発生時]
+    D --> J[市場異常反応時]
+    
+    E --> K[重要指標ダッシュボード]
+    F --> L[詳細分析・提案]
+    G --> M[年間評価・戦略]
+    
+    H --> N[即座問題報告]
+    I --> O[法的対応要請]
+    J --> P[緊急対策提案]
+    
+    K --> Q[取締役会資料作成]
+    L --> Q
+    M --> Q
+    N --> Q
+    O --> Q
+    P --> Q
+    
+    Q --> R[プレゼンテーション準備]
+    R --> S[取締役会報告実施]
+    
+    S --> T[質疑応答・議論]
+    T --> U[決議・指示事項]
+    
+    U --> V[フォローアップ計画]
+    V --> W[実行状況監視]
+    W --> X[次回報告準備]
+    
+    style A fill:#e1f5fe
+    style Q fill:#fff3e0
+    style S fill:#f3e5f5
+    style X fill:#e8f5e8
+            </div>
+        </div>
+        
+        <div class="features-list">
+            <div class="feature-item">
+                <h4>📅 定期報告</h4>
+                <ul>
+                    <li>月次・四半期・年次の体系的報告</li>
+                    <li>重要指標の継続モニタリング</li>
+                    <li>トレンド分析・改善提案</li>
+                    <li>前回指示事項の進捗報告</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>🚨 緊急報告</h4>
+                <ul>
+                    <li>重大問題の即座報告</li>
+                    <li>法的リスクの緊急共有</li>
+                    <li>市場異常への対応提案</li>
+                    <li>迅速な意思決定支援</li>
+                </ul>
+            </div>
+            <div class="feature-item">
+                <h4>💼 実効性確保</h4>
+                <ul>
+                    <li>監督機能の透明性確保</li>
+                    <li>取締役会の意思決定支援</li>
+                    <li>フォローアップの徹底</li>
+                    <li>継続的な改善促進</li>
+                </ul>
+            </div>
+                 </div>
+     </div>
+
+     <!-- 社外取締役 ユースケース 7: 独立評価・改善提案 -->
+     <div class="usecase-container" id="out7">
+         <h2 class="usecase-title">
+             <span class="usecase-icon">💡</span>
+             OUT7: 独立評価・改善提案
+         </h2>
+         <div class="usecase-description">
+             <strong>目的：</strong> 社外取締役が第三者視点でIR活動を評価し、客観的で実効性の高い改善提案を通じて企業価値向上を実現<br>
+             <strong>対象者：</strong> 社外取締役、経営陣、IR担当者<br>
+             <strong>解決課題：</strong> 内部の視点だけでは気づけない改善機会の発見、客観的評価による品質向上
+         </div>
+         
+         <div class="mermaid-container">
+             <div class="mermaid">
+graph TD
+    A[🔍 独立評価開始] --> B[多角的分析実施]
+    
+    B --> C[📊 定量分析]
+    B --> D[👥 定性分析]
+    B --> E[🏆 ベンチマーク分析]
+    B --> F[📈 トレンド分析]
+    
+    C --> G[KPI・指標評価]
+    C --> H[ROI・効果測定]
+    
+    D --> I[投資家フィードバック]
+    D --> J[市場評判・認知度]
+    
+    E --> K[同業他社比較]
+    E --> L[業界ベストプラクティス]
+    
+    F --> M[改善トレンド]
+    F --> N[課題の継続性]
+    
+    G --> O[総合評価]
+    H --> O
+    I --> O
+    J --> O
+    K --> O
+    L --> O
+    M --> O
+    N --> O
+    
+    O --> P[課題・機会特定]
+    P --> Q[優先順位付け]
+    
+    Q --> R[短期改善案]
+    Q --> S[中期戦略案]
+    Q --> T[長期ビジョン案]
+    
+    R --> U[実行可能性評価]
+    S --> U
+    T --> U
+    
+    U --> V[改善提案書作成]
+    V --> W[経営陣プレゼン]
+    
+    W --> X[議論・調整]
+    X --> Y[最終提案確定]
+    Y --> Z[実行計画策定]
+    
+    style A fill:#e1f5fe
+    style O fill:#fff3e0
+    style V fill:#f3e5f5
+    style Z fill:#e8f5e8
+             </div>
+         </div>
+         
+         <div class="features-list">
+             <div class="feature-item">
+                 <h4>🔍 客観的評価</h4>
+                 <ul>
+                     <li>第三者視点での公正な分析</li>
+                     <li>内部バイアスを排除した評価</li>
+                     <li>投資家目線での改善提案</li>
+                     <li>データに基づく客観的判断</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>💡 実効性重視</h4>
+                 <ul>
+                     <li>実行可能な改善案の提示</li>
+                     <li>優先順位の明確化</li>
+                     <li>期待効果の定量化</li>
+                     <li>リスク・課題の事前特定</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>📈 継続改善</h4>
+                 <ul>
+                     <li>定期的な評価・見直し</li>
+                     <li>改善効果の継続測定</li>
+                     <li>新たな課題の早期発見</li>
+                     <li>持続的な価値向上</li>
+                 </ul>
+             </div>
+         </div>
+     </div>
+
+     <!-- 社外取締役 ユースケース 8: ガバナンス改善勧告 -->
+     <div class="usecase-container" id="out8">
+         <h2 class="usecase-title">
+             <span class="usecase-icon">⚖️</span>
+             OUT8: ガバナンス改善勧告
+         </h2>
+         <div class="usecase-description">
+             <strong>目的：</strong> 社外取締役がコーポレートガバナンス体制の強化を勧告し、透明性・説明責任・実効性の向上を実現<br>
+             <strong>対象者：</strong> 社外取締役、取締役会、監査委員会<br>
+             <strong>解決課題：</strong> ガバナンス体制の実効性向上、投資家からの信頼獲得、ESG評価の改善
+         </div>
+         
+         <div class="mermaid-container">
+             <div class="mermaid">
+graph TD
+    A[⚖️ ガバナンス現状分析] --> B[課題・改善点特定]
+    
+    B --> C[🏛️ 組織体制]
+    B --> D[📋 制度・手続き]
+    B --> E[💬 情報開示]
+    B --> F[👥 ステークホルダー関係]
+    
+    C --> G[取締役会の実効性]
+    C --> H[委員会機能の強化]
+    
+    D --> I[意思決定プロセス]
+    D --> J[内部統制システム]
+    
+    E --> K[透明性の向上]
+    E --> L[説明責任の強化]
+    
+    F --> M[投資家との対話]
+    F --> N[多様なステークホルダー]
+    
+    G --> O[改善勧告策定]
+    H --> O
+    I --> O
+    J --> O
+    K --> O
+    L --> O
+    M --> O
+    N --> O
+    
+    O --> P[勧告書作成]
+    P --> Q[取締役会提出]
+    
+    Q --> R[審議・討議]
+    R --> S[改善計画策定]
+    
+    S --> T[実行・監視]
+    T --> U[進捗評価]
+    U --> V[追加勧告・調整]
+    
+    V --> W[継続的改善]
+    
+    style A fill:#e1f5fe
+    style O fill:#fff3e0
+    style Q fill:#f3e5f5
+    style W fill:#e8f5e8
+             </div>
+         </div>
+         
+         <div class="features-list">
+             <div class="feature-item">
+                 <h4>🏛️ 体制強化</h4>
+                 <ul>
+                     <li>取締役会の実効性向上</li>
+                     <li>委員会機能の最適化</li>
+                     <li>意思決定プロセスの改善</li>
+                     <li>監督機能の強化</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>📈 透明性向上</h4>
+                 <ul>
+                     <li>情報開示の充実・改善</li>
+                     <li>説明責任の徹底</li>
+                     <li>投資家との対話促進</li>
+                     <li>ESG情報の充実</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>🎯 実効性確保</h4>
+                 <ul>
+                     <li>改善計画の策定・実行</li>
+                     <li>進捗の継続監視</li>
+                     <li>効果測定・評価</li>
+                     <li>持続的な改善文化</li>
+                 </ul>
+             </div>
+         </div>
+     </div>
+
+     <!-- 社外取締役 ユースケース 9: IR戦略客観性評価 -->
+     <div class="usecase-container" id="out9">
+         <h2 class="usecase-title">
+             <span class="usecase-icon">🎯</span>
+             OUT9: IR戦略客観性評価
+         </h2>
+         <div class="usecase-description">
+             <strong>目的：</strong> 社外取締役がIR戦略の妥当性・効果性を客観評価し、投資家価値最大化に向けた戦略最適化を実現<br>
+             <strong>対象者：</strong> 社外取締役、経営陣、IR担当者<br>
+             <strong>解決課題：</strong> IR戦略の客観的検証、投資家ニーズとの整合性確認、戦略効果の最大化
+         </div>
+         
+         <div class="mermaid-container">
+             <div class="mermaid">
+graph TD
+    A[🎯 IR戦略レビュー] --> B[多面的評価開始]
+    
+    B --> C[📊 戦略妥当性]
+    B --> D[🎪 実行可能性]
+    B --> E[💰 効果予測]
+    B --> F[🔄 適応性]
+    
+    C --> G[市場環境との整合]
+    C --> H[投資家ニーズ適合]
+    C --> I[競合差別化]
+    
+    D --> J[リソース充足性]
+    D --> K[スキル・能力]
+    D --> L[時間・予算]
+    
+    E --> M[ROI予測]
+    E --> N[KPI達成可能性]
+    E --> O[リスク・リターン]
+    
+    F --> P[環境変化対応]
+    F --> Q[柔軟性・調整力]
+    
+    G --> R[総合評価]
+    H --> R
+    I --> R
+    J --> R
+    K --> R
+    L --> R
+    M --> R
+    N --> R
+    O --> R
+    P --> R
+    Q --> R
+    
+    R --> S[客観的判定]
+    S --> T[改善提案策定]
+    
+    T --> U[戦略修正案]
+    T --> V[実行計画調整]
+    T --> W[リソース再配分]
+    
+    U --> X[経営陣協議]
+    V --> X
+    W --> X
+    
+    X --> Y[戦略最適化]
+    Y --> Z[効果測定・継続評価]
+    
+    style A fill:#e1f5fe
+    style R fill:#fff3e0
+    style T fill:#f3e5f5
+    style Z fill:#e8f5e8
+             </div>
+         </div>
+         
+         <div class="features-list">
+             <div class="feature-item">
+                 <h4>🔍 客観的分析</h4>
+                 <ul>
+                     <li>第三者視点での戦略評価</li>
+                     <li>投資家ニーズとの整合性確認</li>
+                     <li>市場環境との適合性分析</li>
+                     <li>競合優位性の検証</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>📈 効果最大化</h4>
+                 <ul>
+                     <li>ROI・効果予測の精度向上</li>
+                     <li>リソース配分の最適化</li>
+                     <li>実行可能性の向上</li>
+                     <li>リスク軽減策の提案</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>🔄 継続改善</h4>
+                 <ul>
+                     <li>定期的な戦略見直し</li>
+                     <li>環境変化への適応</li>
+                     <li>効果測定・調整</li>
+                     <li>持続的な価値創造</li>
+                 </ul>
+             </div>
+         </div>
+     </div>
+
+     <!-- 社外取締役 ユースケース 10: 投資家エンゲージメント監督 -->
+     <div class="usecase-container" id="out10">
+         <h2 class="usecase-title">
+             <span class="usecase-icon">🤝</span>
+             OUT10: 投資家エンゲージメント監督
+         </h2>
+         <div class="usecase-description">
+             <strong>目的：</strong> 社外取締役が投資家との関係性・対話品質を監督し、健全で建設的なエンゲージメントの実現を支援<br>
+             <strong>対象者：</strong> 社外取締役、IR担当者、経営陣<br>
+             <strong>解決課題：</strong> 投資家関係の健全性確保、対話品質の向上、長期的な信頼関係構築
+         </div>
+         
+         <div class="mermaid-container">
+             <div class="mermaid">
+graph TD
+    A[🤝 エンゲージメント監視] --> B[関係性分析開始]
+    
+    B --> C[📊 対話頻度・質]
+    B --> D[📈 関係深化度]
+    B --> E[⚖️ 公平性・透明性]
+    B --> F[🎯 成果・効果]
+    
+    C --> G[面談回数・時間]
+    C --> H[質問・回答品質]
+    C --> I[フォローアップ]
+    
+    D --> J[信頼関係構築]
+    D --> K[長期投資家比率]
+    D --> L[継続的な対話]
+    
+    E --> M[情報提供の公平性]
+    E --> N[アクセス機会平等]
+    E --> O[透明性確保]
+    
+    F --> P[投資判断への影響]
+    F --> Q[企業価値向上]
+    F --> R[市場評価改善]
+    
+    G --> S[総合評価]
+    H --> S
+    I --> S
+    J --> S
+    K --> S
+    L --> S
+    M --> S
+    N --> S
+    O --> S
+    P --> S
+    Q --> S
+    R --> S
+    
+    S --> T[課題・改善点特定]
+    T --> U[改善提案策定]
+    
+    U --> V[対話プロセス改善]
+    U --> W[関係構築強化]
+    U --> X[透明性向上]
+    
+    V --> Y[実行・監視]
+    W --> Y
+    X --> Y
+    
+    Y --> Z[継続的な関係向上]
+    
+    style A fill:#e1f5fe
+    style S fill:#fff3e0
+    style U fill:#f3e5f5
+    style Z fill:#e8f5e8
+             </div>
+         </div>
+         
+         <div class="features-list">
+             <div class="feature-item">
+                 <h4>🔍 関係性監視</h4>
+                 <ul>
+                     <li>投資家との対話頻度・質の評価</li>
+                     <li>信頼関係構築度の測定</li>
+                     <li>長期投資家との関係深化</li>
+                     <li>エンゲージメント効果分析</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>⚖️ 公平性確保</h4>
+                 <ul>
+                     <li>情報提供の公平性監視</li>
+                     <li>アクセス機会の平等確保</li>
+                     <li>透明性・説明責任の徹底</li>
+                     <li>利益相反の防止</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>📈 品質向上</h4>
+                 <ul>
+                     <li>対話プロセスの改善</li>
+                     <li>関係構築手法の最適化</li>
+                     <li>投資家満足度の向上</li>
+                     <li>持続的な信頼関係構築</li>
+                 </ul>
+             </div>
+         </div>
+     </div>
+
+     <!-- 社外取締役 ユースケース 11: 危機対応適正性監視 -->
+     <div class="usecase-container" id="out11">
+         <h2 class="usecase-title">
+             <span class="usecase-icon">🚨</span>
+             OUT11: 危機対応適正性監視
+         </h2>
+         <div class="usecase-description">
+             <strong>目的：</strong> 社外取締役が緊急時・危機時のIR対応の適切性・迅速性を監視し、企業価値保護と信頼維持を実現<br>
+             <strong>対象者：</strong> 社外取締役、危機管理担当者、経営陣<br>
+             <strong>解決課題：</strong> 危機対応の客観的評価、適切性・迅速性の確保、企業価値毀損の最小化
+         </div>
+         
+         <div class="mermaid-container">
+             <div class="mermaid">
+graph TD
+    A[🚨 危機発生・対応監視] --> B[対応適正性評価]
+    
+    B --> C[⏰ 迅速性評価]
+    B --> D[📋 適切性評価]
+    B --> E[🎯 効果性評価]
+    B --> F[⚖️ 法的適正性]
+    
+    C --> G[初動対応時間]
+    C --> H[情報収集速度]
+    C --> I[意思決定迅速性]
+    
+    D --> J[対応内容妥当性]
+    D --> K[コミュニケーション品質]
+    D --> L[ステークホルダー配慮]
+    
+    E --> M[被害最小化効果]
+    E --> N[信頼回復速度]
+    E --> O[市場反応改善]
+    
+    F --> P[法的要件遵守]
+    F --> Q[規制当局対応]
+    F --> R[コンプライアンス]
+    
+    G --> S[総合評価]
+    H --> S
+    I --> S
+    J --> S
+    K --> S
+    L --> S
+    M --> S
+    N --> S
+    O --> S
+    P --> S
+    Q --> S
+    R --> S
+    
+    S --> T[改善点特定]
+    T --> U[対応策提案]
+    
+    U --> V[危機管理体制強化]
+    U --> W[対応手順最適化]
+    U --> X[予防策充実]
+    
+    V --> Y[体制改善実行]
+    W --> Y
+    X --> Y
+    
+    Y --> Z[次回危機への備え]
+    
+    style A fill:#e1f5fe
+    style S fill:#fff3e0
+    style U fill:#f3e5f5
+    style Z fill:#e8f5e8
+             </div>
+         </div>
+         
+         <div class="features-list">
+             <div class="feature-item">
+                 <h4>⏰ 迅速性評価</h4>
+                 <ul>
+                     <li>初動対応時間の測定・評価</li>
+                     <li>情報収集・分析の迅速性</li>
+                     <li>意思決定プロセスの効率性</li>
+                     <li>対外発表のタイミング適正性</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>📋 適切性評価</h4>
+                 <ul>
+                     <li>対応内容・手法の妥当性</li>
+                     <li>コミュニケーションの品質</li>
+                     <li>ステークホルダーへの配慮</li>
+                     <li>法的・規制要件の遵守</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>🔄 改善強化</h4>
+                 <ul>
+                     <li>危機管理体制の見直し</li>
+                     <li>対応手順の最適化</li>
+                     <li>予防策・早期警告の充実</li>
+                     <li>継続的な準備・訓練</li>
+                 </ul>
+             </div>
+         </div>
+     </div>
+
+     <!-- 社外取締役 ユースケース 12: ESG情報開示監督 -->
+     <div class="usecase-container" id="out12">
+         <h2 class="usecase-title">
+             <span class="usecase-icon">🌱</span>
+             OUT12: ESG情報開示監督
+         </h2>
+         <div class="usecase-description">
+             <strong>目的：</strong> 社外取締役がESG情報開示の完全性・信頼性を監督し、持続可能な企業価値創造とESG投資家からの信頼獲得を実現<br>
+             <strong>対象者：</strong> 社外取締役、ESG担当者、IR担当者<br>
+             <strong>解決課題：</strong> ESG開示の質向上、信頼性確保、ESG投資家との良好な関係構築
+         </div>
+         
+         <div class="mermaid-container">
+             <div class="mermaid">
+graph TD
+    A[🌱 ESG開示監督開始] --> B[ESG情報品質評価]
+    
+    B --> C[🌍 環境情報]
+    B --> D[👥 社会情報]
+    B --> E[⚖️ ガバナンス情報]
+    B --> F[📊 統合報告]
+    
+    C --> G[気候変動対応]
+    C --> H[環境負荷・リスク]
+    C --> I[循環経済・資源]
+    
+    D --> J[人権・労働]
+    D --> K[地域・社会貢献]
+    D --> L[製品・サービス責任]
+    
+    E --> M[取締役会・組織]
+    E --> N[倫理・コンプライアンス]
+    E --> O[リスク管理]
+    
+    F --> P[財務・非財務統合]
+    F --> Q[長期価値創造]
+    F --> R[ステークホルダー価値]
+    
+    G --> S[信頼性・完全性評価]
+    H --> S
+    I --> S
+    J --> S
+    K --> S
+    L --> S
+    M --> S
+    N --> S
+    O --> S
+    P --> S
+    Q --> S
+    R --> S
+    
+    S --> T[改善機会特定]
+    T --> U[開示強化提案]
+    
+    U --> V[情報収集体制強化]
+    U --> W[開示内容充実]
+    U --> X[第三者検証導入]
+    
+    V --> Y[実行・監視]
+    W --> Y
+    X --> Y
+    
+    Y --> Z[ESG価値向上]
+    
+    style A fill:#e1f5fe
+    style S fill:#fff3e0
+    style U fill:#f3e5f5
+    style Z fill:#e8f5e8
+             </div>
+         </div>
+         
+         <div class="features-list">
+             <div class="feature-item">
+                 <h4>🌍 包括的監督</h4>
+                 <ul>
+                     <li>環境・社会・ガバナンス全領域</li>
+                     <li>定量・定性情報の両面評価</li>
+                     <li>国際基準・フレームワーク対応</li>
+                     <li>統合報告書の品質向上</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>🔍 信頼性確保</h4>
+                 <ul>
+                     <li>情報の正確性・完全性検証</li>
+                     <li>第三者検証・監査の推進</li>
+                     <li>透明性・説明責任の強化</li>
+                     <li>継続的な品質改善</li>
+                 </ul>
+             </div>
+             <div class="feature-item">
+                 <h4>📈 価値創造</h4>
+                 <ul>
+                     <li>ESG投資家との関係強化</li>
+                     <li>ESG評価機関からの評価向上</li>
+                     <li>持続可能な企業価値創造</li>
+                     <li>長期的な競争優位の確保</li>
+                 </ul>
+             </div>
+         </div>
+     </div>
+
+     <script>
         mermaid.initialize({
             startOnLoad: true,
             theme: 'default',
