@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% from 'components/sidebar_card.html' import card with context %}
+{% from 'components/upload_modal.html' import upload_modal with context %}
+
+{% block title %}IRライブラリ管理{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', path='css/ir-library.css') }}?v=1.0.0" type="text/css">
+{% endblock %}
+
+{% block sidebar %}
+<aside class="layout-sidebar">
+    {% call card('カテゴリ', icon='📂') %}
+    <nav class="report-nav">
+        <a href="#" class="report-link active" data-category="all">すべて</a>
+        <a href="#" class="report-link" data-category="financials">決算資料</a>
+        <a href="#" class="report-link" data-category="presentations">プレゼン資料</a>
+        <a href="#" class="report-link" data-category="videos">説明会動画</a>
+        <a href="#" class="report-link" data-category="others">その他</a>
+    </nav>
+    {% endcall %}
+
+    {% call card('フィルター', icon='📊') %}
+    <div class="filter-group">
+        <label for="accessLevel">アクセス権限</label>
+        <select id="accessLevel" class="form-control">
+            <option>すべて</option>
+            <option>公開</option>
+            <option>限定公開</option>
+            <option>非公開</option>
+        </select>
+    </div>
+    {% endcall %}
+</aside>
+{% endblock %}
+
+{% block content %}
+<main class="layout-content">
+    <div class="page-header">
+        <h1 class="page-title">📚 IRライブラリ管理</h1>
+        <div class="header-actions">
+            <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">新規資料をアップロード</button>
+        </div>
+    </div>
+
+    <div class="library-list-container card">
+        <div class="card-header">
+            <h3>登録資料一覧</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>資料名</th>
+                        <th>カテゴリ</th>
+                        <th>公開日</th>
+                        <th>アクセス権限</th>
+                        <th>DL数</th>
+                        <th>アクション</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2023年第2四半期 決算説明資料</td>
+                        <td>決算資料</td>
+                        <td>2023-10-27</td>
+                        <td><span class="badge bg-success">公開</span></td>
+                        <td>1,234</td>
+                        <td><a href="#" class="btn-sm btn-secondary">編集</a></td>
+                    </tr>
+                    <tr>
+                        <td>中期経営計画 2025</td>
+                        <td>プレゼン資料</td>
+                        <td>2023-08-15</td>
+                        <td><span class="badge bg-primary">限定公開</span></td>
+                        <td>567</td>
+                        <td><a href="#" class="btn-sm btn-secondary">編集</a></td>
+                    </tr>
+                    <tr>
+                        <td>2023年定時株主総会 招集ご通知</td>
+                        <td>その他</td>
+                        <td>2023-06-01</td>
+                        <td><span class="badge bg-secondary">非公開</span></td>
+                        <td>N/A</td>
+                        <td><a href="#" class="btn-sm btn-secondary">編集</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {{ upload_modal(title='新規資料をアップロード') }}
+</main>
+{% endblock %} 

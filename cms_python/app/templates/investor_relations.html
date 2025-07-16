@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% from 'components/sidebar_card.html' import card with context %}
+{% from 'components/investor_modal.html' import investor_modal with context %}
+
+{% block title %}投資家情報管理{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', path='css/investor-relations.css') }}?v=1.0.0" type="text/css">
+{% endblock %}
+
+{% block sidebar %}
+<aside class="layout-sidebar">
+    {% call card('投資家検索', icon='🔍') %}
+    <div class="filter-group">
+        <input type="text" class="form-control" placeholder="投資家名、企業名...">
+        <select class="form-control" style="margin-top: 0.5rem;">
+            <option>すべてのカテゴリ</option>
+            <option>バイサイド</option>
+            <option>セルサイド</option>
+            <option>個人投資家</option>
+        </select>
+        <button class="btn-secondary" style="margin-top: 0.5rem;">検索</button>
+    </div>
+    {% endcall %}
+
+    {% call card('タグクラウド', icon='🏷️') %}
+    <div class="tag-cloud">
+        <span class="tag">ESG</span>
+        <span class="tag">財務戦略</span>
+        <span class="tag">M&A</span>
+        <span class="tag">新製品</span>
+        <span class="tag">株主還元</span>
+        <span class="tag">ガバナンス</span>
+    </div>
+    {% endcall %}
+</aside>
+{% endblock %}
+
+{% block content %}
+<main class="layout-content">
+    <div class="page-header">
+        <h1 class="page-title">👥 投資家情報管理</h1>
+        <div class="header-actions">
+            <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#investorModal">新規投資家を登録</button>
+        </div>
+    </div>
+
+    <div class="investor-list-container card">
+        <div class="card-header">
+            <h3>登録済み投資家リスト</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>投資家名</th>
+                        <th>所属企業</th>
+                        <th>カテゴリ</th>
+                        <th>最終対話日</th>
+                        <th>アクション</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>山田 太郎</td>
+                        <td>A証券</td>
+                        <td>セルサイド</td>
+                        <td>2023-10-26</td>
+                        <td><a href="#" class="btn-sm btn-secondary">詳細</a></td>
+                    </tr>
+                    <tr>
+                        <td>John Smith</td>
+                        <td>B Capital</td>
+                        <td>バイサイド</td>
+                        <td>2023-10-24</td>
+                        <td><a href="#" class="btn-sm btn-secondary">詳細</a></td>
+                    </tr>
+                    <tr>
+                        <td>鈴木 一郎</td>
+                        <td>個人</td>
+                        <td>個人投資家</td>
+                        <td>2023-10-20</td>
+                        <td><a href="#" class="btn-sm btn-secondary">詳細</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{ investor_modal(title='新規投資家を登録') }}
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 必要に応じてモーダル用のJSなどを記述
+</script>
+{% endblock %} 

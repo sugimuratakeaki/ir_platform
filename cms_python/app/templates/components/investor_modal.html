@@ -1,0 +1,53 @@
+{% macro investor_modal(title='投資家情報', investor=None) %}
+<div class="modal fade" id="investorModal" tabindex="-1" aria-labelledby="investorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="investorModalLabel">{{ title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="investorName" class="form-label">投資家名</label>
+                            <input type="text" class="form-control" id="investorName" value="{{ investor.name if investor else '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="investorCompany" class="form-label">所属企業</label>
+                            <input type="text" class="form-control" id="investorCompany" value="{{ investor.company if investor else '' }}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="investorCategory" class="form-label">カテゴリ</label>
+                            <select class="form-select" id="investorCategory">
+                                <option {% if investor and investor.category == 'バイサイド' %}selected{% endif %}>バイサイド</option>
+                                <option {% if investor and investor.category == 'セルサイド' %}selected{% endif %}>セルサイド</option>
+                                <option {% if investor and investor.category == '個人投資家' %}selected{% endif %}>個人投資家</option>
+                                <option {% if investor and investor.category == 'その他' %}selected{% endif %}>その他</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="investorEmail" class="form-label">メールアドレス</label>
+                            <input type="email" class="form-control" id="investorEmail" value="{{ investor.email if investor else '' }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="investorTags" class="form-label">関心事項タグ</label>
+                        <input type="text" class="form-control" id="investorTags" placeholder="例: ESG, M&A, 株主還元 (カンマ区切り)">
+                    </div>
+                    <div class="mb-3">
+                        <label for="investorMemo" class="form-label">メモ</label>
+                        <textarea class="form-control" id="investorMemo" rows="4">{{ investor.memo if investor else '' }}</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <button type="button" class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %} 

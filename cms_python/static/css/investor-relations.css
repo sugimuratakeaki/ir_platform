@@ -1,0 +1,30 @@
+.investor-list-container .table {
+    margin-bottom: 0;
+}
+
+.investor-list-container .btn-sm {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+}
+
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.tag-cloud .tag {
+    background-color: var(--secondary-bg-color);
+    color: var(--text-color);
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.tag-cloud .tag:hover {
+    background-color: var(--primary-color);
+    color: #fff;
+} 

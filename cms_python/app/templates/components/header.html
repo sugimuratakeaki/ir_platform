@@ -18,6 +18,12 @@
             <a href="{{ url_for('dialogue') }}" class="nav-btn {{ 'active' if current_section == 'dialogue' else '' }}">
                 💬 対話管理
             </a>
+            <a href="{{ url_for('investor_relations') }}" class="nav-btn {{ 'active' if current_section == 'investor-relations' else '' }}">
+                👥 投資家情報
+            </a>
+            <a href="{{ url_for('ir_library') }}" class="nav-btn {{ 'active' if current_section == 'ir-library' else '' }}">
+                📚 IRライブラリ
+            </a>
             <a href="{{ url_for('analytics') }}" class="nav-btn {{ 'active' if current_section == 'analytics' else '' }}">
                 📊 分析レポート
             </a>

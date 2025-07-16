@@ -6,6 +6,7 @@ HTML テンプレートレンダリング
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from pathlib import Path
 
 from ..core.logger import kagami_logger
 from .component_helpers import (
@@ -15,7 +16,10 @@ from .component_helpers import (
 )
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
+
+# アプリケーションのベースディレクトリを定義 (app)
+BASE_DIR = Path(__file__).resolve().parent.parent
+templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 
 def get_base_context(request: Request, current_section: str, title: str):
@@ -161,4 +165,22 @@ async def settings(request: Request):
     context = get_base_context(request, "settings", "システム設定")
     
     kagami_logger.info("⚙️ システム設定ページ表示", user=context["user"]["name"])
-    return templates.TemplateResponse("settings.html", context) 
+    return templates.TemplateResponse("settings.html", context)
+
+
+@router.get("/investor-relations", response_class=HTMLResponse, name="investor_relations")
+async def investor_relations(request: Request):
+    """投資家情報管理ページ"""
+    context = get_base_context(request, "investor-relations", "投資家情報管理")
+    
+    kagami_logger.info("👥 投資家情報管理ページ表示", user=context["user"]["name"])
+    return templates.TemplateResponse("investor_relations.html", context)
+
+
+@router.get("/ir-library", response_class=HTMLResponse, name="ir_library")
+async def ir_library(request: Request):
+    """IRライブラリ管理ページ"""
+    context = get_base_context(request, "ir-library", "IRライブラリ管理")
+    
+    kagami_logger.info("📚 IRライブラリ管理ページ表示", user=context["user"]["name"])
+    return templates.TemplateResponse("ir_library.html", context) 

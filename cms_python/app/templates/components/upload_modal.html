@@ -1,0 +1,56 @@
+{% macro upload_modal(title='新規資料をアップロード') %}
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadModalLabel">{{ title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="fileUpload" class="form-label">ファイル選択</label>
+                        <input class="form-control" type="file" id="fileUpload">
+                    </div>
+                    <div class="mb-3">
+                        <label for="documentTitle" class="form-label">資料名</label>
+                        <input type="text" class="form-control" id="documentTitle" placeholder="例: 2023年第2四半期 決算説明資料">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="documentCategory" class="form-label">カテゴリ</label>
+                            <select class="form-select" id="documentCategory">
+                                <option selected>カテゴリを選択...</option>
+                                <option>決算資料</option>
+                                <option>プレゼン資料</option>
+                                <option>説明会動画</option>
+                                <option>その他</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="accessLevel" class="form-label">アクセス権限</label>
+                            <select class="form-select" id="accessLevel">
+                                <option value="public">公開</option>
+                                <option value="limited">限定公開</option>
+                                <option value="private">非公開</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="releaseDate" class="form-label">公開日</label>
+                        <input type="date" class="form-control" id="releaseDate">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="notifyUsers">
+                        <label class="form-check-label" for="notifyUsers">関連する投資家に通知する</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <button type="button" class="btn btn-primary">アップロード</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %} 

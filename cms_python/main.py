@@ -18,6 +18,9 @@ from app.api.routes import router as api_router
 from app.web.routes import router as web_router
 from app.core.middleware import add_middleware
 
+# アプリケーションのベースディレクトリを定義 (cms_python)
+BASE_DIR = Path(__file__).resolve().parent
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -46,14 +49,14 @@ setup_logging()
 add_middleware(app)
 
 # 静的ファイル設定
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory=BASE_DIR / "app/static"), name="static")
 
 # ルーター登録
 app.include_router(api_router, prefix="/api", tags=["API"])
 app.include_router(web_router, tags=["Web"])
 
 # テンプレート設定
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=BASE_DIR / "app/templates")
 
 
 @app.get("/", response_class=HTMLResponse)
